@@ -1,0 +1,12 @@
+.settings {
+  display: flex;
+  align-items: center;
+  min-height: $settingsHeight;
+  width: 100%;
+  background: $colorWhite;
+  border-bottom: $border;
+
+  .btn {
+    margin-left: $btmMargin;
+  }
+}

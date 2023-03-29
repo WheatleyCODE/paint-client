@@ -1,0 +1,18 @@
+.toolbar {
+  height: 100%;
+  min-width: $toolbarWidth;
+  max-width: $toolbarWidth;
+  background: $colorWhite;
+  border-right: $border;
+  display: inline-block;
+
+  &__tools {
+    display: flex;
+    flex-wrap: wrap;
+
+    .btn {
+      margin-left: $btmMargin;
+      margin-bottom: $btmMargin;
+    }
+  }
+}
