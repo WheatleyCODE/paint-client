@@ -1,3 +1,7 @@
 export interface IPaintState {
-  a: boolean;
+  currentTool: any;
+  toolSettings: any;
+  canvas: HTMLCanvasElement;
+  undo: any;
+  redo: any;
 }

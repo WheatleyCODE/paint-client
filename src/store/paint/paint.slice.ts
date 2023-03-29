@@ -2,7 +2,11 @@ import { createSlice } from '@reduxjs/toolkit';
 import { IPaintState } from '../../types/paint.interfaces';
 
 const initialState: IPaintState = {
-  a: true,
+  canvas: {} as HTMLCanvasElement,
+  currentTool: undefined,
+  redo: undefined,
+  toolSettings: undefined,
+  undo: undefined,
 };
 
 export const paintSlice = createSlice({
@@ -11,4 +15,4 @@ export const paintSlice = createSlice({
   reducers: {},
 });
 
-export const PA = paintSlice.actions;
+export const paintActions = paintSlice.actions;
