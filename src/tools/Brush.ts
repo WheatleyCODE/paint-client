@@ -1,39 +1,15 @@
-import { map, pairwise, switchMap, takeUntil, Observable, withLatestFrom, startWith } from 'rxjs';
-import { ChangeEvent } from 'react';
-import { Tool } from './Tool';
+import { map, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
+import { Tool } from './abstract/Tool';
+import { createStream } from '../utils/stream.utils';
 import { IBrush, ToolTypes } from '../types/tools.interfaces';
 
 export class Brush extends Tool implements IBrush {
-  initColor: string;
-  initLineWidth: number;
-  type: ToolTypes = ToolTypes.BRUSH;
-  protected color$: Observable<ChangeEvent<HTMLInputElement>>;
-  protected lineWidth$: Observable<ChangeEvent<HTMLInputElement>>;
-
-  constructor(
-    $canvas: HTMLCanvasElement,
-    color$: Observable<ChangeEvent<HTMLInputElement>>,
-    lineWidth$: Observable<ChangeEvent<HTMLInputElement>>,
-    initColor: string,
-    initLineWidth: number
-  ) {
-    super($canvas);
-    this.color$ = color$;
-    this.lineWidth$ = lineWidth$;
-    this.initColor = initColor;
-    this.initLineWidth = initLineWidth;
-  }
+  isBrush = true;
+  type = ToolTypes.BRUSH;
 
   init() {
-    const lineWidthStream$ = this.lineWidth$.pipe(
-      map((e) => e.target.value),
-      startWith(2)
-    );
-
-    const colorStream$ = this.color$.pipe(
-      map((e) => e.target.value),
-      startWith('#000')
-    );
+    const colorStream$ = createStream(this.color$, this.initColor);
+    const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
 
     const streamMV$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),

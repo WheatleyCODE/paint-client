@@ -1,6 +1,6 @@
 import React from 'react';
 import { Canvas } from './Canvas';
-import { Toolbar } from './Toolbar';
+import { Toolbar } from './toolbar/Toolbar';
 import { Settings } from './Settings';
 
 export const App = () => {

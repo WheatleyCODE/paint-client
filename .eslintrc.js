@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin', 'react', 'react-hooks', 'jsx-a11y', 'import'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'react', 'react-hooks', 'jsx-a11y', 'import', 'prettier'],
   extends: [
     'google',
     'plugin:import/recommended',

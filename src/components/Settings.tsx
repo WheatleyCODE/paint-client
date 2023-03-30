@@ -15,6 +15,10 @@ export const Settings = () => {
       <button className="btn icon" type="submit">
         <MdSave className="icon" />
       </button>
+
+      <button className="btn icon" type="submit">
+        <MdSave className="icon" />
+      </button>
     </div>
   );
 };
