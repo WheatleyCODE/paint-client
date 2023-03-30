@@ -1,12 +1,12 @@
 import React from 'react';
 import { Canvas } from './Canvas';
 import { Toolbar } from './toolbar/Toolbar';
-import { Settings } from './Settings';
+import { SettingBar } from './SettingBar';
 
 export const App = () => {
   return (
     <div className="app">
-      <Settings />
+      <SettingBar />
 
       <div className="app__main">
         <Toolbar />

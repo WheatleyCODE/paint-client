@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import { map, Observable, startWith } from 'rxjs';
+import { map, Observable, Observer, startWith } from 'rxjs';
 
 export const createStream = <
   T extends ChangeEvent<HTMLInputElement>,
@@ -14,4 +14,20 @@ export const createStream = <
   );
 
   return newStream$;
+};
+
+export const getStreamOnloadImg = (src: string): Observable<HTMLImageElement> => {
+  return new Observable((observer: Observer<HTMLImageElement>) => {
+    const img = new Image();
+    img.src = src;
+
+    img.onload = () => {
+      observer.next(img);
+      observer.complete();
+    };
+
+    img.onerror = (err) => {
+      observer.error(err);
+    };
+  });
 };

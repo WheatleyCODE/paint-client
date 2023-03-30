@@ -26,11 +26,13 @@ export class Rect extends Shape implements IRect {
         lineWidthStream$,
         colorStream$,
         fill$Stream$,
-        (startCoords, lineWidth, color, fill) => ({
+        fillColor$Stream$,
+        (startCoords, lineWidth, color, fill, fillColor) => ({
           startCoords,
           lineWidth,
           color,
           fill,
+          fillColor,
         })
       ),
       switchMap((options) => {
@@ -42,7 +44,7 @@ export class Rect extends Shape implements IRect {
     );
 
     const sub = streamMD$.subscribe(({ coords, options }) => {
-      const { lineWidth, color, fill, startCoords } = options;
+      const { lineWidth, color, fill, startCoords, fillColor } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -59,7 +61,7 @@ export class Rect extends Shape implements IRect {
 
         if (fill) {
           this.canvasCtx.fill();
-          this.canvasCtx.fillStyle = color;
+          this.canvasCtx.fillStyle = fillColor;
         }
         this.canvasCtx.stroke();
       });

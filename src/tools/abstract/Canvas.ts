@@ -1,5 +1,6 @@
-import { Observable, Observer } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Events } from './Events';
+import { getStreamOnloadImg } from '../../utils/stream.utils';
 
 export abstract class Canvas extends Events {
   protected $canvas: HTMLCanvasElement;
@@ -21,18 +22,6 @@ export abstract class Canvas extends Events {
   }
 
   protected copy(): Observable<HTMLImageElement> {
-    return new Observable((observer: Observer<HTMLImageElement>) => {
-      const img = new Image();
-      img.src = this.saved;
-
-      img.onload = () => {
-        observer.next(img);
-        observer.complete();
-      };
-
-      img.onerror = (err) => {
-        observer.error(err);
-      };
-    });
+    return getStreamOnloadImg(this.saved);
   }
 }

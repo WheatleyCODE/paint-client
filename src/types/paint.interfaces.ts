@@ -1,7 +1,8 @@
+import { ToolTypes } from './tools.interfaces';
+
 export interface IPaintState {
-  currentTool: any;
+  currentTool: ToolTypes;
   toolSettings: any;
-  canvas: HTMLCanvasElement;
-  undo: any;
-  redo: any;
+  undoList: string[];
+  redoList: string[];
 }

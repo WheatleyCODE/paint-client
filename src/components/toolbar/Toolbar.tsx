@@ -61,7 +61,7 @@ export const Toolbar = () => {
       const lineWidth$ = fromEvent<Change>(line, 'input');
       const borderWidth$ = fromEvent<Change>(border, 'input');
       const fill$ = fromEvent<Change>(fill, 'input');
-      const fillColor$ = fromEvent<Change>(fill, 'input');
+      const fillColor$ = fromEvent<Change>(fillColor, 'input');
 
       setObservables({ lineWidth$, color$, borderWidth$, fill$, fillColor$ });
     }
