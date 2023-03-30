@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { fromEvent } from 'rxjs';
 import { MdBrush, MdCircle, MdOutlineHorizontalRule, MdSquare } from 'react-icons/md';
 import { RiEraserFill } from 'react-icons/ri';
+import { Form } from 'react-bootstrap';
 import { useCanvas } from '../../hooks/useCanvas';
 import { Brush } from '../../tools/Brush';
 import { Tool, ToolTypes } from '../../types/tools.interfaces';
@@ -93,12 +94,12 @@ export const Toolbar = () => {
       </div>
 
       <div className="toolbar__settings">
-        <p>fill</p>
-        <input ref={fillRef} className="checkbox" type="checkbox" />
-        <p>line</p>
-        <input ref={lineWidthRef} type="range" min="0" max="5" />
-        <p>border</p>
-        <input ref={borderWidthRef} type="range" min="0" max="5" />
+        <Form.Label>Fill</Form.Label>
+        <Form.Check ref={fillRef} className="checkbox" type="checkbox" />
+        <Form.Label>Line</Form.Label>
+        <Form.Range ref={lineWidthRef} min="0" max="10" />
+        <Form.Label>Border</Form.Label>
+        <Form.Range ref={borderWidthRef} min="0" max="10" />
       </div>
     </div>
   );

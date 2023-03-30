@@ -1,0 +1,11 @@
+.input.color {
+  box-sizing: border-box;
+  height: $btnWidth * 2 + $btnMargin;
+  width: $paletteWidth;
+  padding: 0;
+  border: none;
+  outline: none;
+  margin: $paletteMargin;
+  margin-top: 0;
+  cursor: pointer;
+}

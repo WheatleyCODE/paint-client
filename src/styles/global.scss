@@ -1,36 +1,3 @@
 * {
   transition: all 0.2s;
 }
-
-.icon {
-  font-size: 1.8rem;
-}
-
-.btn.icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
-  width: $btnWidth;
-  height: $btnWidth;
-}
-
-.btn.active {
-  background: orange;
-}
-
-.input.color {
-  box-sizing: border-box;
-  height: $btnWidth * 2 + $btnMargin;
-  width: $paletteWidth;
-  padding: 0;
-  border: none;
-  outline: none;
-  margin: $paletteMargin;
-  margin-top: 0;
-  cursor: pointer;
-}
-
-.checkbox {
-  opacity: 1 !important;
-}

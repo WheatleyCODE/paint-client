@@ -1,0 +1,21 @@
+.icon {
+  font-size: 1.8rem;
+}
+
+.btn-primary {
+  border-radius: 2px;
+}
+
+.btn.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  width: $btnWidth;
+  height: $btnWidth;
+}
+
+.btn.active {
+  background: $colorOrange;
+  border-color: $colorOrange;
+}
