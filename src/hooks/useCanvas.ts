@@ -1,9 +1,7 @@
-import { useContext, useEffect, useState } from 'react';
-import { Brush } from '../tools/Brush';
-import { ToolTypes } from '../types/tools.interfaces';
-import { Rect } from '../tools/Rect';
-import { SocketPayload } from '../types/socket.interfaces';
-import { PaintContext } from '../components/PaintContext';
+import { useContext, useState } from 'react';
+import { Brush, Rect } from '../tools';
+import { PaintContext } from '../components/hoc/PaintContext';
+import { ToolTypes, SocketPayload } from '../types';
 
 export interface ICanvasSettings {
   width: number;

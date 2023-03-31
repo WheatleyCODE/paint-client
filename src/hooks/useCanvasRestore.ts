@@ -1,7 +1,6 @@
-import { useTypedSelector } from './useTypedSelector';
-import { useTypedDispatch } from './useTypedDispatch';
-import { getStreamOnloadImg } from '../utils/stream.utils';
+import { useTypedSelector, useTypedDispatch } from './redux';
 import { paintActions as PA } from '../store/paint/paint.slice';
+import { getStreamOnloadImg } from '../utils';
 
 export const useCanvasRestore = ($canvas?: HTMLCanvasElement) => {
   const { undoList, redoList } = useTypedSelector((state) => state.paint);

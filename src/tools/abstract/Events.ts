@@ -1,5 +1,5 @@
 import { fromEvent, Observable, Subscription } from 'rxjs';
-import { IEvents } from '../../types/tools.interfaces';
+import { IEvents } from '../../types';
 
 export abstract class Events implements IEvents {
   protected mouseDown$: Observable<MouseEvent>;

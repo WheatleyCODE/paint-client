@@ -1,18 +1,36 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { paintActions as PA } from '../store/paint/paint.slice';
-import { useCanvas } from '../hooks/useCanvas';
-import { useTypedDispatch } from '../hooks/useTypedDispatch';
-import { useRequest } from '../hooks/useRequest';
-import { useTypedSelector } from '../hooks/useTypedSelector';
-import { getStreamOnloadImg } from '../utils/stream.utils';
+import { paintActions as PA } from '../store';
+import { useCanvas, useTypedDispatch, useRequest, useTypedSelector, useSocket } from '../hooks';
+import { getStreamOnloadImg } from '../utils';
+import { SocketMethods } from '../types';
 
 export const Canvas = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
   const { username } = useTypedSelector((state) => state.paint);
-  const { canvas, canvasSettings } = useCanvas();
+  const { canvas, canvasSettings, draw } = useCanvas();
+  const { socket$ } = useSocket();
   const { width, height } = canvasSettings;
+
+  useEffect(() => {
+    if (!socket$) return;
+
+    socket$.subscribe((data) => {
+      switch (data.method) {
+        case SocketMethods.CONNECTION:
+          console.log('CONNECTION');
+          break;
+
+        case SocketMethods.DRAW:
+          draw(data.payload);
+          break;
+
+        default:
+          break;
+      }
+    });
+  }, [socket$]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,

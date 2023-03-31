@@ -3,14 +3,10 @@ import { fromEvent } from 'rxjs';
 import { MdBrush, MdCircle, MdOutlineHorizontalRule, MdSquare } from 'react-icons/md';
 import { RiEraserFill } from 'react-icons/ri';
 import { Form } from 'react-bootstrap';
-import { useCanvas } from '../../hooks/useCanvas';
-import { Brush } from '../../tools/Brush';
-import { Tool, ToolTypes } from '../../types/tools.interfaces';
-import { Change, IObservables } from '../../types/toolbar.interfaces';
-import { Rect } from '../../tools/Rect';
+import { useCanvas, useSocket } from '../../hooks';
+import { Brush, Rect } from '../../tools';
+import { Tool, ToolTypes, Change, IObservables } from '../../types';
 import { ToolButton } from './ToolButton';
-import { useSocket } from '../../hooks/useSocket';
-import { SocketMethods } from '../../types/socket.interfaces';
 
 export const Toolbar = () => {
   const colorRef = useRef<HTMLInputElement | null>(null);
@@ -21,27 +17,8 @@ export const Toolbar = () => {
 
   const [currentTool, setCurrentTool] = useState<Tool | null>(null);
   const [observables, setObservables] = useState<IObservables>({});
-  const { canvas, draw } = useCanvas();
-  const { socket$, socketNext } = useSocket();
-
-  useEffect(() => {
-    if (!socket$) return;
-
-    socket$.subscribe((data) => {
-      switch (data.method) {
-        case SocketMethods.CONNECTION:
-          console.log('CONNECTION');
-          break;
-
-        case SocketMethods.DRAW:
-          draw(data.payload);
-          break;
-
-        default:
-          break;
-      }
-    });
-  }, [socket$]);
+  const { canvas } = useCanvas();
+  const { socketNext } = useSocket();
 
   const clearCurrentTool = () => {
     currentTool?.destroyEvents();

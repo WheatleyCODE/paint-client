@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IPaintState } from '../../types/paint.interfaces';
-import { ToolTypes } from '../../types/tools.interfaces';
+import { IPaintState, ToolTypes } from '../../types';
 
 const initialState: IPaintState = {
   username: null,

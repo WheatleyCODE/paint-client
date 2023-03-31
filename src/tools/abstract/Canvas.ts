@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { Events } from './Events';
-import { getStreamOnloadImg } from '../../utils/stream.utils';
+import { getStreamOnloadImg } from '../../utils';
 
 export abstract class Canvas extends Events {
   protected $canvas: HTMLCanvasElement;

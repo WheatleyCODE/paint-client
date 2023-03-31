@@ -1,9 +1,14 @@
 import { map, Observable, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
 import { Tool } from './abstract/Tool';
-import { createStream } from '../utils/stream.utils';
-import { IBrush, IDrawBrashParams, ToolTypes } from '../types/tools.interfaces';
-import { Change } from '../types/toolbar.interfaces';
-import { SocketMethods, SocketPayload } from '../types/socket.interfaces';
+import { createStream } from '../utils';
+import {
+  IBrush,
+  IDrawBrashParams,
+  ToolTypes,
+  Change,
+  SocketMethods,
+  SocketPayload,
+} from '../types';
 
 export class Brush extends Tool implements IBrush {
   isBrush = true;

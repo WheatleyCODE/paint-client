@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
-import { IShape } from '../../types/tools.interfaces';
 import { Tool } from './Tool';
-import { Change } from '../../types/toolbar.interfaces';
+import { IShape, Change } from '../../types';
 
 export abstract class Shape extends Tool implements IShape {
   initFill: boolean;

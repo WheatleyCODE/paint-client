@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs';
-import { ITool, ToolTypes } from '../../types/tools.interfaces';
 import { Canvas } from './Canvas';
-import { Change } from '../../types/toolbar.interfaces';
+import { ITool, ToolTypes, Change } from '../../types';
 
 export abstract class Tool extends Canvas implements ITool {
   initColor: string;

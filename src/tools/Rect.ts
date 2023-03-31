@@ -9,10 +9,8 @@ import {
   withLatestFrom,
 } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { IDrawRectParams, IRect, ToolTypes } from '../types/tools.interfaces';
-import { createStream } from '../utils/stream.utils';
-import { SocketMethods, SocketPayload } from '../types/socket.interfaces';
-import { Change } from '../types/toolbar.interfaces';
+import { createStream } from '../utils';
+import { IDrawRectParams, IRect, ToolTypes, SocketMethods, SocketPayload, Change } from '../types';
 
 export class Rect extends Shape implements IRect {
   type = ToolTypes.RECT;
