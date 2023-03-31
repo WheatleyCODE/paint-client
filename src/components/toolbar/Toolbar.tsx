@@ -9,6 +9,8 @@ import { Tool, ToolTypes } from '../../types/tools.interfaces';
 import { Change, IObservables } from '../../types/toolbar.interfaces';
 import { Rect } from '../../tools/Rect';
 import { ToolButton } from './ToolButton';
+import { useSocket } from '../../hooks/useSocket';
+import { SocketMethods } from '../../types/socket.interfaces';
 
 export const Toolbar = () => {
   const colorRef = useRef<HTMLInputElement | null>(null);
@@ -19,7 +21,27 @@ export const Toolbar = () => {
 
   const [currentTool, setCurrentTool] = useState<Tool | null>(null);
   const [observables, setObservables] = useState<IObservables>({});
-  const { canvas } = useCanvas();
+  const { canvas, draw } = useCanvas();
+  const { socket$, socketNext } = useSocket();
+
+  useEffect(() => {
+    if (!socket$) return;
+
+    socket$.subscribe((data) => {
+      switch (data.method) {
+        case SocketMethods.CONNECTION:
+          console.log('CONNECTION');
+          break;
+
+        case SocketMethods.DRAW:
+          draw(data.payload);
+          break;
+
+        default:
+          break;
+      }
+    });
+  }, [socket$]);
 
   const clearCurrentTool = () => {
     currentTool?.destroyEvents();
@@ -32,7 +54,7 @@ export const Toolbar = () => {
     const { color$, lineWidth$ } = observables;
 
     if (canvas && color$ && lineWidth$) {
-      const brush = new Brush(canvas, color$, '#000', lineWidth$, 1);
+      const brush = new Brush(canvas, color$, '#000', lineWidth$, 1, socketNext);
       brush.init();
       setCurrentTool(brush);
     }
@@ -40,11 +62,21 @@ export const Toolbar = () => {
 
   const selectRect = () => {
     clearCurrentTool();
-
     const { color$, borderWidth$, fill$, fillColor$ } = observables;
 
     if (canvas && color$ && borderWidth$ && fill$ && fillColor$) {
-      const rect = new Rect(canvas, color$, '#000', borderWidth$, 1, fill$, true, fillColor$, '');
+      const rect = new Rect(
+        canvas,
+        color$,
+        '#000',
+        borderWidth$,
+        1,
+        fill$,
+        true,
+        fillColor$,
+        '#000',
+        socketNext
+      );
       rect.init();
       setCurrentTool(rect);
     }
@@ -60,8 +92,8 @@ export const Toolbar = () => {
     if (color && line && border && fill && fillColor) {
       const color$ = fromEvent<Change>(color, 'input');
       const lineWidth$ = fromEvent<Change>(line, 'input');
-      const borderWidth$ = fromEvent<Change>(border, 'input');
-      const fill$ = fromEvent<Change>(fill, 'input');
+      const borderWidth$ = fromEvent<any>(border, 'input');
+      const fill$ = fromEvent<Change>(fill, 'change');
       const fillColor$ = fromEvent<Change>(fillColor, 'input');
 
       setObservables({ lineWidth$, color$, borderWidth$, fill$, fillColor$ });
@@ -95,7 +127,7 @@ export const Toolbar = () => {
 
       <div className="toolbar__settings">
         <Form.Label>Fill</Form.Label>
-        <Form.Check ref={fillRef} className="checkbox" type="checkbox" />
+        <Form.Check ref={fillRef} className="checkbox" />
         <Form.Label>Line</Form.Label>
         <Form.Range ref={lineWidthRef} min="0" max="10" />
         <Form.Label>Border</Form.Label>

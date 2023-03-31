@@ -3,6 +3,7 @@ import { IPaintState } from '../../types/paint.interfaces';
 import { ToolTypes } from '../../types/tools.interfaces';
 
 const initialState: IPaintState = {
+  username: null,
   currentTool: ToolTypes.BRUSH,
   toolSettings: undefined,
   undoList: [],
@@ -19,6 +20,10 @@ export const paintSlice = createSlice({
 
     setRedo: (state, { payload }: PayloadAction<string[]>) => {
       state.redoList = payload;
+    },
+
+    setUsername: (state, { payload }: PayloadAction<string>) => {
+      state.username = payload;
     },
 
     pushToUndo: (state, { payload }: PayloadAction<string>) => {

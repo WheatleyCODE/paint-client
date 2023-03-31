@@ -1,13 +1,28 @@
-import { map, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
+import { map, Observable, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
 import { Tool } from './abstract/Tool';
 import { createStream } from '../utils/stream.utils';
-import { IBrush, ToolTypes } from '../types/tools.interfaces';
+import { IBrush, IDrawBrashParams, ToolTypes } from '../types/tools.interfaces';
+import { Change } from '../types/toolbar.interfaces';
+import { SocketMethods, SocketPayload } from '../types/socket.interfaces';
 
 export class Brush extends Tool implements IBrush {
   isBrush = true;
   type = ToolTypes.BRUSH;
+  protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
-  init() {
+  constructor(
+    $canvas: HTMLCanvasElement,
+    color$: Observable<Change>,
+    initColor: string,
+    lineWidth$: Observable<Change>,
+    initLineWidth: number,
+    socketNext: (method: SocketMethods, payload: SocketPayload) => void
+  ) {
+    super($canvas, color$, initColor, lineWidth$, initLineWidth);
+    this.socketNext = socketNext;
+  }
+
+  init(): void {
     const colorStream$ = createStream(this.color$, this.initColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
 
@@ -32,15 +47,33 @@ export class Brush extends Tool implements IBrush {
       const [from, to] = coords;
       const { lineWidth, color } = options;
 
-      this.canvasCtx.lineWidth = +lineWidth;
-      this.canvasCtx.strokeStyle = color;
+      const params: IDrawBrashParams = {
+        lineWidth: +lineWidth,
+        strokeStyle: color,
+        fromX: from.x,
+        fromY: from.y,
+        toX: to.x,
+        toY: to.y,
+      };
 
-      this.canvasCtx.beginPath();
-      this.canvasCtx.moveTo(from.x, from.y);
-      this.canvasCtx.lineTo(to.x, to.y);
-      this.canvasCtx.stroke();
+      this.socketNext(SocketMethods.DRAW, {
+        type: ToolTypes.BRUSH,
+        params,
+      });
+
+      Brush.draw(this.canvasCtx, params);
     });
 
     this.subs.push(sub);
+  }
+
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawBrashParams): void {
+    const { lineWidth, strokeStyle, fromY, fromX, toY, toX } = params;
+    canvasCtx.lineWidth = lineWidth;
+    canvasCtx.strokeStyle = strokeStyle;
+    canvasCtx.beginPath();
+    canvasCtx.moveTo(fromX, fromY);
+    canvasCtx.lineTo(toX, toY);
+    canvasCtx.stroke();
   }
 }

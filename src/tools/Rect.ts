@@ -1,16 +1,57 @@
-import { map, tap, switchMap, takeUntil, withLatestFrom, takeLast } from 'rxjs';
+import {
+  map,
+  Observable,
+  startWith,
+  switchMap,
+  takeLast,
+  takeUntil,
+  tap,
+  withLatestFrom,
+} from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { IRect, ToolTypes } from '../types/tools.interfaces';
+import { IDrawRectParams, IRect, ToolTypes } from '../types/tools.interfaces';
 import { createStream } from '../utils/stream.utils';
+import { SocketMethods, SocketPayload } from '../types/socket.interfaces';
+import { Change } from '../types/toolbar.interfaces';
 
 export class Rect extends Shape implements IRect {
   type = ToolTypes.RECT;
   isRect = true;
+  protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
+
+  constructor(
+    $canvas: HTMLCanvasElement,
+    color$: Observable<Change>,
+    initColor: string,
+    lineWidth$: Observable<Change>,
+    initLineWidth: number,
+    fill$: Observable<Change>,
+    initFill: boolean,
+    fillColor$: Observable<Change>,
+    initFillColor: string,
+    socketNext: (method: SocketMethods, payload: SocketPayload) => void
+  ) {
+    super(
+      $canvas,
+      color$,
+      initColor,
+      lineWidth$,
+      initLineWidth,
+      fill$,
+      initFill,
+      fillColor$,
+      initFillColor
+    );
+    this.socketNext = socketNext;
+  }
 
   init() {
     const colorStream$ = createStream(this.color$, this.initColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
-    const fill$Stream$ = createStream(this.fill$, this.initFill);
+    const fill$Stream$ = this.fill$.pipe(
+      map((e) => e.target.checked),
+      startWith(this.initFill)
+    );
     const fillColor$Stream$ = createStream(this.fillColor$, this.initFillColor);
 
     const streamMV$ = this.mouseMove$.pipe(
@@ -49,24 +90,40 @@ export class Rect extends Shape implements IRect {
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
 
-      const copy$ = this.copy();
+      const params: IDrawRectParams = {
+        lineWidth: +lineWidth,
+        strokeStyle: color,
+        x: coords.x,
+        y: coords.y,
+        width,
+        height,
+        fill,
+        fillColor,
+      };
 
-      copy$.subscribe((copyImg) => {
-        this.canvasCtx.clearRect(0, 0, this.$canvas.width, this.$canvas.height);
-        this.canvasCtx.drawImage(copyImg, 0, 0);
-        this.canvasCtx.beginPath();
-        this.canvasCtx.strokeStyle = color;
-        this.canvasCtx.rect(coords.x, coords.y, width, height);
-        this.canvasCtx.lineWidth = +lineWidth;
-
-        if (fill) {
-          this.canvasCtx.fill();
-          this.canvasCtx.fillStyle = fillColor;
-        }
-        this.canvasCtx.stroke();
+      this.socketNext(SocketMethods.DRAW, {
+        type: ToolTypes.RECT,
+        params,
       });
+
+      Rect.draw(this.canvasCtx, params);
     });
 
     this.subs.push(sub);
+  }
+
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
+    const { lineWidth, strokeStyle, x, y, width, height, fill, fillColor } = params;
+
+    canvasCtx.beginPath();
+    canvasCtx.lineWidth = lineWidth;
+    canvasCtx.strokeStyle = strokeStyle;
+    canvasCtx.rect(x, y, width, height);
+
+    if (fill) {
+      canvasCtx.fill();
+      canvasCtx.fillStyle = fillColor;
+    }
+    canvasCtx.stroke();
   }
 }
