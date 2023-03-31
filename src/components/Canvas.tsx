@@ -11,7 +11,7 @@ export const Canvas = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
   const { username } = useTypedSelector((state) => state.paint);
-  const { canvas, canvasSettings, draw } = useCanvas();
+  const { canvas, canvasSettings } = useCanvas();
   const { width, height } = canvasSettings;
 
   const { req: saveImg } = useRequest({
