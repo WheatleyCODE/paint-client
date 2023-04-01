@@ -20,17 +20,13 @@ export const SettingsBar = () => {
   };
 
   const undoHandler = () => {
-    if (undoList.length > 0) {
-      socketNext(SocketMethods.UNDO);
-      undo();
-    }
+    socketNext(SocketMethods.UNDO);
+    undo();
   };
 
   const redoHandler = () => {
-    if (redoList.length > 0) {
-      socketNext(SocketMethods.REDO);
-      redo();
-    }
+    socketNext(SocketMethods.REDO);
+    redo();
   };
 
   return (

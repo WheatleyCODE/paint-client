@@ -1,10 +1,11 @@
 import { createContext } from 'react';
-import { WebSocketSubject } from 'rxjs/webSocket';
+import { Observable } from 'rxjs';
 import { SocketData } from '../../types';
 
 export interface IPaintContext {
   canvas?: HTMLCanvasElement;
-  socket?: WebSocketSubject<SocketData>;
+  socket?: WebSocket;
+  socketObs?: Observable<SocketData>;
 }
 
 const ForbiddenDataForRedax = createContext<IPaintContext>({});

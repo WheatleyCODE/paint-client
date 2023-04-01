@@ -6,23 +6,26 @@ import { SocketMethods, SocketPayload, SocketData } from '../types';
 
 export const useSocket = () => {
   const params = useParams();
-  const { socket } = useContext(PaintContext);
+  const { socket, socketObs } = useContext(PaintContext);
   const { username } = useTypedSelector((state) => state.paint);
 
   const socketNext = (method: SocketMethods, payload?: SocketPayload) => {
     if (!socket || !username) return;
     if (!params.id) return;
 
-    socket.next(<SocketData>{
+    const data = {
       id: params.id,
       username,
       method,
       payload,
-    });
+    };
+
+    socket.send(JSON.stringify(data));
   };
 
   return {
-    socket$: socket,
+    socket,
+    socketObs,
     socketNext,
   };
 };

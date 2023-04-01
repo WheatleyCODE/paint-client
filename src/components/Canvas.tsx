@@ -16,10 +16,10 @@ import { SocketMethods, SocketData } from '../types';
 export const Canvas = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { username, undoList } = useTypedSelector((state) => state.paint);
+  const { username } = useTypedSelector((state) => state.paint);
   const { canvas, canvasSettings, draw } = useCanvas();
   const { undo, redo } = useCanvasRestore();
-  const { socket$, socketNext } = useSocket();
+  const { socketObs, socketNext } = useSocket();
   const { width, height } = canvasSettings;
 
   const pushToUndo = () => {
@@ -35,14 +35,14 @@ export const Canvas = () => {
   };
 
   useEffect(() => {
-    if (!socket$) return;
+    if (!socketObs) return;
 
-    const stream$ = socket$.pipe(filter((data) => data.username !== username));
+    const stream$ = socketObs.pipe(filter((data) => data.username !== username));
 
-    const sub = stream$.subscribe((data) => {
+    // ! rewrite websocket onmessage
+    stream$.subscribe((data) => {
       switch (data.method) {
         case SocketMethods.CONNECTION:
-          console.log('CONNECTION', data);
           break;
 
         case SocketMethods.DRAW:
@@ -50,30 +50,22 @@ export const Canvas = () => {
           break;
 
         case SocketMethods.PUSH_UNDO:
-          console.log('PUSH_UNDO work', data);
           pushToUndo();
           break;
 
         case SocketMethods.UNDO:
-          console.log('UNDO work', data);
           undo();
           break;
 
         case SocketMethods.REDO:
-          console.log('REDO work', data);
           redo();
           break;
 
         default:
           break;
       }
-
-      return () => {
-        socket$.unsubscribe();
-        sub.unsubscribe();
-      };
     });
-  }, [socket$, undoList]);
+  }, [socketObs, redo, undo, canvas, pushToUndo]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,

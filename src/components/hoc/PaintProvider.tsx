@@ -1,6 +1,4 @@
-/* eslint-disable consistent-return */
 import React, { ReactNode, FC, useEffect, useMemo, useState } from 'react';
-import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { useParams } from 'react-router-dom';
 import { Observable } from 'rxjs';
 import { IPaintContext, PaintContext } from './PaintContext';
@@ -13,46 +11,43 @@ export interface IPaintProviderProps {
 }
 
 export const PaintProvider: FC<IPaintProviderProps> = ({ children }) => {
-  const [canvas, setCanvas] = useState<HTMLCanvasElement>();
   const { username } = useTypedSelector((state) => state.paint);
-  const [socket, setSocket] = useState<WebSocketSubject<SocketData>>();
+  const [canvas, setCanvas] = useState<HTMLCanvasElement>();
+  const [socket, setSocket] = useState<WebSocket>();
+  const [socketObs, setSocketObs] = useState<Observable<SocketData>>();
   const params = useParams();
 
   const connect = (name: string) => {
-    if (socket) return;
+    if (socket || socketObs) return;
     if (!params.id) return;
-
-    const subject = webSocket<SocketData>(WS_SERVER);
-
-    setSocket(subject);
 
     const websocket = new WebSocket(WS_SERVER);
 
-    // think !
-    const wsObserver = new Observable((observer) => {
-      websocket.onmessage = (evt) => {
-        console.info(`ws.onmessage: ${evt}`);
-        observer.next(evt);
+    const observer = new Observable<SocketData>((obs) => {
+      websocket.onmessage = (event) => {
+        const msg = JSON.parse(event.data);
+        console.info('ws.onmessage', msg);
+        obs.next(msg);
       };
     });
 
-    subject.next({
-      id: params.id,
-      username: name,
-      method: SocketMethods.CONNECTION,
-    });
+    setSocketObs(observer);
+    setSocket(websocket);
 
-    return subject;
+    websocket.onopen = () => {
+      websocket.send(
+        JSON.stringify({
+          id: params.id,
+          username: name,
+          method: SocketMethods.CONNECTION,
+        })
+      );
+    };
   };
 
   useEffect(() => {
     if (!username) return;
-
-    const sub = connect(username);
-
-    return () => {
-      sub?.complete();
-    };
+    connect(username);
   }, [username]);
 
   useEffect(() => {
@@ -64,8 +59,9 @@ export const PaintProvider: FC<IPaintProviderProps> = ({ children }) => {
     () => ({
       canvas,
       socket,
+      socketObs,
     }),
-    [canvas, socket]
+    [canvas, socket, socketObs]
   );
 
   return <PaintContext.Provider value={data}>{children}</PaintContext.Provider>;
