@@ -14,7 +14,10 @@ export const paintSlice = createSlice({
   initialState,
   reducers: {
     pushToRedo: (state, { payload }: PayloadAction<string>) => {
-      state.redoList.push(payload);
+      const newRedo = [...state.redoList];
+      newRedo.push(payload);
+
+      state.redoList = newRedo;
     },
 
     setRedo: (state, { payload }: PayloadAction<string[]>) => {
@@ -26,7 +29,10 @@ export const paintSlice = createSlice({
     },
 
     pushToUndo: (state, { payload }: PayloadAction<string>) => {
-      state.undoList.push(payload);
+      const newUndo = [...state.redoList];
+      newUndo.push(payload);
+
+      state.undoList = newUndo;
     },
 
     setUndo: (state, { payload }: PayloadAction<string[]>) => {

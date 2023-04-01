@@ -1,36 +1,79 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import { filter, Observable, Subscription } from 'rxjs';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../store';
-import { useCanvas, useTypedDispatch, useRequest, useTypedSelector, useSocket } from '../hooks';
+import {
+  useCanvas,
+  useRequest,
+  useSocket,
+  useTypedDispatch,
+  useTypedSelector,
+  useCanvasRestore,
+} from '../hooks';
 import { getStreamOnloadImg } from '../utils';
-import { SocketMethods } from '../types';
+import { SocketMethods, SocketData } from '../types';
 
 export const Canvas = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { username } = useTypedSelector((state) => state.paint);
+  const { username, undoList } = useTypedSelector((state) => state.paint);
   const { canvas, canvasSettings, draw } = useCanvas();
-  const { socket$ } = useSocket();
+  const { undo, redo } = useCanvasRestore();
+  const { socket$, socketNext } = useSocket();
   const { width, height } = canvasSettings;
+
+  const pushToUndo = () => {
+    if (!canvas) return;
+    dispatch(PA.pushToUndo(canvas.toDataURL()));
+  };
+
+  const pushToUndoWS = () => {
+    if (!canvas) return;
+
+    socketNext(SocketMethods.PUSH_UNDO);
+    dispatch(PA.pushToUndo(canvas.toDataURL()));
+  };
 
   useEffect(() => {
     if (!socket$) return;
 
-    socket$.subscribe((data) => {
+    const stream$ = socket$.pipe(filter((data) => data.username !== username));
+
+    const sub = stream$.subscribe((data) => {
       switch (data.method) {
         case SocketMethods.CONNECTION:
-          console.log('CONNECTION');
+          console.log('CONNECTION', data);
           break;
 
         case SocketMethods.DRAW:
           draw(data.payload);
           break;
 
+        case SocketMethods.PUSH_UNDO:
+          console.log('PUSH_UNDO work', data);
+          pushToUndo();
+          break;
+
+        case SocketMethods.UNDO:
+          console.log('UNDO work', data);
+          undo();
+          break;
+
+        case SocketMethods.REDO:
+          console.log('REDO work', data);
+          redo();
+          break;
+
         default:
           break;
       }
+
+      return () => {
+        socket$.unsubscribe();
+        sub.unsubscribe();
+      };
     });
-  }, [socket$]);
+  }, [socket$, undoList]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,
@@ -68,16 +111,11 @@ export const Canvas = () => {
     saveImg({ img });
   };
 
-  const pushToUndo = () => {
-    if (!canvas) return;
-    dispatch(PA.pushToUndo(canvas.toDataURL()));
-  };
-
   return (
     <div className="canvas">
       <canvas
         onMouseUp={saveImage}
-        onMouseDown={pushToUndo}
+        onMouseDown={pushToUndoWS}
         id="canvas"
         width={width}
         height={height}

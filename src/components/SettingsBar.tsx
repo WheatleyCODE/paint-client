@@ -2,13 +2,16 @@ import React from 'react';
 import { MdRedo, MdSave, MdUndo } from 'react-icons/md';
 import { Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useCanvasRestore, useCanvas } from '../hooks';
+import { useCanvas, useCanvasRestore, useSocket, useTypedSelector } from '../hooks';
 import { downloadCanvasImg } from '../utils';
+import { SocketMethods } from '../types';
 
 export const SettingsBar = () => {
+  const { undoList, redoList } = useTypedSelector((state) => state.paint);
   const params = useParams();
+  const { socketNext } = useSocket();
   const { canvas } = useCanvas();
-  const { undo, redo } = useCanvasRestore(canvas);
+  const { undo, redo } = useCanvasRestore();
 
   const download = () => {
     if (!canvas || !params.id) return;
@@ -16,13 +19,27 @@ export const SettingsBar = () => {
     downloadCanvasImg(dataUrl, params.id);
   };
 
+  const undoHandler = () => {
+    if (undoList.length > 0) {
+      socketNext(SocketMethods.UNDO);
+      undo();
+    }
+  };
+
+  const redoHandler = () => {
+    if (redoList.length > 0) {
+      socketNext(SocketMethods.REDO);
+      redo();
+    }
+  };
+
   return (
     <div className="settings">
-      <Button onClick={() => undo()} className="btn icon" type="submit">
+      <Button onClick={undoHandler} className="btn icon" type="submit">
         <MdUndo className="icon" />
       </Button>
 
-      <Button onClick={() => redo()} className="btn icon" type="submit">
+      <Button onClick={redoHandler} className="btn icon" type="submit">
         <MdRedo className="icon" />
       </Button>
 

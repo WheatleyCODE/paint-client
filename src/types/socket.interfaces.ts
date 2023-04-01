@@ -1,8 +1,11 @@
 import { IDrawBrashParams, IDrawRectParams, ToolTypes } from './tools.interfaces';
 
 export const enum SocketMethods {
-  CONNECTION = 'connection',
-  DRAW = 'draw',
+  PUSH_UNDO = 'PUSH_UNDO',
+  UNDO = 'UNDO',
+  REDO = 'REDO',
+  CONNECTION = 'CONNECTION',
+  DRAW = 'DRAW',
 }
 
 export interface ISocketPayloadBrush {
@@ -15,10 +18,25 @@ export interface ISocketPayloadRect {
   params: IDrawRectParams;
 }
 
-export interface ISocketConnection {
+export interface ISocketIDS {
   id: string;
   username: string;
+}
+
+export interface ISocketConnection extends ISocketIDS {
   method: SocketMethods.CONNECTION;
+}
+
+export interface ISocketPushUndo extends ISocketIDS {
+  method: SocketMethods.PUSH_UNDO;
+}
+
+export interface ISocketUndo extends ISocketIDS {
+  method: SocketMethods.UNDO;
+}
+
+export interface ISocketRedo extends ISocketIDS {
+  method: SocketMethods.REDO;
 }
 
 export interface ISocketDraw {
@@ -29,4 +47,9 @@ export interface ISocketDraw {
 }
 
 export type SocketPayload = ISocketPayloadBrush | ISocketPayloadRect;
-export type SocketData = ISocketConnection | ISocketDraw;
+export type SocketData =
+  | ISocketConnection
+  | ISocketDraw
+  | ISocketPushUndo
+  | ISocketUndo
+  | ISocketRedo;

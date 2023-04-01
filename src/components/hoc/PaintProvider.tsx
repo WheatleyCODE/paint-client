@@ -2,6 +2,7 @@
 import React, { ReactNode, FC, useEffect, useMemo, useState } from 'react';
 import { webSocket, WebSocketSubject } from 'rxjs/webSocket';
 import { useParams } from 'react-router-dom';
+import { Observable } from 'rxjs';
 import { IPaintContext, PaintContext } from './PaintContext';
 import { useTypedSelector } from '../../hooks';
 import { WS_SERVER } from '../../consts';
@@ -20,16 +21,19 @@ export const PaintProvider: FC<IPaintProviderProps> = ({ children }) => {
   const connect = (name: string) => {
     if (socket) return;
     if (!params.id) return;
+
     const subject = webSocket<SocketData>(WS_SERVER);
 
-    // !
-    subject.subscribe({
-      next: (message) => {
-        console.log(message);
-        setSocket(subject);
-      },
-      error: (err) => console.log(err),
-      complete: () => console.log('Socket is complete'),
+    setSocket(subject);
+
+    const websocket = new WebSocket(WS_SERVER);
+
+    // think !
+    const wsObserver = new Observable((observer) => {
+      websocket.onmessage = (evt) => {
+        console.info(`ws.onmessage: ${evt}`);
+        observer.next(evt);
+      };
     });
 
     subject.next({
