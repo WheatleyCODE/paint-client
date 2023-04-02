@@ -1,12 +1,46 @@
 .canvas {
-  height: 100%;
-  width: 100%;
-  background: $colorMain;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+
+  position: relative;
+  display: flex;
+  flex-direction: column;
   overflow: auto;
+
+  margin: 5px;
+
+  height: calc(100% - $settingsHeight - 5px);
+
+  .select {
+    box-sizing: border-box;
+    position: absolute;
+    border: 2px dashed $colorBlue;
+    z-index: 20;
+    height: 0;
+    width: 0;
+    left: 0;
+    top: 0;
+
+    -ms-user-select: none !important;
+    -moz-user-select: none !important;
+    -khtml-user-select: none !important;
+    -webkit-user-select: none !important;
+  }
+}
+
+#shield {
+  z-index: 200;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 800px;
+  height: 600px;
 }
 
 canvas {
-  margin: 50px;
-  border: $border;
+  position: relative;
+  //border: $border;
   background: $colorWhite;
 }

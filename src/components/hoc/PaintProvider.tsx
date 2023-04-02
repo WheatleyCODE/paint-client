@@ -26,7 +26,7 @@ export const PaintProvider: FC<IPaintProviderProps> = ({ children }) => {
     const observer = new Observable<SocketData>((obs) => {
       websocket.onmessage = (event) => {
         const msg = JSON.parse(event.data);
-        console.info('ws.onmessage', msg);
+        // console.info('ws.onmessage', msg);
         obs.next(msg);
       };
     });

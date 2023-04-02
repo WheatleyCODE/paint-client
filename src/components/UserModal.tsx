@@ -6,7 +6,7 @@ import { userValidator } from '../utils';
 
 export const UserModal = () => {
   const [show, setShow] = useState(true);
-  const input = useValidInput([userValidator]);
+  const input = useValidInput('', [userValidator]);
 
   const dispatch = useTypedDispatch();
 
@@ -18,10 +18,11 @@ export const UserModal = () => {
 
   return (
     <Modal show={show} onHide={() => {}}>
-      <Modal.Header closeButton>
+      <Modal.Header className="user-modal__header" closeButton>
         <Modal.Title>Welcome to [Paint] Online</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+
+      <Modal.Body className="user-modal__body">
         <InputGroup className="mb-3 mt-3">
           <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
           <Form.Control
@@ -33,15 +34,19 @@ export const UserModal = () => {
           />
         </InputGroup>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer className="user-modal__footer">
         {input.isTouched && input.validError && (
-          <Alert className="p-1" variant="danger">
+          <Alert className="user-modal__alert" variant="danger">
             {input.validError}
           </Alert>
         )}
 
-        <Button disabled={input.isError && input.isTouched} onClick={setUsername}>
-          To Draw
+        <Button
+          className="user-modal__btn btn btn-cian"
+          disabled={input.isError && input.isTouched}
+          onClick={setUsername}
+        >
+          Draw
         </Button>
       </Modal.Footer>
     </Modal>

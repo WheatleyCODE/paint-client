@@ -1,9 +1,26 @@
 .icon {
-  font-size: 1.8rem;
+  font-size: 1.6rem;
 }
 
-.btn-primary {
+.btn-cian {
   border-radius: 2px;
+  background-color: $colorCian;
+  border-color: $colorCian;
+
+  &:hover {
+    background-color: $colorCian2;
+    border-color: $colorCian2;
+  }
+
+  &:active {
+    background-color: $colorCian3 !important;
+    border-color: $colorCian3 !important;
+  }
+
+  &:disabled {
+    background-color: $colorCian3 !important;
+    border-color: $colorCian3 !important;
+  }
 }
 
 .btn.icon {

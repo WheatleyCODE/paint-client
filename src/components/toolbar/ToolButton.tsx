@@ -13,7 +13,7 @@ export const ToolButton: FC<ToolButtonProps> = memo(({ onClick, isActive, Icon }
     <Button
       variant="primary"
       onClick={onClick}
-      className={`btn icon ${isActive && 'active'}`}
+      className={`btn btn-cian icon ${isActive && 'active'}`}
       type="submit"
     >
       <Icon className="icon" />

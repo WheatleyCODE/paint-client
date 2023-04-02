@@ -1,6 +1,6 @@
 .input.color {
   box-sizing: border-box;
-  height: $btnWidth * 2 + $btnMargin;
+  height: $btnWidth;
   width: $paletteWidth;
   padding: 0;
   border: none;
@@ -8,4 +8,29 @@
   margin: $paletteMargin;
   margin-top: 0;
   cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; 
+  appearance: none;
+  margin-top: -6px; 
+  background-color: $colorCian !important;
+  height: 1.4rem;
+  width: 0.5rem;    
+}
+
+.form-check-input {
+  box-shadow: none;
+  height: 20px;
+  width: 20px;
+  margin-bottom: $btnMargin;
+}
+
+.form-check-input:focus {
+  border-color: $colorCian;
+}
+
+.form-check-input:checked {
+  background-color: $colorCian;
+  border-color: $colorCian;
 }

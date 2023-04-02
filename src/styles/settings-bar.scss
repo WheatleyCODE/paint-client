@@ -1,0 +1,63 @@
+.settings-bar {
+  display: flex;
+  min-height: $settingsHeight;
+  width: 100%;
+  background: $colorWhite;
+
+  .btn {
+    margin-left: $btnMargin;
+    margin-top: $btnMargin;
+    padding: 0;
+    height: $btnWidth;
+    width: $btnWidth * 2  + $btnMargin;
+  }
+
+  &__left {
+    min-width: $toolbarWidth;
+  }
+
+  &__right {
+    width: 100%;
+    border-bottom: $border;
+    height: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding-left: 20px;
+    align-items: center;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    font-family: roboto;
+    background: linear-gradient(90deg,red,#007bff 50%,#29cc00);
+    letter-spacing: -1px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.8rem;
+    margin-bottom: 0;
+  }
+
+
+
+  &__users {
+    display: flex;
+  }
+
+  &__user {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: $colorCian;
+    color: $colorWhite;
+    height: $btnWidth;
+    border-radius: 2px;
+    padding: 0 10px;
+    margin-right: $btnMargin;
+
+    .icon {
+      margin-right: 5px;
+    }
+  }
+}

@@ -10,6 +10,7 @@ import {
 } from 'rxjs';
 import { Shape } from './abstract/Shape';
 import { createStream } from '../utils';
+
 import { IDrawRectParams, IRect, ToolTypes, SocketMethods, SocketPayload, Change } from '../types';
 
 export class Rect extends Shape implements IRect {
@@ -44,6 +45,8 @@ export class Rect extends Shape implements IRect {
   }
 
   init() {
+    const div = document.querySelector('#select') as HTMLDivElement;
+
     const colorStream$ = createStream(this.color$, this.initColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
     const fill$Stream$ = this.fill$.pipe(
@@ -77,7 +80,73 @@ export class Rect extends Shape implements IRect {
       switchMap((options) => {
         return streamMV$.pipe(
           map((val) => ({ coords: val, options })),
-          takeLast(2)
+          tap((value) => {
+            const { startCoords } = value.options;
+            const wid = value.coords.x - startCoords.x;
+            const hei = value.coords.y - startCoords.y;
+
+            type SelectSquare = {
+              top?: number;
+              left?: number;
+              bottom?: number;
+              right?: number;
+              height?: number;
+              width?: number;
+            };
+
+            const data: SelectSquare = {};
+
+            const { left, top, height, width } = this.canvasRect;
+
+            data.left = startCoords.x;
+            data.top = startCoords.y;
+
+            let selHight = value.coords.y - startCoords.y;
+            let selWidth = value.coords.x - startCoords.x;
+
+            if (selHight < 0) {
+              selHight *= -1;
+              data.top = undefined;
+              data.bottom = height - startCoords.y + 6;
+            }
+
+            if (selWidth < 0) {
+              selWidth *= -1;
+              data.left = undefined;
+              data.right = width - startCoords.x;
+            }
+
+            data.height = selHight;
+            data.width = selWidth;
+
+            if (data.top) {
+              div.style.top = `${data.top}px`;
+            } else {
+              div.style.top = 'initial';
+            }
+
+            if (data.left) {
+              div.style.left = `${data.left}px`;
+            } else {
+              div.style.left = 'initial';
+            }
+
+            if (data.right) {
+              div.style.right = `${data.right}px`;
+            } else {
+              div.style.right = 'initial';
+            }
+
+            if (data.bottom) {
+              div.style.bottom = `${data.bottom}px`;
+            } else {
+              div.style.bottom = 'initial';
+            }
+
+            div.style.height = `${data.height}px`;
+            div.style.width = `${data.width}px`;
+          }),
+          takeLast(1)
         );
       })
     );
@@ -88,23 +157,27 @@ export class Rect extends Shape implements IRect {
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
 
-      const params: IDrawRectParams = {
-        lineWidth: +lineWidth,
-        strokeStyle: color,
-        x: coords.x,
-        y: coords.y,
-        width,
-        height,
-        fill,
-        fillColor,
-      };
+      const onload$ = this.copy();
 
-      this.socketNext(SocketMethods.DRAW, {
-        type: ToolTypes.RECT,
-        params,
+      onload$.subscribe((img) => {
+        const params: IDrawRectParams = {
+          lineWidth: +lineWidth,
+          strokeStyle: color,
+          x: coords.x,
+          y: coords.y,
+          width,
+          height,
+          fill,
+          fillColor,
+        };
+
+        this.socketNext(SocketMethods.DRAW, {
+          type: ToolTypes.RECT,
+          params,
+        });
+
+        Rect.draw(this.canvasCtx, params);
       });
-
-      Rect.draw(this.canvasCtx, params);
     });
 
     this.subs.push(sub);
@@ -116,6 +189,8 @@ export class Rect extends Shape implements IRect {
     canvasCtx.beginPath();
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
+    canvasCtx.lineCap = 'butt';
+    canvasCtx.lineJoin = 'miter';
     canvasCtx.rect(x, y, width, height);
 
     if (fill) {

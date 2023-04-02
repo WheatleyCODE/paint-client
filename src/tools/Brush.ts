@@ -79,6 +79,8 @@ export class Brush extends Tool implements IBrush {
     canvasCtx.beginPath();
     canvasCtx.moveTo(fromX, fromY);
     canvasCtx.lineTo(toX, toY);
+    canvasCtx.lineCap = 'round';
+    canvasCtx.lineJoin = 'round';
     canvasCtx.stroke();
   }
 }

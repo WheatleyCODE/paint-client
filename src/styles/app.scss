@@ -1,9 +1,12 @@
 .app {
   display: flex;
   flex-direction: column;
-  background: $colorMain;
+  background-color: $colorWhite2;
   width: 100vw;
   height: 100vh;
+
+  overflow: hidden;
+
 
   &__main {
     display: flex;

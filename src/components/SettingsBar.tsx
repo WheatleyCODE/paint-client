@@ -1,23 +1,12 @@
 import React from 'react';
-import { MdRedo, MdSave, MdUndo } from 'react-icons/md';
+import { MdPerson, MdRedo, MdUndo } from 'react-icons/md';
 import { Button } from 'react-bootstrap';
-import { useParams } from 'react-router-dom';
-import { useCanvas, useCanvasRestore, useSocket, useTypedSelector } from '../hooks';
-import { downloadCanvasImg } from '../utils';
+import { useCanvasRestore, useSocket } from '../hooks';
 import { SocketMethods } from '../types';
 
 export const SettingsBar = () => {
-  const { undoList, redoList } = useTypedSelector((state) => state.paint);
-  const params = useParams();
   const { socketNext } = useSocket();
-  const { canvas } = useCanvas();
   const { undo, redo } = useCanvasRestore();
-
-  const download = () => {
-    if (!canvas || !params.id) return;
-    const dataUrl = canvas.toDataURL();
-    downloadCanvasImg(dataUrl, params.id);
-  };
 
   const undoHandler = () => {
     socketNext(SocketMethods.UNDO);
@@ -30,22 +19,28 @@ export const SettingsBar = () => {
   };
 
   return (
-    <div className="settings">
-      <Button onClick={undoHandler} className="btn icon" type="submit">
-        <MdUndo className="icon" />
-      </Button>
+    <div className="settings-bar">
+      <div className="settings-bar__left">
+        <Button onClick={undoHandler} className="btn btn-cian" type="submit">
+          <MdUndo className="icon" />
+        </Button>
 
-      <Button onClick={redoHandler} className="btn icon" type="submit">
-        <MdRedo className="icon" />
-      </Button>
+        <Button onClick={redoHandler} className="btn btn-cian" type="submit">
+          <MdRedo className="icon" />
+        </Button>
+      </div>
 
-      <Button className="btn icon" type="submit">
-        <MdSave className="icon" />
-      </Button>
-
-      <Button onClick={download} className="btn icon" type="submit">
-        <MdSave className="icon" />
-      </Button>
+      <div className="settings-bar__right">
+        <h1 className="settings-bar__title">MAGIC PAINT ONLINE</h1>
+        <div className="settings-bar__users">
+          <div className="settings-bar__user">
+            <MdPerson className="icon" /> Вася
+          </div>
+          <div className="settings-bar__user">
+            <MdPerson className="icon" /> Петя
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

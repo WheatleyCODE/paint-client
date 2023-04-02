@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 
-export interface IValidInputOpts {
-  value: string;
+export interface IValidInputOpts<T> {
+  value: T;
   isFocus: boolean;
   isActive: boolean;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
@@ -10,15 +10,15 @@ export interface IValidInputOpts {
   isError: boolean;
   isTouched: boolean;
   validError: string | null;
-  changeValue: (string: string) => void;
+  changeValue: (string: T) => void;
   changeFocus: (boolean: boolean) => void;
   changeActive: (boolean: boolean) => void;
 }
 
 export type IValidator = (str: string) => string | null;
 
-export const useValidInput = (validators: IValidator[] = []): IValidInputOpts => {
-  const [value, setValue] = useState('');
+export const useValidInput = <T>(init: T, validators?: IValidator[]): IValidInputOpts<T> => {
+  const [value, setValue] = useState(init);
   const [isFocus, setIsFocus] = useState(false);
   const [isActive, setIsActive] = useState(false);
   const [validError, setValidError] = useState<null | string>(null);
@@ -38,13 +38,13 @@ export const useValidInput = (validators: IValidator[] = []): IValidInputOpts =>
   }, []);
 
   const onChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    setValue(e.target.value);
+    setValue(e.target.value as T);
 
-    if (counter === 0 && e.target.value.length !== 1) {
+    if (counter === 0 && e.target.value) {
       setIsTouched(true);
     }
 
-    validators.forEach((fn) => {
+    validators?.forEach((fn) => {
       setValidError(fn(e.target.value));
     });
 
@@ -59,7 +59,7 @@ export const useValidInput = (validators: IValidator[] = []): IValidInputOpts =>
     setIsActive(boolean);
   }, []);
 
-  const changeValue = useCallback((string: string) => {
+  const changeValue = useCallback((string: T) => {
     setValue(string);
   }, []);
 

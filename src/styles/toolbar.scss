@@ -4,15 +4,77 @@
   max-width: $toolbarWidth;
   background: $colorWhite;
   border-right: $border;
+  background-color: $colorWhite;
   display: inline-block;
+  overflow: auto;
+  padding-bottom: $settingsHeight;
+}
+
+.toolbar-tools {
+  .btn {
+    margin-left: $btnMargin;
+    margin-bottom: $btnMargin;
+  }
 
   &__tools {
     display: flex;
     flex-wrap: wrap;
+  }
 
-    .btn {
-      margin-left: $btnMargin;
-      margin-bottom: $btnMargin;
-    }
+  &__effects {
+    display: flex;
+    flex-wrap: wrap;
+  }
+
+  &__title {
+    padding-left: $btnPadding;
+    padding-bottom: $btnPadding / 2;
+  }
+}
+
+.toolbar-settings, .toolbar-footer {
+  padding: 0 $btnPadding;
+
+  &__title-bold {
+    font-weight: bold;
+    margin-top: $btnMargin;
+    margin-bottom: $btnMargin * 2;
+    font-size: 1.1rem;
+  }
+}
+
+.toolbar-footer {
+  padding-top: $btnPadding * 2;
+
+  .icon {
+    margin-right: $btnMargin;
+  }
+  
+  .btn {
+    width: 100%;
+    padding: 0;
+    padding-left: $btnPadding * 2;
+    height: $btnWidth;
+    text-align: left;
+    margin-bottom: $btnMargin;
+  }
+}
+
+.brash-preview {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: $btnMargin;
+  margin-bottom: $btnMargin;
+  width: 160px;
+  height: 160px;
+  border: $border;
+
+  &__brush {
+    background-color: black;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: $border;
   }
 }

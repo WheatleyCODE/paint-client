@@ -1,115 +1,106 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { fromEvent } from 'rxjs';
-import { MdBrush, MdCircle, MdOutlineHorizontalRule, MdSquare } from 'react-icons/md';
-import { RiEraserFill } from 'react-icons/ri';
-import { Form } from 'react-bootstrap';
-import { useCanvas, useSocket } from '../../hooks';
-import { Brush, Rect } from '../../tools';
-import { Tool, ToolTypes, Change, IObservables } from '../../types';
-import { ToolButton } from './ToolButton';
+import React, { useEffect } from 'react';
+import { debounceTime, filter, tap, map } from 'rxjs';
+import { useTypedDispatch, useValidInput, useTools } from '../../hooks';
+import { paintActions as PA } from '../../store';
+import { ToolbarFooter } from './ToolbarFooter';
+import { ToolbarSettings } from './ToolbarSettings';
+import { ToolbarTools } from './ToolbarTools';
+import Palette from './Palette';
+import { BrushPreview } from './BrushPreview';
 
 export const Toolbar = () => {
-  const colorRef = useRef<HTMLInputElement | null>(null);
-  const lineWidthRef = useRef<HTMLInputElement | null>(null);
-  const borderWidthRef = useRef<HTMLInputElement | null>(null);
-  const fillRef = useRef<HTMLInputElement | null>(null);
-  const fillColorRef = useRef<HTMLInputElement | null>(null);
-
-  const [currentTool, setCurrentTool] = useState<Tool | null>(null);
-  const [observables, setObservables] = useState<IObservables>({});
-  const { canvas } = useCanvas();
-  const { socketNext } = useSocket();
-
-  const clearCurrentTool = () => {
-    currentTool?.destroyEvents();
-    setCurrentTool(null);
-  };
-
-  const selectBrush = () => {
-    clearCurrentTool();
-
-    const { color$, lineWidth$ } = observables;
-
-    if (canvas && color$ && lineWidth$) {
-      const brush = new Brush(canvas, color$, '#000', lineWidth$, 1, socketNext);
-      brush.init();
-      setCurrentTool(brush);
-    }
-  };
-
-  const selectRect = () => {
-    clearCurrentTool();
-    const { color$, borderWidth$, fill$, fillColor$ } = observables;
-
-    if (canvas && color$ && borderWidth$ && fill$ && fillColor$) {
-      const rect = new Rect(
-        canvas,
-        color$,
-        '#000',
-        borderWidth$,
-        1,
-        fill$,
-        true,
-        fillColor$,
-        '#000',
-        socketNext
-      );
-      rect.init();
-      setCurrentTool(rect);
-    }
-  };
+  const {
+    refs,
+    currentTool,
+    toolSettings: ts,
+    observables,
+    selectBrush,
+    selectRect,
+    changeStep,
+  } = useTools();
+  const { colorRef, fillColorRef, fillRef, lineWidthRef, borderWidthRef } = refs;
+  const dispatch = useTypedDispatch();
+  const borderWidthInput = useValidInput(ts.borderWidth);
+  const lineWidthInput = useValidInput(ts.lineWidth);
+  const fillInput = useValidInput(ts.isFill);
+  const colorInput = useValidInput(ts.color);
+  const fillColorInput = useValidInput(ts.fillColor);
 
   useEffect(() => {
-    const color = colorRef.current;
-    const line = lineWidthRef.current;
-    const border = borderWidthRef.current;
-    const fill = fillRef.current;
-    const fillColor = fillColorRef.current;
+    const { borderWidth$, lineWidth$, fill$, color$, fillColor$ } = observables;
+    if (!borderWidth$ || !lineWidth$ || !fill$ || !color$ || !fillColor$) return;
 
-    if (color && line && border && fill && fillColor) {
-      const color$ = fromEvent<Change>(color, 'input');
-      const lineWidth$ = fromEvent<Change>(line, 'input');
-      const borderWidth$ = fromEvent<any>(border, 'input');
-      const fill$ = fromEvent<Change>(fill, 'change');
-      const fillColor$ = fromEvent<Change>(fillColor, 'input');
+    const streamColor$ = color$.pipe(
+      map((e) => ({ color: e.target.value })),
+      tap(({ color }) => colorInput.changeValue(color)),
+      debounceTime(100)
+    );
 
-      setObservables({ lineWidth$, color$, borderWidth$, fill$, fillColor$ });
-    }
-  }, []);
+    const streamFC$ = fillColor$.pipe(
+      map((e) => ({ color: e.target.value })),
+      tap(({ color }) => fillColorInput.changeValue(color)),
+      debounceTime(100)
+    );
+
+    const streamBW$ = borderWidth$.pipe(
+      map((e) => ({ borderWidth: +e.target.value })),
+      filter(({ borderWidth }) => borderWidth % changeStep === 0),
+      tap(({ borderWidth }) => borderWidthInput.changeValue(borderWidth)),
+      debounceTime(100)
+    );
+
+    const streamLW$ = lineWidth$.pipe(
+      map((e) => ({ lineWidth: +e.target.value })),
+      filter(({ lineWidth }) => lineWidth % changeStep === 0),
+      tap(({ lineWidth }) => lineWidthInput.changeValue(lineWidth)),
+      debounceTime(100)
+    );
+
+    fill$.subscribe((e) => {
+      const isFill = !e.target.checked;
+      fillInput.changeValue(isFill);
+      dispatch(PA.changeToolSettings({ isFill }));
+    });
+
+    streamFC$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+
+    streamColor$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+
+    streamBW$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+
+    streamLW$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+  }, [observables]);
 
   return (
     <div className="toolbar">
-      <input ref={colorRef} type="color" className="input color" />
+      <BrushPreview width={lineWidthInput.value} color={colorInput.value} />
 
-      <input ref={fillColorRef} type="color" className="input color" />
+      <Palette input={{ ref: colorRef, value: colorInput.value }} />
+      <Palette input={{ ref: fillColorRef, value: fillColorInput.value }} />
 
-      <div className="toolbar__tools">
-        <ToolButton
-          Icon={MdBrush}
-          isActive={currentTool?.type === ToolTypes.BRUSH}
-          onClick={selectBrush}
-        />
-        <ToolButton
-          Icon={MdSquare}
-          isActive={currentTool?.type === ToolTypes.RECT}
-          onClick={selectRect}
-        />
-        <ToolButton Icon={MdCircle} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={RiEraserFill} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-      </div>
+      <ToolbarTools
+        currentToolType={currentTool?.type || ''}
+        selectBrush={selectBrush}
+        selectRect={selectRect}
+      />
 
-      <div className="toolbar__settings">
-        <Form.Label>Fill</Form.Label>
-        <Form.Check ref={fillRef} className="checkbox" />
-        <Form.Label>Line</Form.Label>
-        <Form.Range ref={lineWidthRef} min="0" max="10" />
-        <Form.Label>Border</Form.Label>
-        <Form.Range ref={borderWidthRef} min="0" max="10" />
-      </div>
+      <ToolbarSettings
+        fill={{ ref: fillRef, value: fillInput.value }}
+        lineWidth={{ ref: lineWidthRef, value: lineWidthInput.value }}
+        borderWidth={{ ref: borderWidthRef, value: borderWidthInput.value }}
+        min={1}
+        max={100}
+      />
+
+      <ToolbarFooter />
     </div>
   );
 };

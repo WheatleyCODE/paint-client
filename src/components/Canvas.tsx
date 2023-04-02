@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { filter, Observable, Subscription } from 'rxjs';
+import { filter, fromEvent, Observable, Subscription } from 'rxjs';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../store';
 import {
@@ -10,8 +10,10 @@ import {
   useTypedSelector,
   useCanvasRestore,
 } from '../hooks';
+
 import { getStreamOnloadImg } from '../utils';
-import { SocketMethods, SocketData } from '../types';
+import { SocketMethods } from '../types';
+import { getCursor } from '../utils/canvas.utils';
 
 export const Canvas = () => {
   const params = useParams();
@@ -39,7 +41,7 @@ export const Canvas = () => {
 
     const stream$ = socketObs.pipe(filter((data) => data.username !== username));
 
-    // ! rewrite websocket onmessage
+    // * rewrite websocket onmessage
     stream$.subscribe((data) => {
       switch (data.method) {
         case SocketMethods.CONNECTION:
@@ -65,7 +67,7 @@ export const Canvas = () => {
           break;
       }
     });
-  }, [socketObs, redo, undo, canvas, pushToUndo]);
+  }, [socketObs, redo, undo, canvas, pushToUndo, draw]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,
@@ -105,13 +107,18 @@ export const Canvas = () => {
 
   return (
     <div className="canvas">
-      <canvas
-        onMouseUp={saveImage}
-        onMouseDown={pushToUndoWS}
-        id="canvas"
-        width={width}
-        height={height}
-      />
+      <div className="position-relative">
+        <div id="select" className="select" />
+        <canvas id="canvas" width={width} height={height} style={{ width, height }} />
+        <div
+          style={{ cursor: getCursor(30), width, height }}
+          onContextMenu={(e) => e.preventDefault()}
+          aria-hidden
+          onMouseUp={saveImage}
+          onMouseDown={pushToUndoWS}
+          id="shield"
+        />
+      </div>
     </div>
   );
 };

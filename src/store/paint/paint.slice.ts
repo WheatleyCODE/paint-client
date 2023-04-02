@@ -1,10 +1,17 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IPaintState, ToolTypes } from '../../types';
+import { ChangeTSFilds, IPaintState, ToolTypes } from '../../types';
 
 const initialState: IPaintState = {
   username: null,
   currentTool: ToolTypes.BRUSH,
-  toolSettings: undefined,
+  toolSettings: {
+    color: '#000',
+    fillColor: '#fff',
+    isFill: true,
+    lineWidth: 1,
+    borderWidth: 1,
+  },
+  changeStep: 5,
   undoList: [],
   redoList: [],
 };
@@ -19,6 +26,10 @@ export const paintSlice = createSlice({
 
     setRedo: (state, { payload }: PayloadAction<string[]>) => {
       state.redoList = payload;
+    },
+
+    changeToolSettings: (state, { payload }: PayloadAction<ChangeTSFilds>) => {
+      state.toolSettings = { ...state.toolSettings, ...payload };
     },
 
     setUsername: (state, { payload }: PayloadAction<string>) => {
