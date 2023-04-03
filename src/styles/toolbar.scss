@@ -43,6 +43,17 @@
   }
 }
 
+.toolbar-settings {
+  &__fill {
+    display: flex;
+    margin: $btnMargin 0;
+
+    .btn {
+      margin-right: $btnMargin;
+    }
+  }
+}
+
 .toolbar-footer {
   padding-top: $btnPadding * 2;
 

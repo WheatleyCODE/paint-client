@@ -34,6 +34,15 @@ export const useCanvas = () => {
     }
   };
 
+  // Todo
+  const changeWidth = () => {
+    setCanvasSettings((p) => ({ ...p }));
+  };
+
+  const changeHeight = () => {
+    setCanvasSettings((p) => ({ ...p }));
+  };
+
   return {
     canvas,
     canvasSettings,

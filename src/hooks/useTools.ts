@@ -1,23 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
-import { fromEvent } from 'rxjs';
-import { useTypedSelector } from './redux';
+import { filter, fromEvent, map, tap } from 'rxjs';
+import { useTypedDispatch, useTypedSelector } from './redux';
 import { useCanvas } from './useCanvas';
 import { useSocket } from './useSocket';
 import { Brush, Rect } from '../tools';
 import { Change, IObservables, Tool, ToolTypes } from '../types';
+import { useValidInput } from './useValidInput';
+import { paintActions as PA } from '../store';
 
 export const useTools = () => {
-  const colorRef = useRef<HTMLInputElement | null>(null);
-  const lineWidthRef = useRef<HTMLInputElement | null>(null);
-  const borderWidthRef = useRef<HTMLInputElement | null>(null);
-  const fillRef = useRef<HTMLInputElement | null>(null);
-  const fillColorRef = useRef<HTMLInputElement | null>(null);
-
   const {
-    toolSettings: ts,
+    toolSettings,
     currentTool: currentToolType,
     changeStep,
+    currentShape,
   } = useTypedSelector((state) => state.paint);
+
+  const dispatch = useTypedDispatch();
+  const lineWidthInput = useValidInput(toolSettings.lineWidth);
+  const fillInput = useValidInput(currentShape);
+  const majorColorInput = useValidInput(toolSettings.majorColor);
+  const minorColorInput = useValidInput(toolSettings.minorColor);
+
+  const majorColorRef = useRef<HTMLInputElement | null>(null);
+  const minorColorRef = useRef<HTMLInputElement | null>(null);
+  const lineWidthRef = useRef<HTMLInputElement | null>(null);
+  const fillRef = useRef<HTMLInputElement | null>(null);
 
   const [currentTool, setCurrentTool] = useState<Tool | null>(null);
   const [observables, setObservables] = useState<IObservables>({});
@@ -30,16 +38,19 @@ export const useTools = () => {
   };
 
   const selectBrush = () => {
-    console.log('ssss');
     clearCurrentTool();
 
-    const { color$, lineWidth$ } = observables;
+    const { majorColor$, minorColor$, lineWidth$ } = observables;
 
-    console.log('ssss');
-    console.log(canvas, color$, lineWidth$);
-
-    if (canvas && color$ && lineWidth$) {
-      const brush = new Brush(canvas, color$, ts.color, lineWidth$, ts.lineWidth, socketNext);
+    if (canvas && majorColor$ && lineWidth$) {
+      const brush = new Brush(
+        canvas,
+        majorColor$,
+        toolSettings.majorColor,
+        lineWidth$,
+        toolSettings.lineWidth,
+        socketNext
+      );
       brush.init();
       setCurrentTool(brush);
     }
@@ -47,19 +58,19 @@ export const useTools = () => {
 
   const selectRect = () => {
     clearCurrentTool();
-    const { color$, borderWidth$, fill$, fillColor$ } = observables;
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
 
-    if (canvas && color$ && borderWidth$ && fill$ && fillColor$) {
+    if (canvas && majorColor$ && minorColor$ && fill$ && lineWidth$) {
       const rect = new Rect(
         canvas,
-        color$,
-        ts.color,
-        borderWidth$,
-        ts.borderWidth,
+        majorColor$,
+        toolSettings.majorColor,
+        lineWidth$,
+        toolSettings.lineWidth,
         fill$,
-        ts.isFill,
-        fillColor$,
-        ts.fillColor,
+        true, // todo
+        minorColor$,
+        toolSettings.minorColor,
         socketNext
       );
       rect.init();
@@ -68,36 +79,95 @@ export const useTools = () => {
   };
 
   useEffect(() => {
-    const color = colorRef.current;
+    const majorColor = majorColorRef.current;
+    const minorColor = majorColorRef.current;
     const line = lineWidthRef.current;
-    const border = borderWidthRef.current;
     const fill = fillRef.current;
-    const fillColor = fillColorRef.current;
-    console.log(color, line, border, fill, fillColor);
 
-    if (color && line && border && fill && fillColor) {
-      const color$ = fromEvent<Change>(color, 'input');
+    if (majorColor && minorColor && line && fill) {
+      const majorColor$ = fromEvent<Change>(majorColor, 'input');
+      const minorColor$ = fromEvent<Change>(minorColor, 'input');
       const lineWidth$ = fromEvent<Change>(line, 'input');
-      const borderWidth$ = fromEvent<any>(border, 'input');
       const fill$ = fromEvent<Change>(fill, 'change');
-      const fillColor$ = fromEvent<Change>(fillColor, 'input');
 
-      setObservables({ lineWidth$, color$, borderWidth$, fill$, fillColor$ });
+      setObservables({ lineWidth$, majorColor$, minorColor$, fill$ });
     }
   }, []);
 
+  useEffect(() => {
+    const { lineWidth$, fill$, majorColor$, minorColor$ } = observables;
+    if (!lineWidth$ || !fill$ || !majorColor$ || !minorColor$) return;
+
+    const streamMajorColor$ = majorColor$.pipe(
+      map((e) => ({ majorColor: e.target.value })),
+      tap(({ majorColor }) => majorColorInput.changeValue(majorColor))
+    );
+
+    const streamMinorColor$ = minorColor$.pipe(
+      map((e) => ({ minorColor: e.target.value })),
+      tap(({ minorColor }) => minorColorInput.changeValue(minorColor))
+    );
+
+    const streamLineWidth$ = lineWidth$.pipe(
+      map((e) => ({ lineWidth: +e.target.value })),
+      filter(({ lineWidth }) => lineWidth % changeStep === 0),
+      tap(({ lineWidth }) => lineWidthInput.changeValue(lineWidth))
+    );
+
+    // fill$.subscribe((e) => {
+    //   const isFill = !e.target.checked;
+    //   fillInput.changeValue(isFill);
+    //   dispatch(PA.changeToolSettings({ isFill }));
+    // });
+
+    streamMajorColor$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+
+    streamMinorColor$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+
+    // streamBW$.subscribe((data) => {
+    //   dispatch(PA.changeToolSettings(data));
+    // });
+
+    streamLineWidth$.subscribe((data) => {
+      dispatch(PA.changeToolSettings(data));
+    });
+  }, [observables]);
+
   return {
-    refs: {
-      colorRef,
-      lineWidthRef,
-      borderWidthRef,
-      fillRef,
-      fillColorRef,
+    tools: {
+      majorColor: {
+        value: majorColorInput.value,
+        ref: majorColorRef,
+        changeValue: majorColorInput.changeValue,
+      },
+
+      minorColor: {
+        value: minorColorInput.value,
+        ref: minorColorRef,
+        changeValue: minorColorInput.changeValue,
+      },
+
+      lineWidth: {
+        value: lineWidthInput.value,
+        ref: lineWidthRef,
+        changeValue: lineWidthInput.changeValue,
+      },
+
+      fill: {
+        value: fillInput.value,
+        ref: fillRef,
+        changeValue: fillInput.changeValue,
+      },
     },
     selectBrush,
     selectRect,
     currentTool,
-    toolSettings: ts,
+    toolSettings,
+    currentShape,
     changeStep,
     observables,
   };

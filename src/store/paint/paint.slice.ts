@@ -1,19 +1,28 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChangeTSFilds, IPaintState, ToolTypes } from '../../types';
+import { ChangeTSFilds, EffectTypes, IPaintState, ShapeTypes, ToolTypes } from '../../types';
 
 const initialState: IPaintState = {
   username: null,
   currentTool: ToolTypes.BRUSH,
+  currentEffect: EffectTypes.NONE,
+  currentShape: ShapeTypes.FILL_BORDER,
   toolSettings: {
-    color: '#000',
-    fillColor: '#fff',
-    isFill: true,
-    lineWidth: 1,
-    borderWidth: 1,
+    majorColor: '#000',
+    minorColor: '#fff',
+    lineWidth: 10,
+    lightness: 1,
+    saturation: 1,
+    timeToEnd: 1000,
+    interval: 1000,
   },
-  changeStep: 5,
+  canvasSettings: {
+    width: 900,
+    height: 900,
+  },
+  changeStep: 2,
   undoList: [],
   redoList: [],
+  connections: [],
 };
 
 export const paintSlice = createSlice({
@@ -42,6 +51,14 @@ export const paintSlice = createSlice({
 
     setUndo: (state, { payload }: PayloadAction<string[]>) => {
       state.undoList = payload;
+    },
+
+    addConnection: (state, { payload }: PayloadAction<string>) => {
+      state.connections.push(payload);
+    },
+
+    setConnections: (state, { payload }: PayloadAction<string[]>) => {
+      state.connections = payload;
     },
   },
 });

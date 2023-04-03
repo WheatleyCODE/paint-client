@@ -3,6 +3,19 @@ export const enum ToolTypes {
   RECT = 'RECT',
 }
 
+export const enum EffectTypes {
+  NONE = 'NONE',
+  RESIZE = 'RESIZE',
+  BIG_TO_LOW = 'BIG_TO_LOW',
+  LOW_TO_BIG = 'LOW_TO_BIG',
+}
+
+export const enum ShapeTypes {
+  BORDER = 'BORDER',
+  FILL = 'FILL',
+  FILL_BORDER = 'FILL_BORDER',
+}
+
 export interface IEvents {
   destroyEvents: () => void;
   init: () => void;

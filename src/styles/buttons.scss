@@ -2,6 +2,10 @@
   font-size: 1.6rem;
 }
 
+.icon.deg35 {
+  transform: rotate(-35deg);
+}
+
 .btn-cian {
   border-radius: 2px;
   background-color: $colorCian;
@@ -21,6 +25,11 @@
     background-color: $colorCian3 !important;
     border-color: $colorCian3 !important;
   }
+}
+
+.btn-check:checked + .btn {
+  background-color: $colorOrange !important;
+  border-color: $colorOrange !important;
 }
 
 .btn.icon {

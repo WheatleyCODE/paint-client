@@ -6,6 +6,8 @@ import {
   MdOutlineAutoFixHigh,
   MdOutlineHorizontalRule,
   MdSquare,
+  MdTimeline,
+  MdAutoFixHigh,
 } from 'react-icons/md';
 import { IoResizeOutline, IoTriangle } from 'react-icons/io5';
 import { RiEraserFill } from 'react-icons/ri';
@@ -38,9 +40,9 @@ export const ToolbarTools: FC<IToolbarToolsProps> = (props) => {
         />
         <ToolButton Icon={MdCircle} isActive={false} onClick={selectBrush} />
         <ToolButton Icon={IoTriangle} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
-        <ToolButton Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
+        <ToolButton Icon={MdTimeline} isActive={false} onClick={selectBrush} />
+        <ToolButton deg Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
+        <ToolButton Icon={MdAutoFixHigh} isActive={false} onClick={selectBrush} />
         <ToolButton Icon={RiEraserFill} isActive={false} onClick={selectBrush} />
       </div>
 

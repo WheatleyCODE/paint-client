@@ -5,10 +5,11 @@ import { IconType } from 'react-icons';
 export interface ToolButtonProps {
   onClick: () => void;
   isActive: boolean;
+  deg?: boolean;
   Icon: IconType;
 }
 
-export const ToolButton: FC<ToolButtonProps> = memo(({ onClick, isActive, Icon }) => {
+export const ToolButton: FC<ToolButtonProps> = memo(({ onClick, isActive, Icon, deg }) => {
   return (
     <Button
       variant="primary"
@@ -16,7 +17,7 @@ export const ToolButton: FC<ToolButtonProps> = memo(({ onClick, isActive, Icon }
       className={`btn btn-cian icon ${isActive && 'active'}`}
       type="submit"
     >
-      <Icon className="icon" />
+      <Icon className={`icon ${deg && 'deg35'}`} />
     </Button>
   );
 });
