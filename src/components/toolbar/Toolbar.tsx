@@ -1,14 +1,20 @@
-import React from 'react';
-import { useTools } from '../../hooks';
+import React, { FC } from 'react';
 import { ToolbarFooter } from './ToolbarFooter';
 import { ToolbarSettings } from './ToolbarSettings';
 import { ToolbarTools } from './ToolbarTools';
 import Palette from './Palette';
 import { BrushPreview } from './BrushPreview';
+import { ISettings } from '../../hooks/paint/usePaint';
+import { ITools } from '../../hooks/paint/useTools';
 
-export const Toolbar = () => {
-  const { tools, currentTool, selectBrush, selectRect } = useTools();
-  const { majorColor, minorColor, lineWidth, fill } = tools;
+export interface IToolbarProps {
+  settings: ISettings;
+  tools: ITools;
+}
+
+export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
+  const { lineWidth, majorColor, minorColor, fill } = settings;
+  const { current, selectBrush, selectRect } = tools;
 
   return (
     <div className="toolbar">
@@ -18,7 +24,7 @@ export const Toolbar = () => {
       <Palette input={{ ref: minorColor.ref, value: minorColor.value }} />
 
       <ToolbarTools
-        currentToolType={currentTool?.type || ''}
+        currentToolType={current?.type || ''}
         selectBrush={selectBrush}
         selectRect={selectRect}
       />

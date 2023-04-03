@@ -2,6 +2,7 @@ import { EffectTypes, ShapeTypes, ToolTypes } from './tools.interfaces';
 import { DeepPartial } from './utils.interfaces';
 
 export interface IToolSettings {
+  currentShape: ShapeTypes;
   majorColor: string;
   minorColor: string;
   lineWidth: number;
@@ -20,7 +21,6 @@ export interface IPaintState {
   username: string | null;
   currentTool: ToolTypes;
   currentEffect: EffectTypes;
-  currentShape: ShapeTypes;
   toolSettings: IToolSettings;
   canvasSettings: ICanvasSettings;
   changeStep: number;

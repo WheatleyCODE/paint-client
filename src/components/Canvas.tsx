@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { filter, fromEvent, Observable, Subscription } from 'rxjs';
+import React, { useEffect, FC } from 'react';
+import { filter } from 'rxjs';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../store';
 import {
@@ -15,7 +15,11 @@ import { getStreamOnloadImg } from '../utils';
 import { SocketMethods } from '../types';
 import { getCursor } from '../utils/canvas.utils';
 
-export const Canvas = () => {
+export interface ICanvasProps {
+  lineWidthValue: number;
+}
+
+export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   const params = useParams();
   const dispatch = useTypedDispatch();
   const { username } = useTypedSelector((state) => state.paint);
@@ -111,7 +115,7 @@ export const Canvas = () => {
         <div id="select" className="select" />
         <canvas id="canvas" width={width} height={height} style={{ width, height }} />
         <div
-          style={{ cursor: getCursor(30), width, height }}
+          style={{ cursor: getCursor(lineWidthValue), width, height }}
           onContextMenu={(e) => e.preventDefault()}
           aria-hidden
           onMouseUp={saveImage}

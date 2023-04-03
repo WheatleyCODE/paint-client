@@ -5,8 +5,8 @@ const initialState: IPaintState = {
   username: null,
   currentTool: ToolTypes.BRUSH,
   currentEffect: EffectTypes.NONE,
-  currentShape: ShapeTypes.FILL_BORDER,
   toolSettings: {
+    currentShape: ShapeTypes.FILL_BORDER,
     majorColor: '#000',
     minorColor: '#fff',
     lineWidth: 10,
