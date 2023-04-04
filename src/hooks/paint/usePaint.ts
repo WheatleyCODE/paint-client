@@ -47,7 +47,6 @@ export const usePaint = (): IPaint => {
   const fillInput = useValidInput(toolSettings.currentShape);
   const majorColorInput = useValidInput(toolSettings.majorColor);
   const minorColorInput = useValidInput(toolSettings.minorColor);
-  console.log(majorColorInput.value, minorColorInput.value);
 
   const majorColorRef = useRef<HTMLInputElement | null>(null);
   const minorColorRef = useRef<HTMLInputElement | null>(null);
@@ -55,7 +54,7 @@ export const usePaint = (): IPaint => {
   const fillRef = useRef<HTMLInputElement | null>(null);
 
   const [observables, setObservables] = useState<IObservables>({});
-  const tools = useTools(observables, toolSettings);
+  const tools = useTools(observables);
 
   useEffect(() => {
     const majorColor = majorColorRef.current;
@@ -90,15 +89,15 @@ export const usePaint = (): IPaint => {
   }, [observables]);
 
   useEffect(() => {
+    const params = {
+      lineWidth: lineWidthInput.value,
+      majorColor: majorColorInput.value,
+      minorColor: minorColorInput.value,
+      currentShape: fillInput.value,
+    };
+
     const sub = streamMouseUp$.subscribe(() => {
-      dispatch(
-        PA.changeToolSettings({
-          lineWidth: lineWidthInput.value,
-          majorColor: majorColorInput.value,
-          minorColor: minorColorInput.value,
-          currentShape: fillInput.value,
-        })
-      );
+      dispatch(PA.changeToolSettings(params));
     });
 
     return () => {

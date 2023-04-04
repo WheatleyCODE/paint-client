@@ -1,4 +1,4 @@
-import { EffectTypes, ShapeTypes, ToolTypes } from './tools.interfaces';
+import { EffectTypes, ShapeTypes, ToolTypes } from './tool-params.interfaces';
 import { DeepPartial } from './utils.interfaces';
 
 export interface IToolSettings {
@@ -28,5 +28,14 @@ export interface IPaintState {
   redoList: string[];
   connections: string[];
 }
+
+export type SelectSquareParams = {
+  top?: number;
+  left?: number;
+  bottom?: number;
+  right?: number;
+  height?: number;
+  width?: number;
+};
 
 export type ChangeTSFilds = DeepPartial<IToolSettings>;

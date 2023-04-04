@@ -1,19 +1,21 @@
-import React, { useEffect, FC } from 'react';
+import React, { FC, useEffect } from 'react';
 import { filter } from 'rxjs';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../store';
 import {
   useCanvas,
+  useCanvasRestore,
   useRequest,
   useSocket,
   useTypedDispatch,
   useTypedSelector,
-  useCanvasRestore,
 } from '../hooks';
 
 import { getStreamOnloadImg } from '../utils';
-import { SocketMethods } from '../types';
+import { SocketMethods, ToolTypes } from '../types';
 import { getCursor } from '../utils/canvas.utils';
+import { cursors } from '../consts/paint.consts';
+import { useSelect } from '../hooks/useSelect';
 
 export interface ICanvasProps {
   lineWidthValue: number;
@@ -22,8 +24,9 @@ export interface ICanvasProps {
 export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { username } = useTypedSelector((state) => state.paint);
+  const { username, currentTool, connections } = useTypedSelector((state) => state.paint);
   const { canvas, canvasSettings, draw } = useCanvas();
+  const { drawSelect } = useSelect();
   const { undo, redo } = useCanvasRestore();
   const { socketObs, socketNext } = useSocket();
   const { width, height } = canvasSettings;
@@ -67,11 +70,16 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
           redo();
           break;
 
+        case SocketMethods.SELECT: {
+          drawSelect(data.payload.params, data.username);
+          break;
+        }
+
         default:
           break;
       }
     });
-  }, [socketObs, redo, undo, canvas, pushToUndo, draw]);
+  }, [socketObs, redo, undo, canvas, pushToUndo, draw, drawSelect]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,
@@ -109,13 +117,28 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     saveImg({ img });
   };
 
+  const cursor = currentTool === ToolTypes.BRUSH ? getCursor(lineWidthValue) : cursors[currentTool];
+
   return (
     <div className="canvas">
       <div className="position-relative">
-        <div id="select" className="select" />
+        {connections.map((name) => (
+          <div id={`select-${name}`} className="select">
+            <div className="circle" />
+          </div>
+        ))}
+
+        <div id="select-test" className="select-connection">
+          <div className="select-connection__name">Dikey WHT</div>
+          <div className="circle" />
+        </div>
+
+        <div id="select" className="select">
+          <div className="circle" />
+        </div>
         <canvas id="canvas" width={width} height={height} style={{ width, height }} />
         <div
-          style={{ cursor: getCursor(lineWidthValue), width, height }}
+          style={{ cursor, width, height }}
           onContextMenu={(e) => e.preventDefault()}
           aria-hidden
           onMouseUp={saveImage}

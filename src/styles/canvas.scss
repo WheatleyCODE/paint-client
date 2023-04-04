@@ -13,7 +13,7 @@
 
   height: calc(100% - $settingsHeight - 5px);
 
-  .select {
+  .select, .select-connection {
     box-sizing: border-box;
     position: absolute;
     border: 2px dashed $colorBlue;
@@ -27,6 +27,34 @@
     -moz-user-select: none !important;
     -khtml-user-select: none !important;
     -webkit-user-select: none !important;
+
+    .circle {
+      display: none;
+      border-radius: 50%;
+      width: 100%;
+      height: 100%;
+      border: 2px dashed $colorOrange;
+    }
+
+    &.circle .circle{
+      display: block;
+    }
+  }
+
+  .select-connection {
+    border: 2px dashed #ae2ad9;
+
+    &__name {
+      white-space: nowrap;
+      color: #ae2ad9;
+      font-weight: bold;
+      height: 26px;
+      padding: 0 10px;
+      position: absolute;
+      top: -32px;
+      left: -2px;
+      border: 2px dashed #ae2ad9;
+    }
   }
 }
 

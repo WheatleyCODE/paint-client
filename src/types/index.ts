@@ -1,4 +1,5 @@
-export * from './tools.interfaces';
+export * from './tool-params.interfaces';
+export * from './tool.interfaces';
 export * from './toolbar.interfaces';
 export * from './paint.interfaces';
 export * from './socket.interfaces';

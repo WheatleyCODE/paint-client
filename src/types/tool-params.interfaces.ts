@@ -1,4 +1,8 @@
+import { Observable } from 'rxjs';
+import { Change } from './toolbar.interfaces';
+
 export const enum ToolTypes {
+  NONE = 'NONE',
   BRUSH = 'BRUSH',
   RECT = 'RECT',
 }
@@ -21,30 +25,16 @@ export interface IEvents {
   init: () => void;
 }
 
-export interface ITool extends IEvents {
-  type: ToolTypes;
-  initLineWidth: number;
-  initColor: string;
+export interface IDefaultBuilder {
+  setMajorColor$: (obs$: Observable<Change>) => void;
+  setInitMajorColor$: (majorColor: string) => void;
+  setMinorColor$: (obs$: Observable<Change>) => void;
+  setInitMinorColor$: (minorColor: string) => void;
+  setLineWidth$: (obs$: Observable<Change>) => void;
+  setInitLineWidth: (lineWidth: number) => void;
 }
 
-export interface IShape extends ITool {
-  initFill: boolean;
-  initFillColor: string;
-}
-
-export interface IBrush extends ITool {
-  isBrush: boolean;
-}
-
-export interface IRect extends IShape {
-  isRect: boolean;
-}
-
-export interface ICircle extends IShape {
-  isCircle: boolean;
-}
-
-export interface IDrawBrashParams {
+export interface IDrawBrushParams {
   lineWidth: number;
   strokeStyle: string;
   fromX: number;
@@ -61,7 +51,5 @@ export interface IDrawRectParams {
   width: number;
   height: number;
   fill: boolean;
-  fillColor: string;
+  fillStyle: string;
 }
-
-export type Tool = IBrush | IRect | ICircle;

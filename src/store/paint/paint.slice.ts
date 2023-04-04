@@ -3,12 +3,12 @@ import { ChangeTSFilds, EffectTypes, IPaintState, ShapeTypes, ToolTypes } from '
 
 const initialState: IPaintState = {
   username: null,
-  currentTool: ToolTypes.BRUSH,
+  currentTool: ToolTypes.NONE,
   currentEffect: EffectTypes.NONE,
   toolSettings: {
     currentShape: ShapeTypes.FILL_BORDER,
-    majorColor: '#000',
-    minorColor: '#fff',
+    majorColor: '#1f3df8',
+    minorColor: '#dc2b2b',
     lineWidth: 10,
     lightness: 1,
     saturation: 1,
@@ -59,6 +59,10 @@ export const paintSlice = createSlice({
 
     setConnections: (state, { payload }: PayloadAction<string[]>) => {
       state.connections = payload;
+    },
+
+    setCurrentTool: (state, { payload }: PayloadAction<ToolTypes>) => {
+      state.currentTool = payload;
     },
   },
 });

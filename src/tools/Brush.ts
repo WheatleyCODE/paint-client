@@ -3,7 +3,7 @@ import { Tool } from './abstract/Tool';
 import { createStream } from '../utils';
 import {
   IBrush,
-  IDrawBrashParams,
+  IDrawBrushParams,
   ToolTypes,
   Change,
   SocketMethods,
@@ -16,45 +16,65 @@ export class Brush extends Tool implements IBrush {
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(
+    $shield: HTMLDivElement,
     $canvas: HTMLCanvasElement,
-    color$: Observable<Change>,
-    initColor: string,
+    majorColor$: Observable<Change>,
+    initMajorColor: string,
+    minorColor$: Observable<Change>,
+    initMinorColor: string,
     lineWidth$: Observable<Change>,
     initLineWidth: number,
     socketNext: (method: SocketMethods, payload: SocketPayload) => void
   ) {
-    super($canvas, color$, initColor, lineWidth$, initLineWidth);
+    super(
+      $shield,
+      $canvas,
+      majorColor$,
+      initMajorColor,
+      minorColor$,
+      initMinorColor,
+      lineWidth$,
+      initLineWidth
+    );
+
     this.socketNext = socketNext;
   }
 
   init(): void {
-    const colorStream$ = createStream(this.color$, this.initColor);
+    const majorColorStream$ = createStream(this.majorColor$, this.initMajorColor);
+    const minorColorStream$ = createStream(this.minorColor$, this.initMinorColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
 
-    const streamMV$ = this.mouseMove$.pipe(
+    const streamMouseMove$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
       pairwise(),
       takeUntil(this.mouseUp$),
       takeUntil(this.mouseOut$)
     );
 
-    const streamMD$ = this.mouseDown$.pipe(
-      withLatestFrom(lineWidthStream$, colorStream$, (_, lineWidth, color) => ({
-        lineWidth,
-        color,
-      })),
+    const streamMouseDown$ = this.mouseDown$.pipe(
+      withLatestFrom(
+        majorColorStream$,
+        minorColorStream$,
+        lineWidthStream$,
+        (_, majorColor, minorColor, lineWidth) => ({
+          majorColor,
+          minorColor,
+          lineWidth,
+        })
+      ),
       switchMap((options) => {
-        return streamMV$.pipe(map((val) => ({ coords: val, options })));
+        return streamMouseMove$.pipe(map((val) => ({ coords: val, options })));
       })
     );
 
-    const sub = streamMD$.subscribe(({ coords, options }) => {
+    const subscription = streamMouseDown$.subscribe(({ coords, options }) => {
       const [from, to] = coords;
-      const { lineWidth, color } = options;
+      const { lineWidth, majorColor, minorColor } = options;
 
-      const params: IDrawBrashParams = {
+      const params: IDrawBrushParams = {
         lineWidth: +lineWidth,
-        strokeStyle: color,
+        strokeStyle: majorColor,
         fromX: from.x,
         fromY: from.y,
         toX: to.x,
@@ -69,10 +89,10 @@ export class Brush extends Tool implements IBrush {
       Brush.draw(this.canvasCtx, params);
     });
 
-    this.subs.push(sub);
+    this.subs.push(subscription);
   }
 
-  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawBrashParams): void {
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawBrushParams): void {
     const { lineWidth, strokeStyle, fromY, fromX, toY, toX } = params;
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
@@ -82,5 +102,9 @@ export class Brush extends Tool implements IBrush {
     canvasCtx.lineCap = 'round';
     canvasCtx.lineJoin = 'round';
     canvasCtx.stroke();
+  }
+
+  setSocketNext(socketNext: (method: SocketMethods, payload: SocketPayload) => void) {
+    this.socketNext = socketNext;
   }
 }

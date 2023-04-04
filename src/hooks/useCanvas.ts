@@ -2,7 +2,6 @@ import { useContext, useState } from 'react';
 import { Brush, Rect } from '../tools';
 import { PaintContext } from '../components/hoc/PaintContext';
 import { ToolTypes, SocketPayload } from '../types';
-import { getStreamOnloadImg } from '../utils';
 
 export interface ICanvasSettings {
   width: number;

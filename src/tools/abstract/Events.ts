@@ -9,12 +9,11 @@ export abstract class Events implements IEvents {
 
   protected subs: Subscription[] = [];
 
-  constructor($canvas: HTMLCanvasElement) {
-    const div = document.querySelector('#shield') as Element;
-    this.mouseMove$ = fromEvent<MouseEvent>(div, 'mousemove');
-    this.mouseDown$ = fromEvent<MouseEvent>(div, 'mousedown');
-    this.mouseUp$ = fromEvent<MouseEvent>(div, 'mouseup');
-    this.mouseOut$ = fromEvent<MouseEvent>(div, 'mouseout');
+  constructor($shield: HTMLDivElement) {
+    this.mouseMove$ = fromEvent<MouseEvent>($shield, 'mousemove');
+    this.mouseDown$ = fromEvent<MouseEvent>($shield, 'mousedown');
+    this.mouseUp$ = fromEvent<MouseEvent>($shield, 'mouseup');
+    this.mouseOut$ = fromEvent<MouseEvent>($shield, 'mouseout');
   }
 
   destroyEvents(): void {

@@ -6,15 +6,14 @@ export abstract class Canvas extends Events {
   protected $canvas: HTMLCanvasElement;
   protected canvasCtx: CanvasRenderingContext2D;
   protected canvasRect: DOMRect;
-  protected scale: number;
   protected saved = '';
 
-  constructor($canvas: HTMLCanvasElement) {
-    super($canvas);
+  constructor($shield: HTMLDivElement, $canvas: HTMLCanvasElement) {
+    super($shield);
+
     this.$canvas = $canvas;
     this.canvasCtx = $canvas.getContext('2d') as CanvasRenderingContext2D;
     this.canvasRect = $canvas.getBoundingClientRect();
-    this.scale = window.devicePixelRatio;
   }
 
   protected save(): void {

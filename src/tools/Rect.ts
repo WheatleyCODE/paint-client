@@ -11,7 +11,16 @@ import {
 import { Shape } from './abstract/Shape';
 import { createStream } from '../utils';
 
-import { IDrawRectParams, IRect, ToolTypes, SocketMethods, SocketPayload, Change } from '../types';
+import {
+  Change,
+  IDrawRectParams,
+  IDrawSelectParams,
+  IRect,
+  ShapeTypes,
+  SocketMethods,
+  SocketPayload,
+  ToolTypes,
+} from '../types';
 
 export class Rect extends Shape implements IRect {
   type = ToolTypes.RECT;
@@ -19,164 +28,123 @@ export class Rect extends Shape implements IRect {
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(
+    $shield: HTMLDivElement,
     $canvas: HTMLCanvasElement,
-    color$: Observable<Change>,
-    initColor: string,
+    majorColor$: Observable<Change>,
+    initMajorColor: string,
+    minorColor$: Observable<Change>,
+    initMinorColor: string,
     lineWidth$: Observable<Change>,
     initLineWidth: number,
     fill$: Observable<Change>,
-    initFill: boolean,
-    fillColor$: Observable<Change>,
-    initFillColor: string,
+    initShapeType: ShapeTypes,
+    $selectSquare: HTMLDivElement,
     socketNext: (method: SocketMethods, payload: SocketPayload) => void
   ) {
     super(
+      $shield,
       $canvas,
-      color$,
-      initColor,
+      majorColor$,
+      initMajorColor,
+      minorColor$,
+      initMinorColor,
       lineWidth$,
       initLineWidth,
       fill$,
-      initFill,
-      fillColor$,
-      initFillColor
+      initShapeType,
+      $selectSquare
     );
+
     this.socketNext = socketNext;
   }
 
   init() {
-    const div = document.querySelector('#select') as HTMLDivElement;
-
-    const colorStream$ = createStream(this.color$, this.initColor);
+    const majorColorStream$ = createStream(this.majorColor$, this.initMajorColor);
+    const minorColorStream$ = createStream(this.minorColor$, this.initMinorColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
+
     const fill$Stream$ = this.fill$.pipe(
       map((e) => e.target.checked),
-      startWith(this.initFill)
+      startWith(this.initShapeType)
     );
-    const fillColor$Stream$ = createStream(this.fillColor$, this.initFillColor);
 
-    const streamMV$ = this.mouseMove$.pipe(
+    const streamMouseMove$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
       takeUntil(this.mouseUp$),
       takeUntil(this.mouseOut$)
     );
 
-    const streamMD$ = this.mouseDown$.pipe(
+    const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
       withLatestFrom(
+        majorColorStream$,
+        minorColorStream$,
         lineWidthStream$,
-        colorStream$,
         fill$Stream$,
-        fillColor$Stream$,
-        (startCoords, lineWidth, color, fill, fillColor) => ({
+        (startCoords, majorColor, minorColor, lineWidth, fill) => ({
           startCoords,
+          majorColor,
+          minorColor,
           lineWidth,
-          color,
           fill,
-          fillColor,
         })
       ),
       switchMap((options) => {
-        return streamMV$.pipe(
-          map((val) => ({ coords: val, options })),
+        return streamMouseMove$.pipe(
+          map((coords) => ({ coords, options })),
           tap((value) => {
             const { startCoords } = value.options;
-            const wid = value.coords.x - startCoords.x;
-            const hei = value.coords.y - startCoords.y;
+            const { coords } = value;
 
-            type SelectSquare = {
-              top?: number;
-              left?: number;
-              bottom?: number;
-              right?: number;
-              height?: number;
-              width?: number;
+            const params: IDrawSelectParams = {
+              startCoords,
+              coords,
+              isShow: true,
+              figure: this.type,
             };
 
-            const data: SelectSquare = {};
+            Shape.drawSelectSquare(this.$selectSquare, this.$canvas, params);
 
-            const { left, top, height, width } = this.canvasRect;
-
-            data.left = startCoords.x;
-            data.top = startCoords.y;
-
-            let selHight = value.coords.y - startCoords.y;
-            let selWidth = value.coords.x - startCoords.x;
-
-            if (selHight < 0) {
-              selHight *= -1;
-              data.top = undefined;
-              data.bottom = height - startCoords.y + 6;
-            }
-
-            if (selWidth < 0) {
-              selWidth *= -1;
-              data.left = undefined;
-              data.right = width - startCoords.x;
-            }
-
-            data.height = selHight;
-            data.width = selWidth;
-
-            if (data.top) {
-              div.style.top = `${data.top}px`;
-            } else {
-              div.style.top = 'initial';
-            }
-
-            if (data.left) {
-              div.style.left = `${data.left}px`;
-            } else {
-              div.style.left = 'initial';
-            }
-
-            if (data.right) {
-              div.style.right = `${data.right}px`;
-            } else {
-              div.style.right = 'initial';
-            }
-
-            if (data.bottom) {
-              div.style.bottom = `${data.bottom}px`;
-            } else {
-              div.style.bottom = 'initial';
-            }
-
-            div.style.height = `${data.height}px`;
-            div.style.width = `${data.width}px`;
+            this.socketNext(SocketMethods.SELECT, {
+              params,
+              type: ToolTypes.NONE,
+            });
           }),
-          takeLast(1)
+          takeLast(2)
         );
       })
     );
 
-    const sub = streamMD$.subscribe(({ coords, options }) => {
-      const { lineWidth, color, fill, startCoords, fillColor } = options;
+    const sub = streamMouseDown$.subscribe(({ coords, options }) => {
+      const { lineWidth, majorColor, minorColor, fill, startCoords } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
 
-      const onload$ = this.copy();
+      const params: IDrawRectParams = {
+        lineWidth: +lineWidth,
+        strokeStyle: majorColor,
+        x: coords.x,
+        y: coords.y,
+        width,
+        height,
+        fill: true, // todo
+        fillStyle: minorColor,
+      };
 
-      onload$.subscribe((img) => {
-        const params: IDrawRectParams = {
-          lineWidth: +lineWidth,
-          strokeStyle: color,
-          x: coords.x,
-          y: coords.y,
-          width,
-          height,
-          fill,
-          fillColor,
-        };
+      this.socketNext(SocketMethods.DRAW, {
+        type: ToolTypes.RECT,
+        params,
+      });
 
-        this.socketNext(SocketMethods.DRAW, {
-          type: ToolTypes.RECT,
-          params,
-        });
+      Rect.draw(this.canvasCtx, params);
 
-        Rect.draw(this.canvasCtx, params);
+      // clear select
+      this.$selectSquare.style.display = 'none';
+      this.socketNext(SocketMethods.SELECT, {
+        params: { startCoords, coords, figure: this.type, isShow: false },
+        type: ToolTypes.NONE,
       });
     });
 
@@ -184,7 +152,7 @@ export class Rect extends Shape implements IRect {
   }
 
   static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
-    const { lineWidth, strokeStyle, x, y, width, height, fill, fillColor } = params;
+    const { lineWidth, strokeStyle, x, y, width, height, fill, fillStyle } = params;
 
     canvasCtx.beginPath();
     canvasCtx.lineWidth = lineWidth;
@@ -195,8 +163,20 @@ export class Rect extends Shape implements IRect {
 
     if (fill) {
       canvasCtx.fill();
-      canvasCtx.fillStyle = fillColor;
+      canvasCtx.fillStyle = fillStyle;
     }
     canvasCtx.stroke();
+  }
+
+  setSocketNext(socketNext: (method: SocketMethods, payload: SocketPayload) => void): void {
+    this.socketNext = socketNext;
+  }
+
+  setFill$(obs$: Observable<Change>): void {
+    this.fill$ = obs$;
+  }
+
+  setInitShapeType(shapeType: ShapeTypes): void {
+    this.initShapeType = shapeType;
   }
 }
