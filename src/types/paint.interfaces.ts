@@ -17,6 +17,22 @@ export interface ICanvasSettings {
   height: number;
 }
 
+export type TriangleParams = {
+  sides: {
+    a: number;
+    b: number;
+    c: number;
+  };
+
+  angles: {
+    a: number;
+    b: number;
+    c: number;
+  };
+
+  translateX: number;
+};
+
 export interface IPaintState {
   username: string | null;
   currentTool: ToolTypes;

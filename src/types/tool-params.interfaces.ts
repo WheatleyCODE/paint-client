@@ -5,6 +5,9 @@ export const enum ToolTypes {
   NONE = 'NONE',
   BRUSH = 'BRUSH',
   RECT = 'RECT',
+  CIRCLE = 'CIRCLE',
+  TRIANGLE = 'TRIANGLE',
+  ERASER = 'ERASER',
 }
 
 export const enum EffectTypes {
@@ -50,6 +53,30 @@ export interface IDrawRectParams {
   y: number;
   width: number;
   height: number;
+  fill: boolean;
+  fillStyle: string;
+}
+
+export interface IDrawCircleParams {
+  lineWidth: number;
+  strokeStyle: string;
+  centerX: number;
+  centerY: number;
+  radiusX: number;
+  radiusY: number;
+  fill: boolean;
+  fillStyle: string;
+}
+
+export interface IDrawTriangleParams {
+  lineWidth: number;
+  strokeStyle: string;
+  firstX: number;
+  firstY: number;
+  secondX: number;
+  secondY: number;
+  lastX: number;
+  lastY: number;
   fill: boolean;
   fillStyle: string;
 }

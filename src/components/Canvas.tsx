@@ -125,16 +125,31 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
         {connections.map((name) => (
           <div id={`select-${name}`} className="select">
             <div className="circle" />
+            <div className="triangle">
+              <div data-triangle="bottom" className="triangle__bottom" />
+              <div data-triangle="right" className="triangle__right" />
+              <div data-triangle="left" className="triangle__left" />
+            </div>
           </div>
         ))}
 
         <div id="select-test" className="select-connection">
-          <div className="select-connection__name">Dikey WHT</div>
           <div className="circle" />
+          <div className="triangle">
+            <div data-triangle="bottom" className="triangle__bottom" />
+            <div data-triangle="right" className="triangle__right" />
+            <div data-triangle="left" className="triangle__left" />
+          </div>
+          <div className="select-connection__name">Dikey WHT</div>
         </div>
 
         <div id="select" className="select">
           <div className="circle" />
+          <div className="triangle">
+            <div data-triangle="bottom" className="triangle__bottom" />
+            <div data-triangle="right" className="triangle__right" />
+            <div data-triangle="left" className="triangle__left" />
+          </div>
         </div>
         <canvas id="canvas" width={width} height={height} style={{ width, height }} />
         <div

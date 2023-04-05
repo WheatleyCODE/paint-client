@@ -1,7 +1,18 @@
 import { Observable } from 'rxjs';
 import { Tool } from './Tool';
-import { IShape, Change, ShapeTypes, SelectSquareParams, IDrawSelectParams } from '../../types';
-import { setStylesOnSelectSquare } from '../../utils/paint.utils';
+import {
+  IShape,
+  Change,
+  ShapeTypes,
+  SelectSquareParams,
+  IDrawSelectParams,
+  TriangleParams,
+} from '../../types';
+import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint.utils';
+
+let bottom: HTMLDivElement | null = null;
+let right: HTMLDivElement | null = null;
+let left: HTMLDivElement | null = null;
 
 export abstract class Shape extends Tool implements IShape {
   initShapeType: ShapeTypes;
@@ -42,10 +53,10 @@ export abstract class Shape extends Tool implements IShape {
     $canvas: HTMLCanvasElement,
     drawParams: IDrawSelectParams
   ) {
-    const { isShow, startCoords, coords, figure } = drawParams;
+    const { isShow, startCoords, coords, figure, triangleParams } = drawParams;
 
     if (!isShow) {
-      $selectSquare.style.display = 'none';
+      removeStylesOnSelectSquare($selectSquare, figure);
       return;
     }
 
@@ -58,26 +69,73 @@ export abstract class Shape extends Tool implements IShape {
 
     let selHight = coords.y - startCoords.y;
     let selWidth = coords.x - startCoords.x;
+    let isTop = false;
 
     if (selHight < 0) {
       selHight *= -1;
       params.top = undefined;
-      params.bottom = height - startCoords.y + 6;
+      params.bottom = height - startCoords.y + 6; // todo magic
+      isTop = true;
     }
 
     if (selWidth < 0) {
+      const bodyRect = document.body.getBoundingClientRect();
       selWidth *= -1;
       params.left = undefined;
       params.right = width - startCoords.x;
+
+      if (rect.width + rect.left > bodyRect.width) {
+        params.right = bodyRect.width - rect.left - startCoords.x;
+      }
+
+      if (rect.left < 191) {
+        // todo magic
+        params.right -= 191 - rect.left;
+      }
     }
 
     params.height = selHight;
     params.width = selWidth;
 
-    setStylesOnSelectSquare($selectSquare, params, figure);
+    if (triangleParams) {
+      // todo fix
+      if (!bottom) {
+        bottom = $selectSquare.querySelector('[data-triangle="bottom"]') as HTMLDivElement;
+      }
+
+      if (!right) {
+        right = $selectSquare.querySelector('[data-triangle="right"]') as HTMLDivElement;
+      }
+
+      if (!left) {
+        left = $selectSquare.querySelector('[data-triangle="left"]') as HTMLDivElement;
+      }
+
+      right.style.height = `${triangleParams.sides.a}px`;
+      left.style.height = `${triangleParams.sides.b}px`;
+      bottom.style.width = `${triangleParams.sides.c}px`;
+
+      right.style.transform = `rotate(-${90 - triangleParams.angles.a}deg) translateX(-${
+        triangleParams.translateX
+      }px)`;
+
+      left.style.transform = `rotate(${90 - triangleParams.angles.b}deg) translateX(${
+        triangleParams.translateX
+      }px)`;
+    }
+
+    setStylesOnSelectSquare($selectSquare, params, figure, isTop);
   }
 
   setSelectSquare($selectSquare: HTMLDivElement) {
     this.$selectSquare = $selectSquare;
+  }
+
+  setFill$(obs$: Observable<Change>): void {
+    this.fill$ = obs$;
+  }
+
+  setInitShapeType(shapeType: ShapeTypes): void {
+    this.initShapeType = shapeType;
   }
 }

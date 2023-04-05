@@ -1,8 +1,13 @@
 import { Observable } from 'rxjs';
-import { Change, SocketMethods, SocketPayload, Tool } from '../../types';
+import { Change, SocketMethods, SocketPayload, Tool, ToolTypes } from '../../types';
 
 export abstract class ToolBuilder {
   protected abstract tool: Tool;
+
+  setType(type: ToolTypes) {
+    this.tool.type = type;
+    return this;
+  }
 
   setMajorColor$(obs$: Observable<Change>) {
     this.tool.setMajorColor$(obs$);

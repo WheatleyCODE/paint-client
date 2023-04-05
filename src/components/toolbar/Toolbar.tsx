@@ -14,7 +14,6 @@ export interface IToolbarProps {
 
 export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
   const { lineWidth, majorColor, minorColor, fill } = settings;
-  const { current, selectBrush, selectRect } = tools;
 
   return (
     <div className="toolbar">
@@ -23,11 +22,7 @@ export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
       <Palette input={{ ref: majorColor.ref, value: majorColor.value }} />
       <Palette input={{ ref: minorColor.ref, value: minorColor.value }} />
 
-      <ToolbarTools
-        currentToolType={current?.type || ''}
-        selectBrush={selectBrush}
-        selectRect={selectRect}
-      />
+      <ToolbarTools tools={tools} />
 
       <ToolbarSettings
         fill={{ ref: fill.ref, value: fill.value, changeValue: fill.changeValue }} // todo

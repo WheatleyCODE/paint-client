@@ -1,10 +1,10 @@
 import { Observable } from 'rxjs';
-import { Rect } from '../Rect';
 import { Change, ShapeTypes } from '../../types';
 import { ShapeBuilder } from './ShapeBuilder';
+import { Circle } from '../Circle';
 
-export class RectBuilder extends ShapeBuilder {
-  protected tool: Rect;
+export class CircleBuilder extends ShapeBuilder {
+  protected tool: Circle;
 
   constructor($shield: HTMLDivElement, $canvas: HTMLCanvasElement) {
     super();
@@ -12,7 +12,7 @@ export class RectBuilder extends ShapeBuilder {
     const div = document.createElement('div');
     const socketNext = () => {};
 
-    this.tool = new Rect(
+    this.tool = new Circle(
       $shield,
       $canvas,
       obs$,

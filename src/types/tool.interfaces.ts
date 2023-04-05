@@ -13,6 +13,8 @@ export interface ITool extends IEvents, IDefaultBuilder {
 export interface IShape extends ITool {
   initShapeType: ShapeTypes;
   setSelectSquare: ($selectSquare: HTMLDivElement) => void;
+  setFill$: (obs$: Observable<Change>) => void;
+  setInitShapeType: (shapeType: ShapeTypes) => void;
 }
 
 export interface IBrush extends ITool {
@@ -22,13 +24,18 @@ export interface IBrush extends ITool {
 
 export interface IRect extends IShape {
   isRect: boolean;
-  setFill$: (obs$: Observable<Change>) => void;
-  setInitShapeType: (shapeType: ShapeTypes) => void;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
-// export interface ICircle extends IShape {
-//   isCircle: boolean;
-// }
+export interface ICircle extends IShape {
+  isCircle: boolean;
+  setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
+}
 
-export type Tool = IBrush | IRect;
+export interface ITriangle extends IShape {
+  isTriangle: boolean;
+  setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
+}
+
+export type Shape = IRect | ICircle | ITriangle;
+export type Tool = IBrush | IRect | ICircle | ITriangle;

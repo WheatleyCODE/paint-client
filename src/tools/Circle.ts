@@ -13,9 +13,10 @@ import { createStream } from '../utils';
 
 import {
   Change,
+  ICircle,
+  IDrawCircleParams,
   IDrawRectParams,
   IDrawSelectParams,
-  IRect,
   ShapeTypes,
   SocketMethods,
   SocketPayload,
@@ -23,9 +24,9 @@ import {
 } from '../types';
 import { removeStylesOnSelectSquare } from '../utils/paint.utils';
 
-export class Rect extends Shape implements IRect {
-  type = ToolTypes.RECT;
-  isRect = true;
+export class Circle extends Shape implements ICircle {
+  type = ToolTypes.CIRCLE;
+  isCircle = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(
@@ -122,24 +123,31 @@ export class Rect extends Shape implements IRect {
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
+      const centerX = width / 2 + coords.x;
+      const centerY = height / 2 + coords.y;
+      let radiusX = width / 2;
+      let radiusY = height / 2;
 
-      const params: IDrawRectParams = {
+      radiusY = radiusY < 0 ? radiusY * -1 : radiusY;
+      radiusX = radiusX < 0 ? radiusX * -1 : radiusX;
+
+      const params: IDrawCircleParams = {
         lineWidth: +lineWidth,
         strokeStyle: majorColor,
-        x: coords.x,
-        y: coords.y,
-        width,
-        height,
+        centerX,
+        centerY,
+        radiusX,
+        radiusY,
         fill: true, // todo
         fillStyle: minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {
-        type: ToolTypes.RECT,
+        type: ToolTypes.CIRCLE,
         params,
       });
 
-      Rect.draw(this.canvasCtx, params);
+      Circle.draw(this.canvasCtx, params);
 
       // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
@@ -152,15 +160,15 @@ export class Rect extends Shape implements IRect {
     this.subs.push(sub);
   }
 
-  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
-    const { lineWidth, strokeStyle, x, y, width, height, fill, fillStyle } = params;
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawCircleParams) {
+    const { lineWidth, strokeStyle, centerX, centerY, radiusX, radiusY, fill, fillStyle } = params;
 
     canvasCtx.beginPath();
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
     canvasCtx.lineCap = 'butt';
     canvasCtx.lineJoin = 'miter';
-    canvasCtx.rect(x, y, width, height);
+    canvasCtx.ellipse(centerX, centerY, radiusX, radiusY, Math.PI, 0, 2 * Math.PI);
 
     if (fill) {
       canvasCtx.fill();

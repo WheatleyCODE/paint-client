@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { Brush, Rect } from '../tools';
+import { Brush, Circle, Rect, Triangle } from '../tools';
 import { PaintContext } from '../components/hoc/PaintContext';
 import { ToolTypes, SocketPayload } from '../types';
 
@@ -27,6 +27,12 @@ export const useCanvas = () => {
         break;
       case ToolTypes.RECT:
         Rect.draw(ctx, data.params);
+        break;
+      case ToolTypes.CIRCLE:
+        Circle.draw(ctx, data.params);
+        break;
+      case ToolTypes.TRIANGLE:
+        Triangle.draw(ctx, data.params);
         break;
       default:
         break;

@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
-import { RectBuilder } from '../../tools';
-import { IObservables, Tool, ToolTypes } from '../../types';
+import { BrushBuilder, CircleBuilder, RectBuilder, TriangleBuilder } from '../../tools';
 import { useCanvas } from '../useCanvas';
 import { useSocket } from '../useSocket';
-import { BrushBuilder } from '../../tools/builders/BrushBuilder';
 import { useTypedDispatch, useTypedSelector } from '../redux';
+import { colors } from '../../consts/paint.consts';
 import { paintActions } from '../../store';
+import { IObservables, Tool, ToolTypes } from '../../types';
 
 export interface ITools {
   current: Tool | null;
   selectRect: () => void;
   selectBrush: () => void;
+  selectCircle: () => void;
+  selectTriangle: () => void;
+  selectEraser: () => void;
 }
 
 export const useTools = (observables: IObservables): ITools => {
@@ -49,6 +52,28 @@ export const useTools = (observables: IObservables): ITools => {
     dispatch(paintActions.setCurrentTool(brush.type));
   };
 
+  const selectEraser = () => {
+    clearCurrentTool();
+    const { majorColor$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !canvas || !majorColor$ || !minorColor$ || !lineWidth$) return;
+
+    const eraser = new BrushBuilder(shield.current, canvas)
+      .setType(ToolTypes.ERASER)
+      .setMajorColor$(majorColor$)
+      .setInitMajorColor(colors.WHITE)
+      .setMinorColor$(minorColor$)
+      .setInitMinorColor(colors.WHITE)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setSocketNext(socketNext)
+      .build();
+
+    eraser.init();
+    setCurrentTool(eraser);
+    dispatch(paintActions.setCurrentTool(eraser.type));
+  };
+
   const selectRect = () => {
     clearCurrentTool();
     const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
@@ -74,24 +99,67 @@ export const useTools = (observables: IObservables): ITools => {
     dispatch(paintActions.setCurrentTool(rect.type));
   };
 
+  const selectCircle = () => {
+    clearCurrentTool();
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !select.current) return;
+    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
+
+    const circle = new CircleBuilder(shield.current, canvas)
+      .setMajorColor$(majorColor$)
+      .setInitMajorColor(toolSettings.majorColor)
+      .setMinorColor$(minorColor$)
+      .setInitMinorColor(toolSettings.minorColor)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setSocketNext(socketNext)
+      .setFill$(fill$)
+      .setInitShapeType(toolSettings.currentShape)
+      .setSelectSquare(select.current)
+      .build();
+
+    circle.init();
+    setCurrentTool(circle);
+    dispatch(paintActions.setCurrentTool(circle.type));
+  };
+
+  const selectTriangle = () => {
+    clearCurrentTool();
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !select.current) return;
+    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
+
+    const triangle = new TriangleBuilder(shield.current, canvas)
+      .setMajorColor$(majorColor$)
+      .setInitMajorColor(toolSettings.majorColor)
+      .setMinorColor$(minorColor$)
+      .setInitMinorColor(toolSettings.minorColor)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setSocketNext(socketNext)
+      .setFill$(fill$)
+      .setInitShapeType(toolSettings.currentShape)
+      .setSelectSquare(select.current)
+      .build();
+
+    triangle.init();
+    setCurrentTool(triangle);
+    dispatch(paintActions.setCurrentTool(triangle.type));
+  };
+
   useEffect(() => {
     shield.current = document.querySelector('#shield') as HTMLDivElement;
     select.current = document.querySelector('#select') as HTMLDivElement;
   }, []);
 
-  useEffect(() => {
-    if (curentToolType === ToolTypes.BRUSH) {
-      selectBrush();
-    }
-
-    if (curentToolType === ToolTypes.RECT) {
-      selectRect();
-    }
-  }, [observables]);
-
   return {
     current: currentTool,
     selectRect,
     selectBrush,
+    selectCircle,
+    selectTriangle,
+    selectEraser,
   };
 };

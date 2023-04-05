@@ -15,17 +15,18 @@ import {
   Change,
   IDrawRectParams,
   IDrawSelectParams,
-  IRect,
+  IDrawTriangleParams,
+  ITriangle,
   ShapeTypes,
   SocketMethods,
   SocketPayload,
   ToolTypes,
 } from '../types';
-import { removeStylesOnSelectSquare } from '../utils/paint.utils';
+import { calcTriangle, removeStylesOnSelectSquare } from '../utils/paint.utils';
 
-export class Rect extends Shape implements IRect {
-  type = ToolTypes.RECT;
-  isRect = true;
+export class Triangle extends Shape implements ITriangle {
+  type = ToolTypes.TRIANGLE;
+  isTriangle = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(
@@ -98,11 +99,17 @@ export class Rect extends Shape implements IRect {
             const { startCoords } = value.options;
             const { coords } = value;
 
+            const width = startCoords.x - coords.x;
+            const height = startCoords.y - coords.y;
+
+            const triangleParams = calcTriangle(width, height);
+
             const params: IDrawSelectParams = {
               startCoords,
               coords,
               isShow: true,
               figure: this.type,
+              triangleParams,
             };
 
             Shape.drawSelectSquare(this.$selectSquare, this.$canvas, params);
@@ -123,23 +130,31 @@ export class Rect extends Shape implements IRect {
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
 
-      const params: IDrawRectParams = {
+      const firstX = coords.x + width / 2;
+      const firstY = startCoords.y;
+
+      const lastX = startCoords.x;
+      const lastY = startCoords.y - height;
+
+      const params: IDrawTriangleParams = {
         lineWidth: +lineWidth,
         strokeStyle: majorColor,
-        x: coords.x,
-        y: coords.y,
-        width,
-        height,
-        fill: true, // todo
+        firstY,
+        firstX,
+        secondX: coords.x,
+        secondY: coords.y,
+        lastX,
+        lastY,
+        fill: true,
         fillStyle: minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {
-        type: ToolTypes.RECT,
+        type: ToolTypes.TRIANGLE,
         params,
       });
 
-      Rect.draw(this.canvasCtx, params);
+      Triangle.draw(this.canvasCtx, params);
 
       // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
@@ -152,15 +167,29 @@ export class Rect extends Shape implements IRect {
     this.subs.push(sub);
   }
 
-  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
-    const { lineWidth, strokeStyle, x, y, width, height, fill, fillStyle } = params;
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawTriangleParams) {
+    const {
+      firstX,
+      firstY,
+      secondX,
+      secondY,
+      lastX,
+      lastY,
+      fill,
+      fillStyle,
+      lineWidth,
+      strokeStyle,
+    } = params;
 
-    canvasCtx.beginPath();
-    canvasCtx.lineWidth = lineWidth;
-    canvasCtx.strokeStyle = strokeStyle;
     canvasCtx.lineCap = 'butt';
     canvasCtx.lineJoin = 'miter';
-    canvasCtx.rect(x, y, width, height);
+    canvasCtx.beginPath();
+    canvasCtx.strokeStyle = strokeStyle;
+    canvasCtx.lineWidth = lineWidth;
+    canvasCtx.moveTo(firstX, firstY);
+    canvasCtx.lineTo(secondX, secondY);
+    canvasCtx.lineTo(lastX, lastY);
+    canvasCtx.closePath();
 
     if (fill) {
       canvasCtx.fill();

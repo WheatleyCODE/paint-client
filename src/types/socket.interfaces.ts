@@ -1,4 +1,11 @@
-import { IDrawBrushParams, IDrawRectParams, ToolTypes } from './tool-params.interfaces';
+import {
+  IDrawBrushParams,
+  IDrawCircleParams,
+  IDrawRectParams,
+  IDrawTriangleParams,
+  ToolTypes,
+} from './tool-params.interfaces';
+import { TriangleParams } from './paint.interfaces';
 
 export const enum SocketMethods {
   PUSH_UNDO = 'PUSH_UNDO',
@@ -14,6 +21,7 @@ export interface IDrawSelectParams {
   coords: { x: number; y: number };
   figure: ToolTypes;
   isShow: boolean;
+  triangleParams?: TriangleParams;
 }
 
 export interface ISocketPayloadSelect {
@@ -29,6 +37,16 @@ export interface ISocketPayloadBrush {
 export interface ISocketPayloadRect {
   type: ToolTypes.RECT;
   params: IDrawRectParams;
+}
+
+export interface ISocketPayloadCircle {
+  type: ToolTypes.CIRCLE;
+  params: IDrawCircleParams;
+}
+
+export interface ISocketPayloadTriangle {
+  type: ToolTypes.TRIANGLE;
+  params: IDrawTriangleParams;
 }
 
 export interface ISocketIDS {
@@ -62,7 +80,13 @@ export interface ISocketDraw extends ISocketIDS {
   payload: SocketPayload;
 }
 
-export type SocketPayload = ISocketPayloadBrush | ISocketPayloadRect | ISocketPayloadSelect;
+export type SocketPayload =
+  | ISocketPayloadBrush
+  | ISocketPayloadRect
+  | ISocketPayloadSelect
+  | ISocketPayloadCircle
+  | ISocketPayloadTriangle;
+
 export type SocketData =
   | ISocketConnection
   | ISocketDraw
