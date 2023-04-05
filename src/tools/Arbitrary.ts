@@ -1,7 +1,7 @@
 import { map, Observable, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { applyFillTypeStyles, createStream } from '../utils';
-
+import { applyFillTypeStyles, createStream, removeStylesOnSelectSquare } from '../utils';
+import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
   Coords,
@@ -12,7 +12,6 @@ import {
   SocketPayload,
   ToolTypes,
 } from '../types';
-import { removeStylesOnSelectSquare } from '../utils/paint.utils';
 
 export class Arbitrary extends Shape implements IArbitrary {
   type = ToolTypes.ARBITRARY;
@@ -59,19 +58,23 @@ export class Arbitrary extends Shape implements IArbitrary {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
+      map((e) => ({
+        coords: { x: e.offsetX, y: e.offsetY },
+        isReverse: e.buttons === MOUSE_RIGHT,
+      })),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (coords, majorColor, minorColor, lineWidth, fillType) => ({
+        ({ coords, isReverse }, majorColor, minorColor, lineWidth, fillType) => ({
           coords,
           options: {
             majorColor,
             minorColor,
             lineWidth,
             fillType,
+            isReverse,
           },
         })
       )
@@ -84,17 +87,17 @@ export class Arbitrary extends Shape implements IArbitrary {
     );
 
     const subscriptionMouseOut = streamMouseOut$.subscribe(({ options }) => {
-      const { lineWidth, majorColor, minorColor, fillType } = options;
+      const { lineWidth, majorColor, minorColor, fillType, isReverse } = options;
 
       this.coords = [];
 
       const params: IDrawArbitraryParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         coords: [],
         isEnd: true,
         fillType,
-        fillStyle: minorColor,
+        fillStyle: isReverse ? majorColor : minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {
@@ -106,17 +109,17 @@ export class Arbitrary extends Shape implements IArbitrary {
     });
 
     const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fillType } = options;
+      const { lineWidth, majorColor, minorColor, fillType, isReverse } = options;
 
       this.coords.push([coords.x, coords.y]);
 
       const params: IDrawArbitraryParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         coords: this.coords,
         isEnd: false,
         fillType,
-        fillStyle: minorColor,
+        fillStyle: isReverse ? majorColor : minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {

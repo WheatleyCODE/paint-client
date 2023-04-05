@@ -1,7 +1,7 @@
 import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream, applyFillTypeStyles } from '../utils';
-
+import { createStream, applyFillTypeStyles, removeStylesOnSelectSquare } from '../utils';
+import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
   IDrawLineParams,
@@ -11,7 +11,6 @@ import {
   SocketPayload,
   ToolTypes,
 } from '../types';
-import { removeStylesOnSelectSquare } from '../utils/paint.utils';
 
 export class Line extends Shape implements ILine {
   type = ToolTypes.LINE;
@@ -63,18 +62,22 @@ export class Line extends Shape implements ILine {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
+      map((e) => ({
+        startCoords: { x: e.offsetX, y: e.offsetY },
+        isReverse: e.buttons === MOUSE_RIGHT,
+      })),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
+        ({ startCoords, isReverse }, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
           fillType,
+          isReverse,
         })
       ),
       switchMap((options) => {
@@ -86,17 +89,17 @@ export class Line extends Shape implements ILine {
     );
 
     const sub = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords, isReverse } = options;
 
       const params: IDrawLineParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         fromX: startCoords.x,
         fromY: startCoords.y,
         toX: coords.x,
         toY: coords.y,
         fillType,
-        fillStyle: minorColor,
+        fillStyle: isReverse ? majorColor : minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {

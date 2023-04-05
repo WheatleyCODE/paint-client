@@ -1,6 +1,12 @@
 import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { applyFillTypeStyles, createStream } from '../utils';
+import {
+  applyFillTypeStyles,
+  createStream,
+  calcTriangle,
+  removeStylesOnSelectSquare,
+} from '../utils';
+import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
   IDrawSelectParams,
@@ -11,7 +17,6 @@ import {
   SocketPayload,
   ToolTypes,
 } from '../types';
-import { calcTriangle, removeStylesOnSelectSquare } from '../utils/paint.utils';
 
 export class Triangle extends Shape implements ITriangle {
   type = ToolTypes.TRIANGLE;
@@ -63,18 +68,22 @@ export class Triangle extends Shape implements ITriangle {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
+      map((e) => ({
+        startCoords: { x: e.offsetX, y: e.offsetY },
+        isReverse: e.buttons === MOUSE_RIGHT,
+      })),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
+        ({ startCoords, isReverse }, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
           fillType,
+          isReverse,
         })
       ),
       switchMap((options) => {
@@ -110,7 +119,7 @@ export class Triangle extends Shape implements ITriangle {
     );
 
     const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords, isReverse } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -123,7 +132,7 @@ export class Triangle extends Shape implements ITriangle {
 
       const params: IDrawTriangleParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         firstY,
         firstX,
         secondX: coords.x,
@@ -131,7 +140,7 @@ export class Triangle extends Shape implements ITriangle {
         lastX,
         lastY,
         fillType,
-        fillStyle: minorColor,
+        fillStyle: isReverse ? majorColor : minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {

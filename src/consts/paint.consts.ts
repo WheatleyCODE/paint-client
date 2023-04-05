@@ -17,3 +17,4 @@ export const colors = {
 
 export const TOOLBAR_WIDTH = 191;
 export const SELECT_BORDER_SUM = 6;
+export const MOUSE_RIGHT = 2;

@@ -1,6 +1,7 @@
 import { map, Observable, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
 import { Tool } from './abstract/Tool';
 import { createStream } from '../utils';
+import { MOUSE_RIGHT } from '../consts';
 import {
   IBrush,
   IDrawBrushParams,
@@ -53,14 +54,16 @@ export class Brush extends Tool implements IBrush {
     );
 
     const streamMouseDown$ = this.mouseDown$.pipe(
+      map((e) => ({ isReverse: e.buttons === MOUSE_RIGHT })),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
         lineWidthStream$,
-        (_, majorColor, minorColor, lineWidth) => ({
+        ({ isReverse }, majorColor, minorColor, lineWidth) => ({
           majorColor,
           minorColor,
           lineWidth,
+          isReverse,
         })
       ),
       switchMap((options) => {
@@ -70,11 +73,11 @@ export class Brush extends Tool implements IBrush {
 
     const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
       const [from, to] = coords;
-      const { lineWidth, majorColor, minorColor } = options;
+      const { lineWidth, majorColor, minorColor, isReverse } = options;
 
       const params: IDrawBrushParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         fromX: from.x,
         fromY: from.y,
         toX: to.x,

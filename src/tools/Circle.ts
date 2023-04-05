@@ -1,7 +1,7 @@
 import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { applyFillTypeStyles, createStream } from '../utils';
-
+import { applyFillTypeStyles, createStream, removeStylesOnSelectSquare } from '../utils';
+import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
   ICircle,
@@ -12,7 +12,6 @@ import {
   SocketPayload,
   ToolTypes,
 } from '../types';
-import { removeStylesOnSelectSquare } from '../utils/paint.utils';
 
 export class Circle extends Shape implements ICircle {
   type = ToolTypes.CIRCLE;
@@ -64,18 +63,22 @@ export class Circle extends Shape implements ICircle {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
+      map((e) => ({
+        startCoords: { x: e.offsetX, y: e.offsetY },
+        isReverse: e.buttons === MOUSE_RIGHT,
+      })),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
+        ({ startCoords, isReverse }, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
           fillType,
+          isReverse,
         })
       ),
       switchMap((options) => {
@@ -105,7 +108,7 @@ export class Circle extends Shape implements ICircle {
     );
 
     const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords, isReverse } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -119,13 +122,13 @@ export class Circle extends Shape implements ICircle {
 
       const params: IDrawCircleParams = {
         lineWidth: +lineWidth,
-        strokeStyle: majorColor,
+        strokeStyle: isReverse ? minorColor : majorColor,
         centerX,
         centerY,
         radiusX,
         radiusY,
         fillType,
-        fillStyle: minorColor,
+        fillStyle: isReverse ? majorColor : minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {

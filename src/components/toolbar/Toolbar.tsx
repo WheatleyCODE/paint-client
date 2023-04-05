@@ -25,7 +25,7 @@ export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
       <ToolbarTools tools={tools} />
 
       <ToolbarSettings
-        fill={{ ref: fill.ref, value: fill.value, changeValue: fill.changeValue }} // todo
+        fill={{ ref: fill.ref, value: fill.value, changeValue: fill.changeValue }}
         lineWidth={{ ref: lineWidth.ref, value: lineWidth.value }}
         min={1}
         max={100}
