@@ -8,6 +8,8 @@ export const enum ToolTypes {
   CIRCLE = 'CIRCLE',
   TRIANGLE = 'TRIANGLE',
   ERASER = 'ERASER',
+  LINE = 'LINE',
+  ARBITRARY = 'ARBITRARY',
 }
 
 export const enum EffectTypes {
@@ -59,6 +61,20 @@ export interface IDrawRectParams extends IDrawShape {
   y: number;
   width: number;
   height: number;
+}
+
+export interface IDrawLineParams extends IDrawShape {
+  fromX: number;
+  fromY: number;
+  toX: number;
+  toY: number;
+}
+
+export type Coords = [number, number];
+
+export interface IDrawArbitraryParams extends IDrawShape {
+  coords: Coords[];
+  isEnd: boolean;
 }
 
 export interface IDrawCircleParams extends IDrawShape {

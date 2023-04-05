@@ -7,11 +7,11 @@ import {
   MdOutlineAutoFixHigh,
   MdOutlineHorizontalRule,
   MdSquare,
-  MdTimeline,
 } from 'react-icons/md';
 import { IoResizeOutline, IoTriangle } from 'react-icons/io5';
 import { RiEraserFill } from 'react-icons/ri';
 import { TbArrowMoveDown, TbArrowMoveUp } from 'react-icons/tb';
+import { FaDrawPolygon } from 'react-icons/fa';
 import { ToolButton } from './ToolButton';
 import { ToolTypes } from '../../types';
 import { ITools } from '../../hooks/paint/useTools';
@@ -21,7 +21,16 @@ export interface IToolbarToolsProps {
 }
 
 export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
-  const { current, selectBrush, selectRect, selectCircle, selectTriangle, selectEraser } = tools;
+  const {
+    current,
+    selectBrush,
+    selectRect,
+    selectCircle,
+    selectTriangle,
+    selectEraser,
+    selectLine,
+    selectArbitrary,
+  } = tools;
 
   const type = current?.type || ToolTypes.NONE;
 
@@ -37,8 +46,17 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
           isActive={type === ToolTypes.TRIANGLE}
           onClick={selectTriangle}
         />
-        <ToolButton Icon={MdTimeline} isActive={false} onClick={selectBrush} />
-        <ToolButton deg Icon={MdOutlineHorizontalRule} isActive={false} onClick={selectBrush} />
+        <ToolButton
+          Icon={FaDrawPolygon}
+          isActive={type === ToolTypes.ARBITRARY}
+          onClick={selectArbitrary}
+        />
+        <ToolButton
+          deg
+          Icon={MdOutlineHorizontalRule}
+          isActive={type === ToolTypes.LINE}
+          onClick={selectLine}
+        />
         <ToolButton Icon={MdAutoFixHigh} isActive={false} onClick={selectBrush} />
         <ToolButton
           Icon={RiEraserFill}

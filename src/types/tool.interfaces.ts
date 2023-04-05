@@ -27,6 +27,16 @@ export interface IRect extends IShape {
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
+export interface IArbitrary extends IShape {
+  isArbitrary: boolean;
+  setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
+}
+
+export interface ILine extends IShape {
+  isLine: boolean;
+  setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
+}
+
 export interface ICircle extends IShape {
   isCircle: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
@@ -37,5 +47,5 @@ export interface ITriangle extends IShape {
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
-export type Shape = IRect | ICircle | ITriangle;
-export type Tool = IBrush | IRect | ICircle | ITriangle;
+export type Shape = IRect | ICircle | ITriangle | ILine | IArbitrary;
+export type Tool = IBrush | IRect | ICircle | ITriangle | ILine | IArbitrary;

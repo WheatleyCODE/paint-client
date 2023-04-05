@@ -68,7 +68,7 @@ export class Brush extends Tool implements IBrush {
       })
     );
 
-    const subscription = streamMouseDown$.subscribe(({ coords, options }) => {
+    const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
       const [from, to] = coords;
       const { lineWidth, majorColor, minorColor } = options;
 
@@ -89,7 +89,7 @@ export class Brush extends Tool implements IBrush {
       Brush.draw(this.canvasCtx, params);
     });
 
-    this.subs.push(subscription);
+    this.subs.push(subscriptionMouseDown);
   }
 
   static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawBrushParams): void {

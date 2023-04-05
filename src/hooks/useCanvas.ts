@@ -1,7 +1,8 @@
 import { useContext, useState } from 'react';
-import { Brush, Circle, Rect, Triangle } from '../tools';
+import { Brush, Circle, Rect, Triangle, Line } from '../tools';
 import { PaintContext } from '../components/hoc/PaintContext';
 import { ToolTypes, SocketPayload } from '../types';
+import { Arbitrary } from '../tools/Arbitrary';
 
 export interface ICanvasSettings {
   width: number;
@@ -33,6 +34,12 @@ export const useCanvas = () => {
         break;
       case ToolTypes.TRIANGLE:
         Triangle.draw(ctx, data.params);
+        break;
+      case ToolTypes.LINE:
+        Line.draw(ctx, data.params);
+        break;
+      case ToolTypes.ARBITRARY:
+        Arbitrary.draw(ctx, data.params);
         break;
       default:
         break;

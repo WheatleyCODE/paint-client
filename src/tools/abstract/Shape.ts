@@ -2,6 +2,7 @@ import { Observable } from 'rxjs';
 import { Tool } from './Tool';
 import { IShape, Change, ShapeFillTypes, SelectSquareParams, IDrawSelectParams } from '../../types';
 import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint.utils';
+import { SELECT_BORDER_SUM, TOOLBAR_WIDTH } from '../../consts';
 
 let bottom: HTMLDivElement | null = null;
 let right: HTMLDivElement | null = null;
@@ -67,7 +68,7 @@ export abstract class Shape extends Tool implements IShape {
     if (selHight < 0) {
       selHight *= -1;
       params.top = undefined;
-      params.bottom = height - startCoords.y + 6; // todo magic
+      params.bottom = height - startCoords.y + SELECT_BORDER_SUM;
       isTop = true;
     }
 
@@ -81,9 +82,8 @@ export abstract class Shape extends Tool implements IShape {
         params.right = bodyRect.width - rect.left - startCoords.x;
       }
 
-      if (rect.left < 191) {
-        // todo magic
-        params.right -= 191 - rect.left;
+      if (rect.left < TOOLBAR_WIDTH) {
+        params.right -= TOOLBAR_WIDTH - rect.left;
       }
     }
 

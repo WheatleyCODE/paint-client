@@ -1,12 +1,12 @@
-import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { map, Observable, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
 import { applyFillTypeStyles, createStream } from '../utils';
 
 import {
   Change,
-  ICircle,
-  IDrawCircleParams,
-  IDrawSelectParams,
+  Coords,
+  IArbitrary,
+  IDrawArbitraryParams,
   ShapeFillTypes,
   SocketMethods,
   SocketPayload,
@@ -14,10 +14,11 @@ import {
 } from '../types';
 import { removeStylesOnSelectSquare } from '../utils/paint.utils';
 
-export class Circle extends Shape implements ICircle {
-  type = ToolTypes.CIRCLE;
-  isCircle = true;
+export class Arbitrary extends Shape implements IArbitrary {
+  type = ToolTypes.ARBITRARY;
+  isArbitrary = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
+  protected coords: Coords[] = [];
 
   constructor(
     $shield: HTMLDivElement,
@@ -56,12 +57,6 @@ export class Circle extends Shape implements ICircle {
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
     const fill$Stream$ = createStream(this.fill$, this.initShapeFillType);
 
-    const streamMouseMove$ = this.mouseMove$.pipe(
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
-      takeUntil(this.mouseUp$),
-      takeUntil(this.mouseOut$)
-    );
-
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
@@ -70,85 +65,83 @@ export class Circle extends Shape implements ICircle {
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
-          startCoords,
-          majorColor,
-          minorColor,
-          lineWidth,
-          fillType,
+        (coords, majorColor, minorColor, lineWidth, fillType) => ({
+          coords,
+          options: {
+            majorColor,
+            minorColor,
+            lineWidth,
+            fillType,
+          },
         })
-      ),
-      switchMap((options) => {
-        return streamMouseMove$.pipe(
-          map((coords) => ({ coords, options })),
-          tap((value) => {
-            const { startCoords } = value.options;
-            const { coords } = value;
-
-            const params: IDrawSelectParams = {
-              startCoords,
-              coords,
-              isShow: true,
-              figure: this.type,
-            };
-
-            Shape.drawSelectSquare(this.$selectSquare, this.$canvas, params);
-
-            this.socketNext(SocketMethods.SELECT, {
-              params,
-              type: ToolTypes.NONE,
-            });
-          }),
-          takeLast(1)
-        );
-      })
+      )
     );
 
-    const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
+    const streamMouseOut$ = this.mouseOut$.pipe(
+      withLatestFrom(streamMouseDown$, (_, options) => ({
+        ...options,
+      }))
+    );
 
-      const width = startCoords.x - coords.x;
-      const height = startCoords.y - coords.y;
-      const centerX = width / 2 + coords.x;
-      const centerY = height / 2 + coords.y;
-      let radiusX = width / 2;
-      let radiusY = height / 2;
+    const subscriptionMouseOut = streamMouseOut$.subscribe(({ options }) => {
+      const { lineWidth, majorColor, minorColor, fillType } = options;
 
-      radiusY = radiusY < 0 ? radiusY * -1 : radiusY;
-      radiusX = radiusX < 0 ? radiusX * -1 : radiusX;
+      this.coords = [];
 
-      const params: IDrawCircleParams = {
+      const params: IDrawArbitraryParams = {
         lineWidth: +lineWidth,
         strokeStyle: majorColor,
-        centerX,
-        centerY,
-        radiusX,
-        radiusY,
+        coords: [],
+        isEnd: true,
         fillType,
         fillStyle: minorColor,
       };
 
       this.socketNext(SocketMethods.DRAW, {
-        type: ToolTypes.CIRCLE,
+        type: ToolTypes.ARBITRARY,
         params,
       });
 
-      Circle.draw(this.canvasCtx, params);
+      Arbitrary.draw(this.canvasCtx, params);
+    });
+
+    const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
+      const { lineWidth, majorColor, minorColor, fillType } = options;
+
+      this.coords.push([coords.x, coords.y]);
+
+      const params: IDrawArbitraryParams = {
+        lineWidth: +lineWidth,
+        strokeStyle: majorColor,
+        coords: this.coords,
+        isEnd: false,
+        fillType,
+        fillStyle: minorColor,
+      };
+
+      this.socketNext(SocketMethods.DRAW, {
+        type: ToolTypes.ARBITRARY,
+        params,
+      });
+
+      Arbitrary.draw(this.canvasCtx, params);
 
       // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
-      this.socketNext(SocketMethods.SELECT, {
-        params: { startCoords, coords, figure: this.type, isShow: false },
-        type: ToolTypes.NONE,
-      });
     });
 
     this.subs.push(subscriptionMouseDown);
+    this.subs.push(subscriptionMouseOut);
   }
 
-  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawCircleParams) {
-    const { lineWidth, strokeStyle, centerX, centerY, radiusX, radiusY, fillType, fillStyle } =
-      params;
+  static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawArbitraryParams) {
+    const { lineWidth, strokeStyle, coords, isEnd, fillType, fillStyle } = params;
+
+    if (isEnd) {
+      canvasCtx.closePath();
+      applyFillTypeStyles(canvasCtx, fillType);
+      return;
+    }
 
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
@@ -156,8 +149,15 @@ export class Circle extends Shape implements ICircle {
     canvasCtx.lineJoin = 'miter';
     canvasCtx.fillStyle = fillStyle;
 
-    canvasCtx.beginPath();
-    canvasCtx.ellipse(centerX, centerY, radiusX, radiusY, Math.PI, 0, 2 * Math.PI);
+    if (coords.length === 1) {
+      canvasCtx.beginPath();
+      canvasCtx.moveTo(coords[0][0], coords[0][1]);
+    }
+
+    if (coords.length > 1) {
+      const [x, y] = coords[coords.length - 1];
+      canvasCtx.lineTo(x, y);
+    }
 
     applyFillTypeStyles(canvasCtx, fillType);
   }

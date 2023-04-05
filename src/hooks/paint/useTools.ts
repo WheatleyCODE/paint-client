@@ -1,5 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { BrushBuilder, CircleBuilder, RectBuilder, TriangleBuilder } from '../../tools';
+import {
+  ArbitraryBuilder,
+  BrushBuilder,
+  CircleBuilder,
+  LineBuilder,
+  RectBuilder,
+  TriangleBuilder,
+} from '../../tools';
 import { useCanvas } from '../useCanvas';
 import { useSocket } from '../useSocket';
 import { useTypedDispatch, useTypedSelector } from '../redux';
@@ -14,6 +21,8 @@ export interface ITools {
   selectCircle: () => void;
   selectTriangle: () => void;
   selectEraser: () => void;
+  selectLine: () => void;
+  selectArbitrary: () => void;
 }
 
 export const useTools = (observables: IObservables): ITools => {
@@ -81,8 +90,6 @@ export const useTools = (observables: IObservables): ITools => {
     if (!shield.current || !select.current) return;
     if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
 
-    console.log(toolSettings.currentShapeFillType);
-
     const rect = new RectBuilder(shield.current, canvas)
       .setMajorColor$(majorColor$)
       .setInitMajorColor(toolSettings.majorColor)
@@ -99,6 +106,31 @@ export const useTools = (observables: IObservables): ITools => {
     rect.init();
     setCurrentTool(rect);
     dispatch(paintActions.setCurrentTool(rect.type));
+  };
+
+  const selectLine = () => {
+    clearCurrentTool();
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !select.current) return;
+    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
+
+    const line = new LineBuilder(shield.current, canvas)
+      .setMajorColor$(majorColor$)
+      .setInitMajorColor(toolSettings.majorColor)
+      .setMinorColor$(minorColor$)
+      .setInitMinorColor(toolSettings.minorColor)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setSocketNext(socketNext)
+      .setFill$(fill$)
+      .setInitShapeFillType(toolSettings.currentShapeFillType)
+      .setSelectSquare(select.current)
+      .build();
+
+    line.init();
+    setCurrentTool(line);
+    dispatch(paintActions.setCurrentTool(line.type));
   };
 
   const selectCircle = () => {
@@ -151,6 +183,31 @@ export const useTools = (observables: IObservables): ITools => {
     dispatch(paintActions.setCurrentTool(triangle.type));
   };
 
+  const selectArbitrary = () => {
+    clearCurrentTool();
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !select.current) return;
+    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
+
+    const arbitrary = new ArbitraryBuilder(shield.current, canvas)
+      .setMajorColor$(majorColor$)
+      .setInitMajorColor(toolSettings.majorColor)
+      .setMinorColor$(minorColor$)
+      .setInitMinorColor(toolSettings.minorColor)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setSocketNext(socketNext)
+      .setFill$(fill$)
+      .setInitShapeFillType(toolSettings.currentShapeFillType)
+      .setSelectSquare(select.current)
+      .build();
+
+    arbitrary.init();
+    setCurrentTool(arbitrary);
+    dispatch(paintActions.setCurrentTool(arbitrary.type));
+  };
+
   useEffect(() => {
     shield.current = document.querySelector('#shield') as HTMLDivElement;
     select.current = document.querySelector('#select') as HTMLDivElement;
@@ -163,5 +220,7 @@ export const useTools = (observables: IObservables): ITools => {
     selectCircle,
     selectTriangle,
     selectEraser,
+    selectLine,
+    selectArbitrary,
   };
 };

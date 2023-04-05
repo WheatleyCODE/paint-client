@@ -1,6 +1,8 @@
 import {
+  IDrawArbitraryParams,
   IDrawBrushParams,
   IDrawCircleParams,
+  IDrawLineParams,
   IDrawRectParams,
   IDrawTriangleParams,
   ToolTypes,
@@ -37,6 +39,16 @@ export interface ISocketPayloadBrush {
 export interface ISocketPayloadRect {
   type: ToolTypes.RECT;
   params: IDrawRectParams;
+}
+
+export interface ISocketPayloadArbitrary {
+  type: ToolTypes.ARBITRARY;
+  params: IDrawArbitraryParams;
+}
+
+export interface ISocketPayloadLine {
+  type: ToolTypes.LINE;
+  params: IDrawLineParams;
 }
 
 export interface ISocketPayloadCircle {
@@ -85,7 +97,9 @@ export type SocketPayload =
   | ISocketPayloadRect
   | ISocketPayloadSelect
   | ISocketPayloadCircle
-  | ISocketPayloadTriangle;
+  | ISocketPayloadTriangle
+  | ISocketPayloadLine
+  | ISocketPayloadArbitrary;
 
 export type SocketData =
   | ISocketConnection

@@ -104,7 +104,7 @@ export class Rect extends Shape implements IRect {
       })
     );
 
-    const sub = streamMouseDown$.subscribe(({ coords, options }) => {
+    const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
       const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
 
       const width = startCoords.x - coords.x;
@@ -136,7 +136,7 @@ export class Rect extends Shape implements IRect {
       });
     });
 
-    this.subs.push(sub);
+    this.subs.push(subscriptionMouseDown);
   }
 
   static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
