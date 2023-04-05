@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { SocketMethods, SocketPayload } from './socket.interfaces';
 import { Change } from './toolbar.interfaces';
-import { IDefaultBuilder, IEvents, ShapeTypes, ToolTypes } from './tool-params.interfaces';
+import { IDefaultBuilder, IEvents, ShapeFillTypes, ToolTypes } from './tool-params.interfaces';
 
 export interface ITool extends IEvents, IDefaultBuilder {
   type: ToolTypes;
@@ -11,10 +11,10 @@ export interface ITool extends IEvents, IDefaultBuilder {
 }
 
 export interface IShape extends ITool {
-  initShapeType: ShapeTypes;
+  initShapeFillType: ShapeFillTypes;
   setSelectSquare: ($selectSquare: HTMLDivElement) => void;
   setFill$: (obs$: Observable<Change>) => void;
-  setInitShapeType: (shapeType: ShapeTypes) => void;
+  setInitShapeFillType: (fillType: ShapeFillTypes) => void;
 }
 
 export interface IBrush extends ITool {

@@ -17,7 +17,7 @@ export const enum EffectTypes {
   LOW_TO_BIG = 'LOW_TO_BIG',
 }
 
-export const enum ShapeTypes {
+export const enum ShapeFillTypes {
   BORDER = 'BORDER',
   FILL = 'FILL',
   FILL_BORDER = 'FILL_BORDER',
@@ -37,46 +37,42 @@ export interface IDefaultBuilder {
   setInitLineWidth: (lineWidth: number) => void;
 }
 
-export interface IDrawBrushParams {
+export interface IDrawTool {
   lineWidth: number;
   strokeStyle: string;
+}
+
+export interface IDrawShape extends IDrawTool {
+  fillType: ShapeFillTypes;
+  fillStyle: string;
+}
+
+export interface IDrawBrushParams extends IDrawTool {
   fromX: number;
   fromY: number;
   toX: number;
   toY: number;
 }
 
-export interface IDrawRectParams {
-  lineWidth: number;
-  strokeStyle: string;
+export interface IDrawRectParams extends IDrawShape {
   x: number;
   y: number;
   width: number;
   height: number;
-  fill: boolean;
-  fillStyle: string;
 }
 
-export interface IDrawCircleParams {
-  lineWidth: number;
-  strokeStyle: string;
+export interface IDrawCircleParams extends IDrawShape {
   centerX: number;
   centerY: number;
   radiusX: number;
   radiusY: number;
-  fill: boolean;
-  fillStyle: string;
 }
 
-export interface IDrawTriangleParams {
-  lineWidth: number;
-  strokeStyle: string;
+export interface IDrawTriangleParams extends IDrawShape {
   firstX: number;
   firstY: number;
   secondX: number;
   secondY: number;
   lastX: number;
   lastY: number;
-  fill: boolean;
-  fillStyle: string;
 }

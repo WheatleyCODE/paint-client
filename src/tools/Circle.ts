@@ -1,23 +1,13 @@
-import {
-  map,
-  Observable,
-  startWith,
-  switchMap,
-  takeLast,
-  takeUntil,
-  tap,
-  withLatestFrom,
-} from 'rxjs';
+import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream } from '../utils';
+import { applyFillTypeStyles, createStream } from '../utils';
 
 import {
   Change,
   ICircle,
   IDrawCircleParams,
-  IDrawRectParams,
   IDrawSelectParams,
-  ShapeTypes,
+  ShapeFillTypes,
   SocketMethods,
   SocketPayload,
   ToolTypes,
@@ -39,7 +29,7 @@ export class Circle extends Shape implements ICircle {
     lineWidth$: Observable<Change>,
     initLineWidth: number,
     fill$: Observable<Change>,
-    initShapeType: ShapeTypes,
+    initShapeFillType: ShapeFillTypes,
     $selectSquare: HTMLDivElement,
     socketNext: (method: SocketMethods, payload: SocketPayload) => void
   ) {
@@ -53,7 +43,7 @@ export class Circle extends Shape implements ICircle {
       lineWidth$,
       initLineWidth,
       fill$,
-      initShapeType,
+      initShapeFillType,
       $selectSquare
     );
 
@@ -64,11 +54,7 @@ export class Circle extends Shape implements ICircle {
     const majorColorStream$ = createStream(this.majorColor$, this.initMajorColor);
     const minorColorStream$ = createStream(this.minorColor$, this.initMinorColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
-
-    const fill$Stream$ = this.fill$.pipe(
-      map((e) => e.target.checked),
-      startWith(this.initShapeType)
-    );
+    const fill$Stream$ = createStream(this.fill$, this.initShapeFillType);
 
     const streamMouseMove$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
@@ -84,12 +70,12 @@ export class Circle extends Shape implements ICircle {
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fill) => ({
+        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
-          fill,
+          fillType,
         })
       ),
       switchMap((options) => {
@@ -113,13 +99,13 @@ export class Circle extends Shape implements ICircle {
               type: ToolTypes.NONE,
             });
           }),
-          takeLast(2)
+          takeLast(1)
         );
       })
     );
 
     const sub = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fill, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -138,7 +124,7 @@ export class Circle extends Shape implements ICircle {
         centerY,
         radiusX,
         radiusY,
-        fill: true, // todo
+        fillType,
         fillStyle: minorColor,
       };
 
@@ -161,20 +147,19 @@ export class Circle extends Shape implements ICircle {
   }
 
   static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawCircleParams) {
-    const { lineWidth, strokeStyle, centerX, centerY, radiusX, radiusY, fill, fillStyle } = params;
+    const { lineWidth, strokeStyle, centerX, centerY, radiusX, radiusY, fillType, fillStyle } =
+      params;
 
-    canvasCtx.beginPath();
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
     canvasCtx.lineCap = 'butt';
     canvasCtx.lineJoin = 'miter';
+    canvasCtx.fillStyle = fillStyle;
+
+    canvasCtx.beginPath();
     canvasCtx.ellipse(centerX, centerY, radiusX, radiusY, Math.PI, 0, 2 * Math.PI);
 
-    if (fill) {
-      canvasCtx.fill();
-      canvasCtx.fillStyle = fillStyle;
-    }
-    canvasCtx.stroke();
+    applyFillTypeStyles(canvasCtx, fillType);
   }
 
   setSocketNext(socketNext: (method: SocketMethods, payload: SocketPayload) => void): void {

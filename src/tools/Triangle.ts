@@ -1,23 +1,12 @@
-import {
-  map,
-  Observable,
-  startWith,
-  switchMap,
-  takeLast,
-  takeUntil,
-  tap,
-  withLatestFrom,
-} from 'rxjs';
+import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream } from '../utils';
-
+import { applyFillTypeStyles, createStream } from '../utils';
 import {
   Change,
-  IDrawRectParams,
   IDrawSelectParams,
   IDrawTriangleParams,
   ITriangle,
-  ShapeTypes,
+  ShapeFillTypes,
   SocketMethods,
   SocketPayload,
   ToolTypes,
@@ -39,7 +28,7 @@ export class Triangle extends Shape implements ITriangle {
     lineWidth$: Observable<Change>,
     initLineWidth: number,
     fill$: Observable<Change>,
-    initShapeType: ShapeTypes,
+    initShapeFileType: ShapeFillTypes,
     $selectSquare: HTMLDivElement,
     socketNext: (method: SocketMethods, payload: SocketPayload) => void
   ) {
@@ -53,7 +42,7 @@ export class Triangle extends Shape implements ITriangle {
       lineWidth$,
       initLineWidth,
       fill$,
-      initShapeType,
+      initShapeFileType,
       $selectSquare
     );
 
@@ -64,11 +53,7 @@ export class Triangle extends Shape implements ITriangle {
     const majorColorStream$ = createStream(this.majorColor$, this.initMajorColor);
     const minorColorStream$ = createStream(this.minorColor$, this.initMinorColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
-
-    const fill$Stream$ = this.fill$.pipe(
-      map((e) => e.target.checked),
-      startWith(this.initShapeType)
-    );
+    const fill$Stream$ = createStream(this.fill$, this.initShapeFillType);
 
     const streamMouseMove$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
@@ -84,12 +69,12 @@ export class Triangle extends Shape implements ITriangle {
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fill) => ({
+        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
-          fill,
+          fillType,
         })
       ),
       switchMap((options) => {
@@ -119,13 +104,13 @@ export class Triangle extends Shape implements ITriangle {
               type: ToolTypes.NONE,
             });
           }),
-          takeLast(2)
+          takeLast(1)
         );
       })
     );
 
     const sub = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fill, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -145,7 +130,7 @@ export class Triangle extends Shape implements ITriangle {
         secondY: coords.y,
         lastX,
         lastY,
-        fill: true,
+        fillType,
         fillStyle: minorColor,
       };
 
@@ -175,7 +160,7 @@ export class Triangle extends Shape implements ITriangle {
       secondY,
       lastX,
       lastY,
-      fill,
+      fillType,
       fillStyle,
       lineWidth,
       strokeStyle,
@@ -183,19 +168,17 @@ export class Triangle extends Shape implements ITriangle {
 
     canvasCtx.lineCap = 'butt';
     canvasCtx.lineJoin = 'miter';
-    canvasCtx.beginPath();
     canvasCtx.strokeStyle = strokeStyle;
     canvasCtx.lineWidth = lineWidth;
+    canvasCtx.fillStyle = fillStyle;
+
+    canvasCtx.beginPath();
     canvasCtx.moveTo(firstX, firstY);
     canvasCtx.lineTo(secondX, secondY);
     canvasCtx.lineTo(lastX, lastY);
     canvasCtx.closePath();
 
-    if (fill) {
-      canvasCtx.fill();
-      canvasCtx.fillStyle = fillStyle;
-    }
-    canvasCtx.stroke();
+    applyFillTypeStyles(canvasCtx, fillType);
   }
 
   setSocketNext(socketNext: (method: SocketMethods, payload: SocketPayload) => void): void {

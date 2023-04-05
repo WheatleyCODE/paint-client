@@ -1,13 +1,6 @@
 import { Observable } from 'rxjs';
 import { Tool } from './Tool';
-import {
-  IShape,
-  Change,
-  ShapeTypes,
-  SelectSquareParams,
-  IDrawSelectParams,
-  TriangleParams,
-} from '../../types';
+import { IShape, Change, ShapeFillTypes, SelectSquareParams, IDrawSelectParams } from '../../types';
 import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint.utils';
 
 let bottom: HTMLDivElement | null = null;
@@ -15,7 +8,7 @@ let right: HTMLDivElement | null = null;
 let left: HTMLDivElement | null = null;
 
 export abstract class Shape extends Tool implements IShape {
-  initShapeType: ShapeTypes;
+  initShapeFillType: ShapeFillTypes;
   protected fill$: Observable<Change>;
   protected $selectSquare: HTMLDivElement;
 
@@ -28,8 +21,8 @@ export abstract class Shape extends Tool implements IShape {
     initMinorColor: string,
     lineWidth$: Observable<Change>,
     initLineWidth: number,
-    fill$: Observable<Change>, // todo check
-    initShapeType: ShapeTypes,
+    fill$: Observable<Change>,
+    initShapeFillType: ShapeFillTypes,
     $selectSquare: HTMLDivElement
   ) {
     super(
@@ -44,7 +37,7 @@ export abstract class Shape extends Tool implements IShape {
     );
 
     this.fill$ = fill$;
-    this.initShapeType = initShapeType;
+    this.initShapeFillType = initShapeFillType;
     this.$selectSquare = $selectSquare;
   }
 
@@ -135,7 +128,7 @@ export abstract class Shape extends Tool implements IShape {
     this.fill$ = obs$;
   }
 
-  setInitShapeType(shapeType: ShapeTypes): void {
-    this.initShapeType = shapeType;
+  setInitShapeFillType(shapeFillType: ShapeFillTypes): void {
+    this.initShapeFillType = shapeFillType;
   }
 }

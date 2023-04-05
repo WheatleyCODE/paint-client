@@ -1,14 +1,13 @@
 import React, { FC, MutableRefObject } from 'react';
 import { Form, ToggleButton } from 'react-bootstrap';
 import { MdOutlineSquare, MdSquare } from 'react-icons/md';
-import { SiSquare } from 'react-icons/si';
-import { ShapeTypes } from '../../types';
+import { ShapeFillTypes } from '../../types';
 
 export interface IToolbarSettingsProps {
   fill: {
     ref: MutableRefObject<HTMLInputElement | null>;
-    value: ShapeTypes;
-    changeValue: (val: ShapeTypes) => void;
+    value: ShapeFillTypes;
+    changeValue: (val: ShapeFillTypes) => void;
   };
 
   lineWidth: {
@@ -21,9 +20,9 @@ export interface IToolbarSettingsProps {
 }
 
 const radios = [
-  { Icon: MdOutlineSquare, value: ShapeTypes.BORDER },
-  { Icon: MdSquare, value: ShapeTypes.FILL },
-  { Icon: MdOutlineSquare, value: ShapeTypes.FILL_BORDER },
+  { Icon: MdOutlineSquare, value: ShapeFillTypes.BORDER },
+  { Icon: MdSquare, value: ShapeFillTypes.FILL },
+  { Icon: MdOutlineSquare, value: ShapeFillTypes.FILL_BORDER },
 ];
 
 export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {

@@ -1,10 +1,10 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { filter, fromEvent, map, reduce, takeLast, takeUntil, tap } from 'rxjs';
+import { filter, fromEvent, map } from 'rxjs';
 import { paintActions as PA } from '../../store';
 import { useTypedDispatch, useTypedSelector } from '../redux';
 import { useValidInput } from '../useValidInput';
 import { ITools, useTools } from './useTools';
-import { Change, IObservables, ShapeTypes } from '../../types';
+import { Change, ChangeTSFilds, IObservables, ShapeFillTypes } from '../../types';
 
 export interface ISettings {
   majorColor: {
@@ -26,9 +26,9 @@ export interface ISettings {
   };
 
   fill: {
-    value: ShapeTypes;
+    value: ShapeFillTypes;
     ref: MutableRefObject<HTMLInputElement | null>;
-    changeValue: (value: ShapeTypes) => void;
+    changeValue: (value: ShapeFillTypes) => void;
   };
 }
 
@@ -44,7 +44,7 @@ export const usePaint = (): IPaint => {
   const dispatch = useTypedDispatch();
 
   const lineWidthInput = useValidInput(toolSettings.lineWidth);
-  const fillInput = useValidInput(toolSettings.currentShape);
+  const fillInput = useValidInput(toolSettings.currentShapeFillType);
   const majorColorInput = useValidInput(toolSettings.majorColor);
   const minorColorInput = useValidInput(toolSettings.minorColor);
 
@@ -89,11 +89,11 @@ export const usePaint = (): IPaint => {
   }, [observables]);
 
   useEffect(() => {
-    const params = {
+    const params: ChangeTSFilds = {
       lineWidth: lineWidthInput.value,
       majorColor: majorColorInput.value,
       minorColor: minorColorInput.value,
-      currentShape: fillInput.value,
+      currentShapeFillType: fillInput.value,
     };
 
     const sub = streamMouseUp$.subscribe(() => {

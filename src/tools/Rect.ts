@@ -1,22 +1,13 @@
-import {
-  map,
-  Observable,
-  startWith,
-  switchMap,
-  takeLast,
-  takeUntil,
-  tap,
-  withLatestFrom,
-} from 'rxjs';
+import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream } from '../utils';
+import { createStream, applyFillTypeStyles } from '../utils';
 
 import {
   Change,
   IDrawRectParams,
   IDrawSelectParams,
   IRect,
-  ShapeTypes,
+  ShapeFillTypes,
   SocketMethods,
   SocketPayload,
   ToolTypes,
@@ -38,7 +29,7 @@ export class Rect extends Shape implements IRect {
     lineWidth$: Observable<Change>,
     initLineWidth: number,
     fill$: Observable<Change>,
-    initShapeType: ShapeTypes,
+    initShapeFillType: ShapeFillTypes,
     $selectSquare: HTMLDivElement,
     socketNext: (method: SocketMethods, payload: SocketPayload) => void
   ) {
@@ -52,7 +43,7 @@ export class Rect extends Shape implements IRect {
       lineWidth$,
       initLineWidth,
       fill$,
-      initShapeType,
+      initShapeFillType,
       $selectSquare
     );
 
@@ -63,11 +54,7 @@ export class Rect extends Shape implements IRect {
     const majorColorStream$ = createStream(this.majorColor$, this.initMajorColor);
     const minorColorStream$ = createStream(this.minorColor$, this.initMinorColor);
     const lineWidthStream$ = createStream(this.lineWidth$, this.initLineWidth);
-
-    const fill$Stream$ = this.fill$.pipe(
-      map((e) => e.target.checked),
-      startWith(this.initShapeType)
-    );
+    const fill$Stream$ = createStream(this.fill$, this.initShapeFillType);
 
     const streamMouseMove$ = this.mouseMove$.pipe(
       map((e) => ({ x: e.offsetX, y: e.offsetY })),
@@ -83,12 +70,12 @@ export class Rect extends Shape implements IRect {
         minorColorStream$,
         lineWidthStream$,
         fill$Stream$,
-        (startCoords, majorColor, minorColor, lineWidth, fill) => ({
+        (startCoords, majorColor, minorColor, lineWidth, fillType) => ({
           startCoords,
           majorColor,
           minorColor,
           lineWidth,
-          fill,
+          fillType,
         })
       ),
       switchMap((options) => {
@@ -112,13 +99,13 @@ export class Rect extends Shape implements IRect {
               type: ToolTypes.NONE,
             });
           }),
-          takeLast(2)
+          takeLast(1)
         );
       })
     );
 
     const sub = streamMouseDown$.subscribe(({ coords, options }) => {
-      const { lineWidth, majorColor, minorColor, fill, startCoords } = options;
+      const { lineWidth, majorColor, minorColor, fillType, startCoords } = options;
 
       const width = startCoords.x - coords.x;
       const height = startCoords.y - coords.y;
@@ -130,7 +117,7 @@ export class Rect extends Shape implements IRect {
         y: coords.y,
         width,
         height,
-        fill: true, // todo
+        fillType,
         fillStyle: minorColor,
       };
 
@@ -153,20 +140,18 @@ export class Rect extends Shape implements IRect {
   }
 
   static draw(canvasCtx: CanvasRenderingContext2D, params: IDrawRectParams) {
-    const { lineWidth, strokeStyle, x, y, width, height, fill, fillStyle } = params;
+    const { lineWidth, strokeStyle, x, y, width, height, fillType, fillStyle } = params;
 
-    canvasCtx.beginPath();
     canvasCtx.lineWidth = lineWidth;
     canvasCtx.strokeStyle = strokeStyle;
     canvasCtx.lineCap = 'butt';
     canvasCtx.lineJoin = 'miter';
+    canvasCtx.fillStyle = fillStyle;
+
+    canvasCtx.beginPath();
     canvasCtx.rect(x, y, width, height);
 
-    if (fill) {
-      canvasCtx.fill();
-      canvasCtx.fillStyle = fillStyle;
-    }
-    canvasCtx.stroke();
+    applyFillTypeStyles(canvasCtx, fillType);
   }
 
   setSocketNext(socketNext: (method: SocketMethods, payload: SocketPayload) => void): void {

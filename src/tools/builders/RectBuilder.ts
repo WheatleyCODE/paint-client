@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { Rect } from '../Rect';
-import { Change, ShapeTypes } from '../../types';
+import { Change, ShapeFillTypes } from '../../types';
 import { ShapeBuilder } from './ShapeBuilder';
 
 export class RectBuilder extends ShapeBuilder {
@@ -22,7 +22,7 @@ export class RectBuilder extends ShapeBuilder {
       obs$,
       10,
       obs$,
-      ShapeTypes.FILL_BORDER,
+      ShapeFillTypes.FILL_BORDER,
       div,
       socketNext
     );

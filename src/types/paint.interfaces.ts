@@ -1,8 +1,8 @@
-import { EffectTypes, ShapeTypes, ToolTypes } from './tool-params.interfaces';
+import { EffectTypes, ShapeFillTypes, ToolTypes } from './tool-params.interfaces';
 import { DeepPartial } from './utils.interfaces';
 
 export interface IToolSettings {
-  currentShape: ShapeTypes;
+  currentShapeFillType: ShapeFillTypes;
   majorColor: string;
   minorColor: string;
   lineWidth: number;

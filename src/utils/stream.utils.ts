@@ -1,5 +1,5 @@
 import { ChangeEvent } from 'react';
-import { debounceTime, map, Observable, Observer, startWith, tap } from 'rxjs';
+import { map, Observable, Observer, startWith } from 'rxjs';
 
 export const createStream = <
   T extends ChangeEvent<HTMLInputElement>,
@@ -7,9 +7,9 @@ export const createStream = <
 >(
   stream$: Observable<T>,
   initValue: R
-): Observable<string | R> => {
+): Observable<R> => {
   return stream$.pipe(
-    map((e) => e.target.value),
+    map((e) => e.target.value as R),
     startWith(initValue)
   );
 };

@@ -17,7 +17,7 @@ export interface ITools {
 }
 
 export const useTools = (observables: IObservables): ITools => {
-  const { toolSettings, currentTool: curentToolType } = useTypedSelector((state) => state.paint);
+  const { toolSettings } = useTypedSelector((state) => state.paint);
   const { canvas } = useCanvas();
   const { socketNext } = useSocket();
   const dispatch = useTypedDispatch();
@@ -81,6 +81,8 @@ export const useTools = (observables: IObservables): ITools => {
     if (!shield.current || !select.current) return;
     if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
 
+    console.log(toolSettings.currentShapeFillType);
+
     const rect = new RectBuilder(shield.current, canvas)
       .setMajorColor$(majorColor$)
       .setInitMajorColor(toolSettings.majorColor)
@@ -90,7 +92,7 @@ export const useTools = (observables: IObservables): ITools => {
       .setInitLineWidth(toolSettings.lineWidth)
       .setSocketNext(socketNext)
       .setFill$(fill$)
-      .setInitShapeType(toolSettings.currentShape)
+      .setInitShapeFillType(toolSettings.currentShapeFillType)
       .setSelectSquare(select.current)
       .build();
 
@@ -115,7 +117,7 @@ export const useTools = (observables: IObservables): ITools => {
       .setInitLineWidth(toolSettings.lineWidth)
       .setSocketNext(socketNext)
       .setFill$(fill$)
-      .setInitShapeType(toolSettings.currentShape)
+      .setInitShapeFillType(toolSettings.currentShapeFillType)
       .setSelectSquare(select.current)
       .build();
 
@@ -140,7 +142,7 @@ export const useTools = (observables: IObservables): ITools => {
       .setInitLineWidth(toolSettings.lineWidth)
       .setSocketNext(socketNext)
       .setFill$(fill$)
-      .setInitShapeType(toolSettings.currentShape)
+      .setInitShapeFillType(toolSettings.currentShapeFillType)
       .setSelectSquare(select.current)
       .build();
 

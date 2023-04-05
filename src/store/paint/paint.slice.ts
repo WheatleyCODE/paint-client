@@ -1,12 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChangeTSFilds, EffectTypes, IPaintState, ShapeTypes, ToolTypes } from '../../types';
+import { ChangeTSFilds, EffectTypes, IPaintState, ShapeFillTypes, ToolTypes } from '../../types';
 
 const initialState: IPaintState = {
   username: null,
   currentTool: ToolTypes.NONE,
   currentEffect: EffectTypes.NONE,
   toolSettings: {
-    currentShape: ShapeTypes.FILL_BORDER,
+    currentShapeFillType: ShapeFillTypes.FILL_BORDER,
     majorColor: '#1f3df8',
     minorColor: '#dc2b2b',
     lineWidth: 10,

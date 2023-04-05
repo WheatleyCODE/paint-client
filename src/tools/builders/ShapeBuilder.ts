@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { ToolBuilder } from './ToolBuilder';
-import { Change, Shape, ShapeTypes } from '../../types';
+import { Change, Shape, ShapeFillTypes } from '../../types';
 
 export abstract class ShapeBuilder extends ToolBuilder {
   protected abstract tool: Shape;
@@ -10,8 +10,8 @@ export abstract class ShapeBuilder extends ToolBuilder {
     return this;
   }
 
-  setInitShapeType(shapeType: ShapeTypes) {
-    this.tool.setInitShapeType(shapeType);
+  setInitShapeFillType(shapeFillType: ShapeFillTypes) {
+    this.tool.setInitShapeFillType(shapeFillType);
     return this;
   }
 
