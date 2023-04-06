@@ -13,7 +13,7 @@ export interface IToolbarProps {
 }
 
 export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
-  const { lineWidth, majorColor, minorColor, fill } = settings;
+  const { lineWidth, majorColor, minorColor, fill, saturation, lightness, effectSpeed } = settings;
 
   return (
     <div className="toolbar">
@@ -27,6 +27,9 @@ export const Toolbar: FC<IToolbarProps> = ({ settings, tools }) => {
       <ToolbarSettings
         fill={{ ref: fill.ref, value: fill.value, changeValue: fill.changeValue }}
         lineWidth={{ ref: lineWidth.ref, value: lineWidth.value }}
+        saturation={saturation}
+        lightness={lightness}
+        effectSpeed={effectSpeed}
         min={1}
         max={100}
       />

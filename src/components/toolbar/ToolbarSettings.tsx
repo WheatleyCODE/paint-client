@@ -1,18 +1,37 @@
 import React, { FC, MutableRefObject } from 'react';
 import { Form, ToggleButton } from 'react-bootstrap';
 import { MdOutlineSquare, MdSquare } from 'react-icons/md';
-import { ShapeFillTypes } from '../../types';
+import { ShapeFillTypes, ToolTypes } from '../../types';
+import { useTypedSelector } from '../../hooks';
 
 export interface IToolbarSettingsProps {
   fill: {
-    ref: MutableRefObject<HTMLInputElement | null>;
     value: ShapeFillTypes;
+    ref: MutableRefObject<HTMLInputElement | null>;
     changeValue: (val: ShapeFillTypes) => void;
   };
 
   lineWidth: {
-    ref: MutableRefObject<HTMLInputElement | null>;
     value: number;
+    ref: MutableRefObject<HTMLInputElement | null>;
+  };
+
+  lightness: {
+    value: number;
+    ref: MutableRefObject<HTMLInputElement | null>;
+    changeValue: (val: number) => void;
+  };
+
+  saturation: {
+    value: number;
+    ref: MutableRefObject<HTMLInputElement | null>;
+    changeValue: (val: number) => void;
+  };
+
+  effectSpeed: {
+    value: number;
+    ref: MutableRefObject<HTMLInputElement | null>;
+    changeValue: (val: number) => void;
   };
 
   min?: number;
@@ -26,7 +45,8 @@ const radios = [
 ];
 
 export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {
-  const { fill, lineWidth, min = 1, max = 100 } = props;
+  const { fill, lineWidth, lightness, saturation, effectSpeed, min = 1, max = 100 } = props;
+
   return (
     <div className="toolbar-settings">
       <div className="toolbar-settings__title">Fill:</div>
@@ -51,11 +71,15 @@ export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {
       <Form.Range value={lineWidth.value} ref={lineWidth.ref} min={min} max={max} />
 
       <div className="toolbar-settings__title-bold">Magic Brush:</div>
-      <div className="toolbar-settings__title">Lightness: ({lineWidth.value})</div>
-      <Form.Range value={lineWidth.value} min={min} max={max} />
+      <div className="toolbar-settings__title">Lightness: ({lightness.value})</div>
+      <Form.Range ref={lightness.ref} value={lightness.value} min={min} max={max} />
 
-      <div className="toolbar-settings__title">Saturation: ({lineWidth.value})</div>
-      <Form.Range value={lineWidth.value} min={min} max={max} />
+      <div className="toolbar-settings__title">Saturation: ({saturation.value})</div>
+      <Form.Range ref={saturation.ref} value={saturation.value} min={min} max={max} />
+
+      <div className="toolbar-settings__title-bold">Effect Speed:</div>
+      <div className="toolbar-settings__title">Speed: ({effectSpeed.value})</div>
+      <Form.Range ref={effectSpeed.ref} value={effectSpeed.value} min={1} max={10} />
     </div>
   );
 };

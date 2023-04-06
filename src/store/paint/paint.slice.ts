@@ -10,10 +10,11 @@ const initialState: IPaintState = {
     majorColor: '#1f3df8',
     minorColor: '#dc2b2b',
     lineWidth: 10,
-    lightness: 1,
-    saturation: 1,
+    lightness: 60,
+    saturation: 100,
     timeToEnd: 1000,
     interval: 1000,
+    effectSpeed: 5,
   },
   canvasSettings: {
     width: 900,
@@ -63,6 +64,10 @@ export const paintSlice = createSlice({
 
     setCurrentTool: (state, { payload }: PayloadAction<ToolTypes>) => {
       state.currentTool = payload;
+    },
+
+    setCurrentEffect: (state, { payload }: PayloadAction<EffectTypes>) => {
+      state.currentEffect = payload;
     },
   },
 });

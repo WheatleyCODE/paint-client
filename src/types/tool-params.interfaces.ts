@@ -10,9 +10,11 @@ export const enum ToolTypes {
   ERASER = 'ERASER',
   LINE = 'LINE',
   ARBITRARY = 'ARBITRARY',
+  MAGIC = 'MAGIC',
 }
 
 export const enum EffectTypes {
+  RAINBOW = 'RAINBOW',
   NONE = 'NONE',
   RESIZE = 'RESIZE',
   BIG_TO_LOW = 'BIG_TO_LOW',

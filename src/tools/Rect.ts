@@ -1,6 +1,6 @@
 import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream, applyFillTypeStyles, removeStylesOnSelectSquare } from '../utils';
+import { applyFillTypeStyles, createStream, removeStylesOnSelectSquare } from '../utils';
 import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
@@ -15,7 +15,6 @@ import {
 
 export class Rect extends Shape implements IRect {
   type = ToolTypes.RECT;
-  isRect = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(

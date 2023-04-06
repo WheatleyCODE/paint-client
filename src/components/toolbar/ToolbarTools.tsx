@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { Button } from 'react-bootstrap';
 import {
-  MdAutoFixHigh,
   MdBrush,
   MdCircle,
+  MdClose,
   MdOutlineAutoFixHigh,
   MdOutlineHorizontalRule,
   MdSquare,
@@ -15,6 +15,9 @@ import { FaDrawPolygon } from 'react-icons/fa';
 import { ToolButton } from './ToolButton';
 import { ToolTypes } from '../../types';
 import { ITools } from '../../hooks/paint/useTools';
+import { effects } from '../../consts';
+import { useTypedDispatch, useTypedSelector } from '../../hooks';
+import { paintActions } from '../../store';
 
 export interface IToolbarToolsProps {
   tools: ITools;
@@ -30,7 +33,10 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
     selectEraser,
     selectLine,
     selectArbitrary,
+    selectMagic,
   } = tools;
+  const { currentEffect } = useTypedSelector((state) => state.paint);
+  const dispatch = useTypedDispatch();
 
   const type = current?.type || ToolTypes.NONE;
 
@@ -57,7 +63,11 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
           isActive={type === ToolTypes.LINE}
           onClick={selectLine}
         />
-        <ToolButton Icon={MdAutoFixHigh} isActive={false} onClick={selectBrush} />
+        <ToolButton
+          Icon={MdOutlineAutoFixHigh}
+          isActive={type === ToolTypes.MAGIC}
+          onClick={selectMagic}
+        />
         <ToolButton
           Icon={RiEraserFill}
           isActive={type === ToolTypes.ERASER}
@@ -67,21 +77,15 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
 
       <div className="toolbar-tools__title">Brush Effects</div>
       <div className="toolbar-tools__effects">
-        <Button className="btn icon btn-cian">
-          <IoResizeOutline />
-        </Button>
-
-        <Button className="btn icon btn-cian">
-          <TbArrowMoveDown />
-        </Button>
-
-        <Button className="btn icon btn-cian">
-          <TbArrowMoveUp />
-        </Button>
-
-        <Button className="btn icon btn-cian">
-          <MdOutlineAutoFixHigh />
-        </Button>
+        {effects.map(({ Icon, effect }) => (
+          <Button
+            key={effect}
+            onClick={() => dispatch(paintActions.setCurrentEffect(effect))}
+            className={`btn icon btn-cian ${currentEffect === effect && 'active'}`}
+          >
+            <Icon />
+          </Button>
+        ))}
       </div>
     </div>
   );

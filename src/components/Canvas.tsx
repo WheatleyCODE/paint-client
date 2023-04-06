@@ -117,7 +117,12 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     saveImg({ img });
   };
 
-  const cursor = currentTool === ToolTypes.BRUSH ? getCursor(lineWidthValue) : cursors[currentTool];
+  const cursor =
+    currentTool === ToolTypes.BRUSH ||
+    currentTool === ToolTypes.ERASER ||
+    currentTool === ToolTypes.MAGIC
+      ? getCursor(lineWidthValue)
+      : cursors[currentTool];
 
   return (
     <div className="canvas">

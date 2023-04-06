@@ -10,9 +10,9 @@ import {
 import { useCanvas } from '../useCanvas';
 import { useSocket } from '../useSocket';
 import { useTypedDispatch, useTypedSelector } from '../redux';
-import { colors } from '../../consts/paint.consts';
+import { colors, DEFAULT_LINE_WIDTH } from '../../consts/paint.consts';
 import { paintActions } from '../../store';
-import { IObservables, Tool, ToolTypes } from '../../types';
+import { EffectTypes, IBrush, IObservables, Tool, ToolTypes } from '../../types';
 
 export interface ITools {
   current: Tool | null;
@@ -23,10 +23,16 @@ export interface ITools {
   selectEraser: () => void;
   selectLine: () => void;
   selectArbitrary: () => void;
+  selectMagic: () => void;
 }
 
-export const useTools = (observables: IObservables): ITools => {
-  const { toolSettings } = useTypedSelector((state) => state.paint);
+export interface IUseToolsParams {
+  observables: IObservables;
+  changeLineWidth: (num: number) => void;
+}
+
+export const useTools = ({ observables, changeLineWidth }: IUseToolsParams): ITools => {
+  const { toolSettings, currentEffect } = useTypedSelector((state) => state.paint);
   const { canvas } = useCanvas();
   const { socketNext } = useSocket();
   const dispatch = useTypedDispatch();
@@ -40,11 +46,27 @@ export const useTools = (observables: IObservables): ITools => {
     dispatch(paintActions.setCurrentTool(ToolTypes.NONE));
   };
 
+  const getChangeLineWidth = () => {
+    let prevNum = 0;
+
+    return (num: number) => {
+      const number = Math.round(num);
+
+      if (prevNum === number) return;
+      prevNum = number;
+
+      if (number % 5 !== 0) return;
+
+      changeLineWidth(number);
+    };
+  };
+
   const selectBrush = () => {
     clearCurrentTool();
-    const { majorColor$, minorColor$, lineWidth$ } = observables;
+    const { majorColor$, minorColor$, lineWidth$, effectSpeed$ } = observables;
 
-    if (!shield.current || !canvas || !majorColor$ || !minorColor$ || !lineWidth$) return;
+    if (!shield.current || !canvas || !majorColor$ || !minorColor$ || !lineWidth$ || !effectSpeed$)
+      return;
 
     const brush = new BrushBuilder(shield.current, canvas)
       .setMajorColor$(majorColor$)
@@ -53,7 +75,11 @@ export const useTools = (observables: IObservables): ITools => {
       .setInitMinorColor(toolSettings.minorColor)
       .setLineWidth$(lineWidth$)
       .setInitLineWidth(toolSettings.lineWidth)
+      .setEffects([currentEffect])
+      .setEffectSpeed$(effectSpeed$)
+      .setInitEffectSpeed(toolSettings.effectSpeed)
       .setSocketNext(socketNext)
+      .setChangeLineWidth(getChangeLineWidth())
       .build();
 
     brush.init();
@@ -69,9 +95,7 @@ export const useTools = (observables: IObservables): ITools => {
 
     const eraser = new BrushBuilder(shield.current, canvas)
       .setType(ToolTypes.ERASER)
-      .setMajorColor$(majorColor$)
       .setInitMajorColor(colors.WHITE)
-      .setMinorColor$(minorColor$)
       .setInitMinorColor(colors.WHITE)
       .setLineWidth$(lineWidth$)
       .setInitLineWidth(toolSettings.lineWidth)
@@ -208,10 +232,77 @@ export const useTools = (observables: IObservables): ITools => {
     dispatch(paintActions.setCurrentTool(arbitrary.type));
   };
 
+  const selectMagic = () => {
+    clearCurrentTool();
+    const { majorColor$, minorColor$, lineWidth$, lightness$, saturation$, effectSpeed$ } =
+      observables;
+
+    if (
+      !shield.current ||
+      !canvas ||
+      !majorColor$ ||
+      !minorColor$ ||
+      !lineWidth$ ||
+      !lightness$ ||
+      !saturation$ ||
+      !effectSpeed$
+    )
+      return;
+
+    const magic = new BrushBuilder(shield.current, canvas)
+      .setType(ToolTypes.MAGIC)
+      .setInitMajorColor(colors.WHITE)
+      .setInitMinorColor(colors.WHITE)
+      .setLineWidth$(lineWidth$)
+      .setInitLineWidth(toolSettings.lineWidth)
+      .setLightness$(lightness$)
+      .setInitLightness$(toolSettings.lightness)
+      .setSaturation$(saturation$)
+      .setInitSaturation$(toolSettings.saturation)
+      .setEffects([EffectTypes.RAINBOW, currentEffect])
+      .setEffectSpeed$(effectSpeed$)
+      .setInitEffectSpeed(toolSettings.effectSpeed)
+      .setChangeLineWidth(getChangeLineWidth())
+      .setSocketNext(socketNext)
+      .build();
+
+    magic.init();
+    setCurrentTool(magic);
+    dispatch(paintActions.setCurrentTool(magic.type));
+  };
+
   useEffect(() => {
     shield.current = document.querySelector('#shield') as HTMLDivElement;
     select.current = document.querySelector('#select') as HTMLDivElement;
   }, []);
+
+  useEffect(() => {
+    if (currentEffect === EffectTypes.NONE) {
+      changeLineWidth(DEFAULT_LINE_WIDTH);
+      dispatch(paintActions.changeToolSettings({ lineWidth: DEFAULT_LINE_WIDTH }));
+      currentTool?.setInitLineWidth(DEFAULT_LINE_WIDTH);
+      currentTool?.destroyEvents();
+      currentTool?.init();
+    }
+
+    if (currentTool) {
+      if (currentTool.type === ToolTypes.BRUSH || currentTool.type === ToolTypes.MAGIC) {
+        const tool = currentTool as IBrush;
+        const effects = tool.getEffects();
+        const isExits = !!effects.find((effect) => effect === currentEffect);
+        const rainbowEffect = effects.find((effect) => effect === EffectTypes.RAINBOW);
+
+        if (!isExits) {
+          const newEffects = [currentEffect];
+          if (rainbowEffect) newEffects.push(rainbowEffect);
+
+          tool.setEffects(newEffects);
+          tool.destroyEvents();
+          tool.init();
+        }
+      }
+    }
+  }, [currentEffect, currentTool]);
 
   return {
     current: currentTool,
@@ -222,5 +313,6 @@ export const useTools = (observables: IObservables): ITools => {
     selectEraser,
     selectLine,
     selectArbitrary,
+    selectMagic,
   };
 };

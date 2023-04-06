@@ -1,7 +1,13 @@
 import { Observable } from 'rxjs';
 import { SocketMethods, SocketPayload } from './socket.interfaces';
 import { Change } from './toolbar.interfaces';
-import { IDefaultBuilder, IEvents, ShapeFillTypes, ToolTypes } from './tool-params.interfaces';
+import {
+  EffectTypes,
+  IDefaultBuilder,
+  IEvents,
+  ShapeFillTypes,
+  ToolTypes,
+} from './tool-params.interfaces';
 
 export interface ITool extends IEvents, IDefaultBuilder {
   type: ToolTypes;
@@ -18,32 +24,35 @@ export interface IShape extends ITool {
 }
 
 export interface IBrush extends ITool {
-  isBrush: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
+  setEffects: (effects: EffectTypes[]) => void;
+  getEffects: () => EffectTypes[];
+  setChangeLineWidth: (change: () => void) => void;
+  setLightness$(lightness$: Observable<Change>): void;
+  setInitLightness(initLightness: number): void;
+  setSaturation$(saturation$: Observable<Change>): void;
+  setInitSaturation(saturation: number): void;
+  setEffectSpeed$(effectSpeed$: Observable<Change>): void;
+  setInitEffectSpeed(effectSpeed: number): void;
 }
 
 export interface IRect extends IShape {
-  isRect: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
 export interface IArbitrary extends IShape {
-  isArbitrary: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
 export interface ILine extends IShape {
-  isLine: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
 export interface ICircle extends IShape {
-  isCircle: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 
 export interface ITriangle extends IShape {
-  isTriangle: boolean;
   setSocketNext: (socketNext: (method: SocketMethods, payload: SocketPayload) => void) => void;
 }
 

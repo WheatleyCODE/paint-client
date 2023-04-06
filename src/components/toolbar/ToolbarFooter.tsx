@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from 'react-bootstrap';
-import { MdDeleteOutline, MdSave } from 'react-icons/md';
+import { MdDelete, MdSave } from 'react-icons/md';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../../store';
 import { downloadCanvasImg } from '../../utils';
@@ -34,7 +34,7 @@ export const ToolbarFooter = () => {
       </Button>
 
       <Button onClick={clear} className="btn btn-cian" type="submit">
-        <MdDeleteOutline className="icon" /> Clear canvas
+        <MdDelete className="icon" /> Clear canvas
       </Button>
     </div>
   );

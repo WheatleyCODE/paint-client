@@ -14,7 +14,6 @@ import {
 
 export class Line extends Shape implements ILine {
   type = ToolTypes.LINE;
-  isLine = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(

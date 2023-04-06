@@ -15,7 +15,6 @@ import {
 
 export class Circle extends Shape implements ICircle {
   type = ToolTypes.CIRCLE;
-  isCircle = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(

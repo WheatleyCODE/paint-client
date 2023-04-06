@@ -20,7 +20,6 @@ import {
 
 export class Triangle extends Shape implements ITriangle {
   type = ToolTypes.TRIANGLE;
-  isTriangle = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
 
   constructor(

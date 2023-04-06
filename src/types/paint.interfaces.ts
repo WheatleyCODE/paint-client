@@ -10,6 +10,7 @@ export interface IToolSettings {
   saturation: number;
   timeToEnd: number;
   interval: number;
+  effectSpeed: number;
 }
 
 export interface ICanvasSettings {
