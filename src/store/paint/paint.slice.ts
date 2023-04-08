@@ -1,5 +1,12 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { ChangeTSFilds, EffectTypes, IPaintState, ShapeFillTypes, ToolTypes } from '../../types';
+import {
+  ChangeTSFilds,
+  EffectTypes,
+  IPaintState,
+  ISaveCanvas,
+  ShapeFillTypes,
+  ToolTypes,
+} from '../../types';
 
 const initialState: IPaintState = {
   username: null,
@@ -30,11 +37,11 @@ export const paintSlice = createSlice({
   name: 'paint',
   initialState,
   reducers: {
-    pushToRedo: (state, { payload }: PayloadAction<string>) => {
+    pushToRedo: (state, { payload }: PayloadAction<ISaveCanvas>) => {
       state.redoList.push(payload);
     },
 
-    setRedo: (state, { payload }: PayloadAction<string[]>) => {
+    setRedo: (state, { payload }: PayloadAction<ISaveCanvas[]>) => {
       state.redoList = payload;
     },
 
@@ -46,11 +53,11 @@ export const paintSlice = createSlice({
       state.username = payload;
     },
 
-    pushToUndo: (state, { payload }: PayloadAction<string>) => {
+    pushToUndo: (state, { payload }: PayloadAction<ISaveCanvas>) => {
       state.undoList.push(payload);
     },
 
-    setUndo: (state, { payload }: PayloadAction<string[]>) => {
+    setUndo: (state, { payload }: PayloadAction<ISaveCanvas[]>) => {
       state.undoList = payload;
     },
 

@@ -34,6 +34,12 @@ export type TriangleParams = {
   translateX: number;
 };
 
+export interface ISaveCanvas {
+  width: number;
+  height: number;
+  image: string;
+}
+
 export interface IPaintState {
   username: string | null;
   currentTool: ToolTypes;
@@ -41,8 +47,8 @@ export interface IPaintState {
   toolSettings: IToolSettings;
   canvasSettings: ICanvasSettings;
   changeStep: number;
-  undoList: string[];
-  redoList: string[];
+  undoList: ISaveCanvas[];
+  redoList: ISaveCanvas[];
   connections: string[];
 }
 

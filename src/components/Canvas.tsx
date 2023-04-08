@@ -13,7 +13,7 @@ import {
   useTypedSelector,
 } from '../hooks';
 import { getStreamOnloadImg, getCursor } from '../utils';
-import { ISocketPayloadResize, SocketMethods } from '../types';
+import { ISaveCanvas, ISocketPayloadResize, SocketMethods } from '../types';
 
 export interface ICanvasProps {
   lineWidthValue: number;
@@ -55,14 +55,27 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
 
   const pushToUndo = () => {
     if (!canvas) return;
-    dispatch(PA.pushToUndo(canvas.toDataURL()));
+
+    const saveData: ISaveCanvas = {
+      width: canvas.width,
+      height: canvas.height,
+      image: canvas.toDataURL(),
+    };
+
+    dispatch(PA.pushToUndo(saveData));
   };
 
   const pushToUndoWS = () => {
     if (!canvas) return;
 
+    const saveData: ISaveCanvas = {
+      width: canvas.width,
+      height: canvas.height,
+      image: canvas.toDataURL(),
+    };
+
     socketNext(SocketMethods.PUSH_UNDO);
-    dispatch(PA.pushToUndo(canvas.toDataURL()));
+    dispatch(PA.pushToUndo(saveData));
   };
 
   useEffect(() => {

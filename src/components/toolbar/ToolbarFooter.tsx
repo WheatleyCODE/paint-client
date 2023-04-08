@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../../store';
 import { downloadCanvasImg } from '../../utils';
 import { useCanvas, useSocket, useTypedDispatch } from '../../hooks';
-import { SocketMethods } from '../../types';
+import { ISaveCanvas, SocketMethods } from '../../types';
 
 export const ToolbarFooter = () => {
   const params = useParams();
@@ -16,8 +16,14 @@ export const ToolbarFooter = () => {
   const clear = () => {
     if (!canvas) return;
 
+    const saveData: ISaveCanvas = {
+      width: canvas.width,
+      height: canvas.height,
+      image: canvas.toDataURL(),
+    };
+
     socketNext(SocketMethods.PUSH_UNDO);
-    dispatch(PA.pushToUndo(canvas.toDataURL()));
+    dispatch(PA.pushToUndo(saveData));
 
     socketNext(SocketMethods.CLEAR);
     // eslint-disable-next-line no-self-assign
