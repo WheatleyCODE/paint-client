@@ -71,6 +71,7 @@ export interface ISocketPayloadTriangle {
 export interface ISocketIDS {
   id: string;
   username: string;
+  connections: string[];
 }
 
 export interface ISocketConnection extends ISocketIDS {

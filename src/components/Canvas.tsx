@@ -1,18 +1,18 @@
 import React, { FC, useEffect } from 'react';
-import { filter } from 'rxjs';
+import { filter, tap } from 'rxjs';
 import { useParams } from 'react-router-dom';
 import { paintActions, paintActions as PA } from '../store';
 import {
-  useSelect,
   useCanvas,
   useCanvasResize,
   useCanvasRestore,
   useRequest,
+  useSelect,
   useSocket,
   useTypedDispatch,
   useTypedSelector,
 } from '../hooks';
-import { getStreamOnloadImg, getCursor } from '../utils';
+import { getCursor, getStreamOnloadImg } from '../utils';
 import { ISaveCanvas, ISocketPayloadResize, SocketMethods } from '../types';
 
 export interface ICanvasProps {
@@ -81,14 +81,18 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   useEffect(() => {
     if (!socketObs) return;
 
-    const stream$ = socketObs.pipe(filter((data) => data.username !== username));
+    const stream$ = socketObs.pipe(
+      tap((data) => {
+        if (JSON.stringify(data.connections) !== JSON.stringify(connections)) {
+          dispatch(paintActions.setConnections(data.connections));
+        }
+      }),
+      filter((data) => data.username !== username)
+    );
 
     // * rewrite websocket onmessage
     stream$.subscribe((data) => {
       switch (data.method) {
-        case SocketMethods.CONNECTION:
-          break;
-
         case SocketMethods.DRAW:
           draw(data.payload);
           break;
@@ -124,7 +128,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
           break;
       }
     });
-  }, [socketObs, redo, undo, canvas, pushToUndo, draw, drawSelect, changeSize]);
+  }, [socketObs, redo, undo, canvas, pushToUndo, draw, drawSelect, changeSize, connections]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,
@@ -162,25 +166,16 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     <div className="canvas">
       <div className="position-relative">
         {connections.map((name) => (
-          <div id={`select-${name}`} className="select">
+          <div data-select={name} className="select-connection">
             <div className="circle" />
             <div className="triangle">
               <div data-triangle="bottom" className="triangle__bottom" />
               <div data-triangle="right" className="triangle__right" />
               <div data-triangle="left" className="triangle__left" />
             </div>
+            <div className="select-connection__name">{name}</div>
           </div>
         ))}
-
-        <div id="select-test" className="select-connection">
-          <div className="circle" />
-          <div className="triangle">
-            <div data-triangle="bottom" className="triangle__bottom" />
-            <div data-triangle="right" className="triangle__right" />
-            <div data-triangle="left" className="triangle__left" />
-          </div>
-          <div className="select-connection__name">Dikey WHT</div>
-        </div>
 
         <div id="select" className="select">
           <div className="circle" />

@@ -1,11 +1,12 @@
 import React from 'react';
 import { MdPerson, MdRedo, MdUndo } from 'react-icons/md';
 import { Button } from 'react-bootstrap';
-import { useCanvasRestore, useSocket } from '../hooks';
+import { useCanvasRestore, useSocket, useTypedSelector } from '../hooks';
 import { SocketMethods } from '../types';
 
 export const Header = () => {
   const { socketNext } = useSocket();
+  const { connections } = useTypedSelector((state) => state.paint);
   const { undo, redo } = useCanvasRestore();
 
   const undoHandler = () => {
@@ -33,12 +34,11 @@ export const Header = () => {
       <div className="header__right">
         <h1 className="header__title">MAGIC PAINT ONLINE</h1>
         <div className="header__users">
-          <div className="header__user">
-            <MdPerson className="icon" /> Вася
-          </div>
-          <div className="header__user">
-            <MdPerson className="icon" /> Петя
-          </div>
+          {connections.map((name) => (
+            <div className="header__user">
+              <MdPerson className="icon" /> {name}
+            </div>
+          ))}
         </div>
       </div>
     </div>
