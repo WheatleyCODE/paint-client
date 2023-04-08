@@ -17,6 +17,7 @@ export const enum SocketMethods {
   DRAW = 'DRAW',
   SELECT = 'SELECT',
   RESIZE = 'RESIZE',
+  CLEAR = 'CLEAR',
 }
 
 export interface IDrawSelectParams {
@@ -88,6 +89,10 @@ export interface ISocketRedo extends ISocketIDS {
   method: SocketMethods.REDO;
 }
 
+export interface ISocketClear extends ISocketIDS {
+  method: SocketMethods.CLEAR;
+}
+
 export interface ISocketSelect extends ISocketIDS {
   method: SocketMethods.SELECT;
   payload: ISocketPayloadSelect;
@@ -120,4 +125,5 @@ export type SocketData =
   | ISocketUndo
   | ISocketRedo
   | ISocketSelect
-  | ISocketResize;
+  | ISocketResize
+  | ISocketClear;

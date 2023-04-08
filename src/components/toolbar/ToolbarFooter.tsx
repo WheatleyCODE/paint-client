@@ -18,7 +18,10 @@ export const ToolbarFooter = () => {
 
     socketNext(SocketMethods.PUSH_UNDO);
     dispatch(PA.pushToUndo(canvas.toDataURL()));
-    // canvas.width = canvasSettings.width;
+
+    socketNext(SocketMethods.CLEAR);
+    // eslint-disable-next-line no-self-assign
+    canvas.width = canvas.width;
   };
 
   const download = () => {

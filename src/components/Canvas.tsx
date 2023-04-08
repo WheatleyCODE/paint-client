@@ -47,6 +47,12 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     });
   };
 
+  const clearCanvas = () => {
+    if (!canvas) return;
+    // eslint-disable-next-line no-self-assign
+    canvas.width = canvas.width;
+  };
+
   const pushToUndo = () => {
     if (!canvas) return;
     dispatch(PA.pushToUndo(canvas.toDataURL()));
@@ -93,6 +99,11 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
 
         case SocketMethods.RESIZE: {
           changeSize(data.payload);
+          break;
+        }
+
+        case SocketMethods.CLEAR: {
+          clearCanvas();
           break;
         }
 
