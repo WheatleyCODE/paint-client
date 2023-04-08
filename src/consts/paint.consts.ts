@@ -1,7 +1,7 @@
 import { IoResizeOutline } from 'react-icons/io5';
 import { TbArrowMoveDown, TbArrowMoveUp } from 'react-icons/tb';
-import { MdClose } from 'react-icons/md';
-import { EffectTypes, ToolTypes } from '../types';
+import { MdClose, MdOutlineSquare, MdSquare } from 'react-icons/md';
+import { EffectTypes, ShapeFillTypes, ToolTypes } from '../types';
 
 export const cursors = {
   [ToolTypes.RECT]: 'crosshair',
@@ -29,25 +29,33 @@ export const mockSettings = {
 
 export const DEFAULT_LINE_WIDTH = 10;
 
-export const TOOLBAR_WIDTH = 191;
+export const TOOLBAR_WIDTH = 197;
 export const SELECT_BORDER_SUM = 6;
 export const MOUSE_RIGHT = 2;
 
 export const effects = [
   {
     Icon: IoResizeOutline,
-    effect: EffectTypes.RESIZE,
+    effectType: EffectTypes.RESIZE,
   },
   {
     Icon: TbArrowMoveDown,
-    effect: EffectTypes.BIG_TO_LOW,
+    effectType: EffectTypes.BIG_TO_LOW,
   },
   {
     Icon: TbArrowMoveUp,
-    effect: EffectTypes.LOW_TO_BIG,
+    effectType: EffectTypes.LOW_TO_BIG,
   },
   {
     Icon: MdClose,
-    effect: EffectTypes.NONE,
+    effectType: EffectTypes.NONE,
   },
 ];
+
+export const fillRadios = [
+  { Icon: MdOutlineSquare, value: ShapeFillTypes.BORDER },
+  { Icon: MdSquare, value: ShapeFillTypes.FILL },
+  { Icon: MdOutlineSquare, value: ShapeFillTypes.FILL_BORDER },
+];
+
+export const RESIZER_WIDTH = 8;

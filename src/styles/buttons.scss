@@ -12,8 +12,8 @@
   border-color: $colorCian;
 
   &:hover {
-    background-color: $colorCian2;
-    border-color: $colorCian2;
+    background-color: $colorCian2 !important;
+    border-color: $colorCian2 !important;
   }
 
   &:active {

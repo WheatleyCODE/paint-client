@@ -69,6 +69,11 @@ export const paintSlice = createSlice({
     setCurrentEffect: (state, { payload }: PayloadAction<EffectTypes>) => {
       state.currentEffect = payload;
     },
+
+    setCanvasSize: (state, { payload }: PayloadAction<{ width: number; height: number }>) => {
+      state.canvasSettings.height = payload.height;
+      state.canvasSettings.width = payload.width;
+    },
   },
 });
 

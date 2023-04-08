@@ -1,4 +1,6 @@
 .toolbar {
+  @include no-select;
+  padding-left: $toolbarPaddingLeft;
   height: 100%;
   min-width: $toolbarWidth;
   max-width: $toolbarWidth;
@@ -12,8 +14,8 @@
 
 .toolbar-tools {
   .btn {
-    margin-left: $btnMargin;
-    margin-bottom: $btnMargin;
+    margin-left: $toolbarMargin;
+    margin-bottom: $toolbarMargin;
   }
 
   &__tools {
@@ -27,51 +29,52 @@
   }
 
   &__title {
-    padding-left: $btnPadding;
-    padding-bottom: $btnPadding / 2;
+    padding-left: $toolbarPadding;
+    padding-bottom: $toolbarPadding / 2;
   }
 }
 
 .toolbar-settings, .toolbar-footer {
-  padding: 0 $btnPadding;
+  padding: 0 $toolbarPadding;
+  padding-right: $toolbarPadding + $toolbarPaddingLeft;
 
   &__title-bold {
     font-weight: bold;
-    margin-top: $btnMargin;
-    margin-bottom: $btnMargin;
+    margin-top: $toolbarMargin;
+    margin-bottom: $toolbarMargin;
     font-size: 1.05rem;
   }
 
   &__title {
-    padding-bottom: $btnPadding / 2;
+    padding-bottom: $toolbarPadding / 2;
   }
 }
 
 .toolbar-settings {
   &__fill {
     display: flex;
-    margin: $btnMargin 0;
+    margin-bottom: $toolbarMargin;
 
     .btn {
-      margin-right: $btnMargin;
+      margin-right: $toolbarMargin;
     }
   }
 }
 
 .toolbar-footer {
-  padding-top: $btnPadding * 3;
+  padding-top: $toolbarPadding * 2;
 
   .icon {
-    margin-right: $btnMargin;
+    margin-right: $toolbarMargin;
   }
   
   .btn {
     width: 100%;
     padding: 0;
-    padding-left: $btnPadding * 2;
+    padding-left: $toolbarPadding * 2;
     height: $btnWidth;
     text-align: left;
-    margin-bottom: $btnMargin;
+    margin-bottom: $toolbarMargin;
   }
 }
 
@@ -79,8 +82,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-left: $btnMargin;
-  margin-bottom: $btnMargin;
+  margin-left: $toolbarMargin;
+  margin-bottom: $toolbarMargin;
   width: 160px;
   height: 160px;
   border: $border;

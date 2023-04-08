@@ -2,10 +2,12 @@
 
 @import "variables";
 @import "global";
+@import "mixins";
+
 @import "buttons";
 @import "inputs";
 @import "toolbar";
-@import "settings-bar";
+@import "header";
 @import "canvas";
 @import "modals";
 @import "paint";

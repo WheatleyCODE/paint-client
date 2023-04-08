@@ -1,5 +1,5 @@
 import React from 'react';
-import { SettingsBar } from './SettingsBar';
+import { Header } from './Header';
 import { Toolbar } from './toolbar';
 import { Canvas } from './Canvas';
 import { UserModal } from './UserModal';
@@ -10,7 +10,7 @@ export const Paint = () => {
 
   return (
     <div className="paint">
-      <SettingsBar />
+      <Header />
 
       <div className="paint__main">
         <Toolbar settings={settings} tools={tools} />

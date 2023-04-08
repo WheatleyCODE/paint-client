@@ -1,21 +1,19 @@
 import React, { FC, useEffect } from 'react';
 import { filter } from 'rxjs';
 import { useParams } from 'react-router-dom';
-import { paintActions as PA } from '../store';
+import { paintActions, paintActions as PA } from '../store';
 import {
+  useSelect,
   useCanvas,
+  useCanvasResize,
   useCanvasRestore,
   useRequest,
   useSocket,
   useTypedDispatch,
   useTypedSelector,
 } from '../hooks';
-
-import { getStreamOnloadImg } from '../utils';
-import { SocketMethods, ToolTypes } from '../types';
-import { getCursor } from '../utils/canvas.utils';
-import { cursors } from '../consts/paint.consts';
-import { useSelect } from '../hooks/useSelect';
+import { getStreamOnloadImg, getCursor } from '../utils';
+import { ISocketPayloadResize, SocketMethods } from '../types';
 
 export interface ICanvasProps {
   lineWidthValue: number;
@@ -25,11 +23,29 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   const params = useParams();
   const dispatch = useTypedDispatch();
   const { username, currentTool, connections } = useTypedSelector((state) => state.paint);
-  const { canvas, canvasSettings, draw } = useCanvas();
+  const { canvas, draw, setImage, canvasSettings, setImageResize } = useCanvas();
   const { drawSelect } = useSelect();
   const { undo, redo } = useCanvasRestore();
+  const { rightRef, bottomRef } = useCanvasResize();
   const { socketObs, socketNext } = useSocket();
   const { width, height } = canvasSettings;
+
+  const changeSize = ({ params: param }: ISocketPayloadResize) => {
+    const { sWidth, sHeight, width: w, height: h } = param;
+
+    if (!canvas) return;
+
+    const data = canvas.toDataURL();
+    const onload$ = getStreamOnloadImg(data);
+
+    onload$.subscribe((img) => {
+      dispatch(paintActions.setCanvasSize({ width: w, height: h }));
+
+      setTimeout(() => {
+        setImageResize(img, w, h, sWidth, sHeight);
+      }, 0);
+    });
+  };
 
   const pushToUndo = () => {
     if (!canvas) return;
@@ -75,11 +91,16 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
           break;
         }
 
+        case SocketMethods.RESIZE: {
+          changeSize(data.payload);
+          break;
+        }
+
         default:
           break;
       }
     });
-  }, [socketObs, redo, undo, canvas, pushToUndo, draw, drawSelect]);
+  }, [socketObs, redo, undo, canvas, pushToUndo, draw, drawSelect, changeSize]);
 
   const { req: saveImg } = useRequest({
     url: `image?id=${params.id}`,
@@ -102,13 +123,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     const onload$ = getStreamOnloadImg(data);
 
     onload$.subscribe((img) => {
-      const ctx = canvas?.getContext('2d');
-
-      if (!ctx || !canvas) return;
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      ctx.stroke();
+      setImage(img);
     });
   }, [data, username]);
 
@@ -117,12 +132,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     saveImg({ img });
   };
 
-  const cursor =
-    currentTool === ToolTypes.BRUSH ||
-    currentTool === ToolTypes.ERASER ||
-    currentTool === ToolTypes.MAGIC
-      ? getCursor(lineWidthValue)
-      : cursors[currentTool];
+  const cursor = getCursor(currentTool, lineWidthValue);
 
   return (
     <div className="canvas">
@@ -164,7 +174,10 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
           onMouseUp={saveImage}
           onMouseDown={pushToUndoWS}
           id="shield"
-        />
+        >
+          <div ref={rightRef} className="canvas__resize-right" />
+          <div ref={bottomRef} className="canvas__resize-bottom" />
+        </div>
       </div>
     </div>
   );

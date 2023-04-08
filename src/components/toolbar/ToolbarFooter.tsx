@@ -10,7 +10,7 @@ import { SocketMethods } from '../../types';
 export const ToolbarFooter = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { canvas, canvasSettings } = useCanvas();
+  const { canvas } = useCanvas();
   const { socketNext } = useSocket();
 
   const clear = () => {
@@ -18,7 +18,7 @@ export const ToolbarFooter = () => {
 
     socketNext(SocketMethods.PUSH_UNDO);
     dispatch(PA.pushToUndo(canvas.toDataURL()));
-    canvas.width = canvasSettings.width;
+    // canvas.width = canvasSettings.width;
   };
 
   const download = () => {

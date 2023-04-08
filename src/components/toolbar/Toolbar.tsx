@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ToolbarFooter } from './ToolbarFooter';
-import { ToolbarSettings } from './ToolbarSettings';
-import { ToolbarTools } from './ToolbarTools';
+import { ToolbarSettings } from './settings/ToolbarSettings';
+import { ToolbarTools } from './tools/ToolbarTools';
 import Palette from './Palette';
 import { BrushPreview } from './BrushPreview';
 import { ISettings } from '../../hooks/paint/usePaint';

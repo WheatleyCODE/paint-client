@@ -1,8 +1,8 @@
 import React, { FC, MutableRefObject } from 'react';
-import { Form, ToggleButton } from 'react-bootstrap';
-import { MdOutlineSquare, MdSquare } from 'react-icons/md';
-import { ShapeFillTypes, ToolTypes } from '../../types';
-import { useTypedSelector } from '../../hooks';
+import { Form } from 'react-bootstrap';
+import { ShapeFillTypes } from '../../../types';
+import { fillRadios } from '../../../consts';
+import { FillToggle } from './FillToggle';
 
 export interface IToolbarSettingsProps {
   fill: {
@@ -38,12 +38,6 @@ export interface IToolbarSettingsProps {
   max?: number;
 }
 
-const radios = [
-  { Icon: MdOutlineSquare, value: ShapeFillTypes.BORDER },
-  { Icon: MdSquare, value: ShapeFillTypes.FILL },
-  { Icon: MdOutlineSquare, value: ShapeFillTypes.FILL_BORDER },
-];
-
 export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {
   const { fill, lineWidth, lightness, saturation, effectSpeed, min = 1, max = 100 } = props;
 
@@ -51,19 +45,13 @@ export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {
     <div className="toolbar-settings">
       <div className="toolbar-settings__title">Fill:</div>
       <div className="toolbar-settings__fill" ref={fill.ref}>
-        {radios.map((radio) => (
-          <ToggleButton
-            key={radio.value}
-            id={`radio-${radio.value}`}
-            type="radio"
-            name="radio"
-            className="btn icon btn-cian"
-            value={radio.value}
-            checked={fill.value === radio.value}
-            onChange={() => fill.changeValue(radio.value)}
-          >
-            <radio.Icon />
-          </ToggleButton>
+        {fillRadios.map(({ value, Icon }) => (
+          <FillToggle
+            value={value}
+            Icon={Icon}
+            isChecked={value === fill.value}
+            changeValue={fill.changeValue}
+          />
         ))}
       </div>
 

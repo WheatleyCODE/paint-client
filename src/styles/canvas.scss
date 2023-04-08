@@ -1,39 +1,33 @@
 .canvas {
-  -ms-user-select: none;
-  -moz-user-select: none;
-  -khtml-user-select: none;
-  -webkit-user-select: none;
+  @include no-select;
 
   position: relative;
   display: flex;
   flex-direction: column;
   overflow: auto;
-
   margin: 5px;
-
   height: calc(100% - $settingsHeight - 5px);
 
+  width: 100%;
+  //height: 100%;
+
   .select, .select-connection {
+    @include no-select;
     box-sizing: border-box;
     position: absolute;
-    border: 2px dashed $colorBlue;
+    border: $borderOwnerSelect;
     z-index: 20;
     height: 0;
     width: 0;
     left: 0;
     top: 0;
 
-    -ms-user-select: none !important;
-    -moz-user-select: none !important;
-    -khtml-user-select: none !important;
-    -webkit-user-select: none !important;
-
     .circle {
       display: none;
       border-radius: 50%;
       width: 100%;
       height: 100%;
-      border: 2px dashed $colorOrange;
+      border: $borderOwnerSelect;
     }
 
     .triangle {
@@ -48,7 +42,7 @@
         bottom: 0;
         height: 0;
         width: 100%;
-        border-top: 2px dashed #00ffe1;
+        border: $borderOwnerSelect;
       }
 
       &__right {
@@ -56,7 +50,7 @@
         right: 0;
         bottom: 0;
         width: 0;
-        border-right: 2px dashed #00ffe1;
+        border: $borderOwnerSelect;
       }
 
       &__left {
@@ -64,7 +58,7 @@
         left: 0;
         bottom: 0;
         width: 0;
-        border-left: 2px dashed #00ffe1;
+        border: $borderOwnerSelect;
       }
     }
 
@@ -100,6 +94,33 @@
       border: 2px dashed #ae2ad9;
     }
   }
+
+  &__resize-right, &__resize-bottom {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 200;
+
+    &:hover {
+      opacity: 1 !important;
+    }
+  }
+
+  &__resize-right {
+    cursor: col-resize;
+    right: -8px;
+    width: 8px;
+    height: 100%;
+    border-left: 2px dotted #0167ff;
+  }
+
+  &__resize-bottom {
+    cursor: row-resize;
+    bottom: -8px;
+    width: 100%;
+    height: 8px;
+    border-top: 2px dotted #0167ff;
+  }
 }
 
 #shield {
@@ -113,6 +134,5 @@
 
 canvas {
   position: relative;
-  //border: $border;
   background: $colorWhite;
 }

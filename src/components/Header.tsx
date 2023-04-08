@@ -4,7 +4,7 @@ import { Button } from 'react-bootstrap';
 import { useCanvasRestore, useSocket } from '../hooks';
 import { SocketMethods } from '../types';
 
-export const SettingsBar = () => {
+export const Header = () => {
   const { socketNext } = useSocket();
   const { undo, redo } = useCanvasRestore();
 
@@ -19,8 +19,8 @@ export const SettingsBar = () => {
   };
 
   return (
-    <div className="settings-bar">
-      <div className="settings-bar__left">
+    <div className="header">
+      <div className="header__left">
         <Button onClick={undoHandler} className="btn btn-cian" type="submit">
           <MdUndo className="icon" />
         </Button>
@@ -30,13 +30,13 @@ export const SettingsBar = () => {
         </Button>
       </div>
 
-      <div className="settings-bar__right">
-        <h1 className="settings-bar__title">MAGIC PAINT ONLINE</h1>
-        <div className="settings-bar__users">
-          <div className="settings-bar__user">
+      <div className="header__right">
+        <h1 className="header__title">MAGIC PAINT ONLINE</h1>
+        <div className="header__users">
+          <div className="header__user">
             <MdPerson className="icon" /> Вася
           </div>
-          <div className="settings-bar__user">
+          <div className="header__user">
             <MdPerson className="icon" /> Петя
           </div>
         </div>

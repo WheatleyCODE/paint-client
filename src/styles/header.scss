@@ -1,15 +1,17 @@
-.settings-bar {
+.header {
+  @include no-select;
   display: flex;
+  padding-left: $toolbarPaddingLeft;
   min-height: $settingsHeight;
   width: 100%;
   background: $colorWhite;
 
   .btn {
-    margin-left: $btnMargin;
-    margin-top: $btnMargin;
+    margin-left: $toolbarMargin;
+    margin-top: $toolbarMargin;
     padding: 0;
     height: $btnWidth;
-    width: $btnWidth * 2  + $btnMargin;
+    width: $btnWidth * 2  + $toolbarMargin;
   }
 
   &__left {
@@ -38,8 +40,6 @@
     margin-bottom: 0;
   }
 
-
-
   &__users {
     display: flex;
   }
@@ -53,7 +53,7 @@
     height: $btnWidth;
     border-radius: 2px;
     padding: 0 10px;
-    margin-right: $btnMargin;
+    margin-right: $toolbarMargin;
 
     .icon {
       margin-right: 5px;

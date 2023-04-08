@@ -1,21 +1,20 @@
 $colorWhite: #ffffff;
 $colorWhite2: #ebebeb;
-
-$colorBlue: #1059ff;
+$colorOrange: #ee9000;
+$colorCian: #1c968a;
+$colorCian2: #1a867b;
+$colorCian3: #26aca0;
+$colorOwnerBorder: red;
 
 $settingsHeight: 52px;
-$toolbarWidth: 186px;
+$toolbarWidth: 192px;
+$toolbarPaddingLeft: 6px;
 $border: 1px solid #e3e3e3;
+$borderOwnerSelect: 2px dashed $colorOwnerBorder;
 
-$btnMargin: 8px;
-$btnPadding: 8px;
+$toolbarMargin: 8px;
+$toolbarPadding: 8px;
 $btnWidth: 34px;
 
 $paletteWidth: 160px;
 $paletteMargin: 8px;
-
-$colorOrange: #ee9000;
-
-$colorCian: #1c968a;
-$colorCian2: #1a867b;
-$colorCian3: #26aca0;

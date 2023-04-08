@@ -16,6 +16,7 @@ export const enum SocketMethods {
   CONNECTION = 'CONNECTION',
   DRAW = 'DRAW',
   SELECT = 'SELECT',
+  RESIZE = 'RESIZE',
 }
 
 export interface IDrawSelectParams {
@@ -29,6 +30,11 @@ export interface IDrawSelectParams {
 export interface ISocketPayloadSelect {
   type: ToolTypes.NONE;
   params: IDrawSelectParams;
+}
+
+export interface ISocketPayloadResize {
+  type: ToolTypes.NONE;
+  params: { width: number; height: number; sWidth: number; sHeight: number };
 }
 
 export interface ISocketPayloadBrush {
@@ -92,6 +98,11 @@ export interface ISocketDraw extends ISocketIDS {
   payload: SocketPayload;
 }
 
+export interface ISocketResize extends ISocketIDS {
+  method: SocketMethods.RESIZE;
+  payload: ISocketPayloadResize;
+}
+
 export type SocketPayload =
   | ISocketPayloadBrush
   | ISocketPayloadRect
@@ -99,7 +110,8 @@ export type SocketPayload =
   | ISocketPayloadCircle
   | ISocketPayloadTriangle
   | ISocketPayloadLine
-  | ISocketPayloadArbitrary;
+  | ISocketPayloadArbitrary
+  | ISocketPayloadResize;
 
 export type SocketData =
   | ISocketConnection
@@ -107,4 +119,5 @@ export type SocketData =
   | ISocketPushUndo
   | ISocketUndo
   | ISocketRedo
-  | ISocketSelect;
+  | ISocketSelect
+  | ISocketResize;

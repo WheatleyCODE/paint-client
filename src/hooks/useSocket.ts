@@ -23,9 +23,23 @@ export const useSocket = () => {
     socket.send(JSON.stringify(data));
   };
 
+  const socketSend = (method: SocketMethods, id: string, name: string, payload?: SocketPayload) => {
+    const data = {
+      id: params.id,
+      username,
+      method,
+      payload,
+    };
+
+    if (!socket) return;
+
+    socket.send(JSON.stringify(data));
+  };
+
   return {
     socket,
     socketObs,
     socketNext,
+    socketSend,
   };
 };
