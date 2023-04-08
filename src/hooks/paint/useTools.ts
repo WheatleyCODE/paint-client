@@ -277,14 +277,6 @@ export const useTools = ({ observables, changeLineWidth }: IUseToolsParams): ITo
   }, []);
 
   useEffect(() => {
-    if (currentEffect === EffectTypes.NONE) {
-      changeLineWidth(DEFAULT_LINE_WIDTH);
-      dispatch(paintActions.changeToolSettings({ lineWidth: DEFAULT_LINE_WIDTH }));
-      currentTool?.setInitLineWidth(DEFAULT_LINE_WIDTH);
-      currentTool?.destroyEvents();
-      currentTool?.init();
-    }
-
     if (currentTool) {
       if (currentTool.type === ToolTypes.BRUSH || currentTool.type === ToolTypes.MAGIC) {
         const tool = currentTool as IBrush;
@@ -303,6 +295,16 @@ export const useTools = ({ observables, changeLineWidth }: IUseToolsParams): ITo
       }
     }
   }, [currentEffect, currentTool]);
+
+  useEffect(() => {
+    if (currentEffect === EffectTypes.NONE) {
+      changeLineWidth(DEFAULT_LINE_WIDTH);
+      dispatch(paintActions.changeToolSettings({ lineWidth: DEFAULT_LINE_WIDTH }));
+      currentTool?.setInitLineWidth(DEFAULT_LINE_WIDTH);
+      currentTool?.destroyEvents();
+      currentTool?.init();
+    }
+  }, [currentEffect]);
 
   return {
     current: currentTool,

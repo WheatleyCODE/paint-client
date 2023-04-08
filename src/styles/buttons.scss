@@ -6,14 +6,21 @@
   transform: rotate(-35deg);
 }
 
+label.btn-cian {
+  &:hover {
+    background-color: $colorCian2 !important;
+    border-color: $colorCian2 !important;
+  }
+}
+
 .btn-cian {
   border-radius: 2px;
   background-color: $colorCian;
   border-color: $colorCian;
 
   &:hover {
-    background-color: $colorCian2 !important;
-    border-color: $colorCian2 !important;
+    background-color: $colorCian2;
+    border-color: $colorCian2;
   }
 
   &:active {

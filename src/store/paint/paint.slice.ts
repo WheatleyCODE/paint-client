@@ -24,8 +24,8 @@ const initialState: IPaintState = {
     effectSpeed: 5,
   },
   canvasSettings: {
-    width: 900,
-    height: 900,
+    width: 500,
+    height: 500,
   },
   changeStep: 2,
   undoList: [],
@@ -39,10 +39,18 @@ export const paintSlice = createSlice({
   reducers: {
     pushToRedo: (state, { payload }: PayloadAction<ISaveCanvas>) => {
       state.redoList.push(payload);
+
+      if (state.redoList.length > 11) {
+        state.redoList.shift();
+      }
     },
 
     setRedo: (state, { payload }: PayloadAction<ISaveCanvas[]>) => {
       state.redoList = payload;
+
+      if (state.redoList.length > 10) {
+        state.redoList = state.redoList.slice(state.redoList.length - 10);
+      }
     },
 
     changeToolSettings: (state, { payload }: PayloadAction<ChangeTSFilds>) => {
@@ -55,10 +63,18 @@ export const paintSlice = createSlice({
 
     pushToUndo: (state, { payload }: PayloadAction<ISaveCanvas>) => {
       state.undoList.push(payload);
+
+      if (state.undoList.length > 11) {
+        state.undoList.shift();
+      }
     },
 
     setUndo: (state, { payload }: PayloadAction<ISaveCanvas[]>) => {
       state.undoList = payload;
+
+      if (state.undoList.length > 10) {
+        state.undoList = state.undoList.slice(state.undoList.length - 10);
+      }
     },
 
     addConnection: (state, { payload }: PayloadAction<string>) => {

@@ -73,18 +73,9 @@ export abstract class Shape extends Tool implements IShape {
     }
 
     if (selWidth < 0) {
-      const bodyRect = document.body.getBoundingClientRect();
       selWidth *= -1;
       params.left = undefined;
       params.right = width - startCoords.x;
-
-      if (rect.width + rect.left > bodyRect.width) {
-        params.right = bodyRect.width - rect.left - startCoords.x;
-      }
-
-      if (rect.left < TOOLBAR_WIDTH) {
-        params.right -= TOOLBAR_WIDTH - rect.left;
-      }
     }
 
     params.height = selHight;

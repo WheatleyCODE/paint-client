@@ -135,7 +135,10 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     method: 'post',
   });
 
-  const { data, req: getImage } = useRequest<string, unknown>({
+  const { data, req: getImage } = useRequest<
+    { image: string; size: { width: number; height: number } },
+    unknown
+  >({
     url: `image?id=${params.id}`,
     method: 'get',
   });
@@ -148,7 +151,8 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
       return;
     }
 
-    const onload$ = getStreamOnloadImg(data);
+    dispatch(paintActions.setCanvasSize({ width: data.size.width, height: data.size.height }));
+    const onload$ = getStreamOnloadImg(data.image);
 
     onload$.subscribe((img) => {
       setImage(img);
@@ -164,7 +168,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
 
   return (
     <div className="canvas">
-      <div className="position-relative">
+      <div style={{ width, height }} className="position-relative">
         {connections.map((name) => (
           <div data-select={name} className="select-connection">
             <div className="circle" />
