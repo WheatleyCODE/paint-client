@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import { ITools } from '../../../hooks/paint/useTools';
+import { ITools } from '../../../hooks/paint/usePaintTools';
 import { useTypedSelector } from '../../../hooks';
 import { useCreateToolButtons } from './useCreateToolButtons';
 import { ToolButton } from './ToolButton';

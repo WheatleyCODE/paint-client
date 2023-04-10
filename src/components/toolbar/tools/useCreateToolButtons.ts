@@ -9,7 +9,7 @@ import { IoTriangle } from 'react-icons/io5';
 import { FaDrawPolygon } from 'react-icons/fa';
 import { RiEraserFill } from 'react-icons/ri';
 import { ToolTypes } from '../../../types';
-import { ITools } from '../../../hooks/paint/useTools';
+import { ITools } from '../../../hooks/paint/usePaintTools';
 
 export const useCreateToolButtons = (tools: ITools) => {
   const {

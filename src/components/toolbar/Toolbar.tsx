@@ -5,7 +5,7 @@ import { ToolbarTools } from './tools/ToolbarTools';
 import Palette from './Palette';
 import { BrushPreview } from './BrushPreview';
 import { ISettings } from '../../hooks/paint/usePaint';
-import { ITools } from '../../hooks/paint/useTools';
+import { ITools } from '../../hooks/paint/usePaintTools';
 
 export interface IToolbarProps {
   settings: ISettings;
