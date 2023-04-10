@@ -1,17 +1,9 @@
 import { Brush, BrushBuilder } from '../index';
-import { IToolSettings, SocketMethods, SocketPayload, ToolTypes } from '../../types';
-import { IPaintObservables } from '../../hooks/paint/usePaintObservables';
+import { ToolTypes } from '../../types';
+import { ICreateBrushParams } from '../../types/create-tools.interfaces';
 import { colors } from '../../consts';
 
-export interface ICreateEraserParams {
-  shield?: HTMLDivElement;
-  canvas?: HTMLCanvasElement;
-  toolSettings: IToolSettings;
-  observables: IPaintObservables;
-  socketNext: (method: SocketMethods, payload: SocketPayload) => void;
-}
-
-export const createEraser = (params: ICreateEraserParams): Brush | undefined => {
+export const createEraser = (params: ICreateBrushParams): Brush | undefined => {
   const { shield, canvas, toolSettings, observables, socketNext } = params;
 
   const { lineWidth$ } = observables;

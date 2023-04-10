@@ -128,8 +128,6 @@ export class Arbitrary extends Shape implements IArbitrary {
       });
 
       Arbitrary.draw(this.canvasCtx, params);
-
-      // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
     });
 

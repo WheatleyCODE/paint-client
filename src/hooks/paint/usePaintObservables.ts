@@ -1,6 +1,6 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { debounceTime, filter, fromEvent, map, Observable } from 'rxjs';
-import { Change } from '../../types';
+import { Change } from '../../types/toolbar.interfaces';
 import { IPainToolSettings } from './usePaintToolSettings';
 
 export interface IPaintObservables {

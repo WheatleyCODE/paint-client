@@ -13,6 +13,14 @@ export const enum ToolTypes {
   MAGIC = 'MAGIC',
 }
 
+export const enum ShapeTypes {
+  RECT = 'RECT',
+  CIRCLE = 'CIRCLE',
+  TRIANGLE = 'TRIANGLE',
+  LINE = 'LINE',
+  ARBITRARY = 'ARBITRARY',
+}
+
 export const enum EffectTypes {
   RAINBOW = 'RAINBOW',
   NONE = 'NONE',

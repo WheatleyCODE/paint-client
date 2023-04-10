@@ -1,21 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import {
-  ArbitraryBuilder,
-  BrushBuilder,
-  CircleBuilder,
-  LineBuilder,
-  RectBuilder,
-  TriangleBuilder,
-} from '../../tools';
 import { useCanvas } from '../canvas';
 import { useSocket } from '../useSocket';
 import { useTypedDispatch, useTypedSelector } from '../redux';
-import { colors, DEFAULT_LINE_WIDTH } from '../../consts';
+import { DEFAULT_LINE_WIDTH } from '../../consts';
 import { paintActions } from '../../store';
-import { EffectTypes, IBrush, Tool, ToolTypes } from '../../types';
+import { EffectTypes, IBrush, ShapeTypes, Tool, ToolTypes } from '../../types';
 import { IPaintObservables } from './usePaintObservables';
-import { createBrush, createEraser } from '../../tools/creators';
-import { createMagic } from '../../tools/creators/createMagic';
+import * as creators from '../../tools/creators';
 
 export interface ITools {
   current: Tool | null;
@@ -63,12 +54,19 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
     };
   };
 
-  // Brushes
+  const getShapeParams = () => ({
+    shield: shield.current,
+    select: select.current,
+    canvas,
+    socketNext,
+    observables,
+    toolSettings,
+  });
+
   const selectBrush = () => {
     clearCurrentTool();
-    if (!shield.current || !canvas) return;
 
-    const brush = createBrush({
+    const brush = creators.createBrush({
       shield: shield.current,
       canvas,
       toolSettings,
@@ -87,9 +85,8 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
 
   const selectEraser = () => {
     clearCurrentTool();
-    if (!shield.current || !canvas) return;
 
-    const eraser = createEraser({
+    const eraser = creators.createEraser({
       shield: shield.current,
       canvas,
       socketNext,
@@ -106,9 +103,8 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
 
   const selectMagic = () => {
     clearCurrentTool();
-    if (!shield.current || !canvas) return;
 
-    const magic = createMagic({
+    const magic = creators.createMagic({
       shield: shield.current,
       canvas,
       toolSettings,
@@ -125,76 +121,22 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
     dispatch(paintActions.setCurrentTool(magic.type));
   };
 
-  // Shapes
   const selectRect = () => {
     clearCurrentTool();
-    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
 
-    if (!shield.current || !select.current) return;
-    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
-
-    const rect = new RectBuilder(shield.current, canvas)
-      .setMajorColor$(majorColor$)
-      .setInitMajorColor(toolSettings.majorColor)
-      .setMinorColor$(minorColor$)
-      .setInitMinorColor(toolSettings.minorColor)
-      .setLineWidth$(lineWidth$)
-      .setInitLineWidth(toolSettings.lineWidth)
-      .setSocketNext(socketNext)
-      .setFill$(fill$)
-      .setInitShapeFillType(toolSettings.currentShapeFillType)
-      .setSelectSquare(select.current)
-      .build();
+    const rect = creators.createShape(ShapeTypes.RECT, getShapeParams());
+    if (!rect) return;
 
     rect.init();
     setCurrentTool(rect);
     dispatch(paintActions.setCurrentTool(rect.type));
   };
 
-  const selectLine = () => {
-    clearCurrentTool();
-    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
-
-    if (!shield.current || !select.current) return;
-    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
-
-    const line = new LineBuilder(shield.current, canvas)
-      .setMajorColor$(majorColor$)
-      .setInitMajorColor(toolSettings.majorColor)
-      .setMinorColor$(minorColor$)
-      .setInitMinorColor(toolSettings.minorColor)
-      .setLineWidth$(lineWidth$)
-      .setInitLineWidth(toolSettings.lineWidth)
-      .setSocketNext(socketNext)
-      .setFill$(fill$)
-      .setInitShapeFillType(toolSettings.currentShapeFillType)
-      .setSelectSquare(select.current)
-      .build();
-
-    line.init();
-    setCurrentTool(line);
-    dispatch(paintActions.setCurrentTool(line.type));
-  };
-
   const selectCircle = () => {
     clearCurrentTool();
-    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
 
-    if (!shield.current || !select.current) return;
-    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
-
-    const circle = new CircleBuilder(shield.current, canvas)
-      .setMajorColor$(majorColor$)
-      .setInitMajorColor(toolSettings.majorColor)
-      .setMinorColor$(minorColor$)
-      .setInitMinorColor(toolSettings.minorColor)
-      .setLineWidth$(lineWidth$)
-      .setInitLineWidth(toolSettings.lineWidth)
-      .setSocketNext(socketNext)
-      .setFill$(fill$)
-      .setInitShapeFillType(toolSettings.currentShapeFillType)
-      .setSelectSquare(select.current)
-      .build();
+    const circle = creators.createShape(ShapeTypes.CIRCLE, getShapeParams());
+    if (!circle) return;
 
     circle.init();
     setCurrentTool(circle);
@@ -203,23 +145,9 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
 
   const selectTriangle = () => {
     clearCurrentTool();
-    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
 
-    if (!shield.current || !select.current) return;
-    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
-
-    const triangle = new TriangleBuilder(shield.current, canvas)
-      .setMajorColor$(majorColor$)
-      .setInitMajorColor(toolSettings.majorColor)
-      .setMinorColor$(minorColor$)
-      .setInitMinorColor(toolSettings.minorColor)
-      .setLineWidth$(lineWidth$)
-      .setInitLineWidth(toolSettings.lineWidth)
-      .setSocketNext(socketNext)
-      .setFill$(fill$)
-      .setInitShapeFillType(toolSettings.currentShapeFillType)
-      .setSelectSquare(select.current)
-      .build();
+    const triangle = creators.createShape(ShapeTypes.TRIANGLE, getShapeParams());
+    if (!triangle) return;
 
     triangle.init();
     setCurrentTool(triangle);
@@ -233,22 +161,27 @@ export const usePaintTools = ({ observables, changeLineWidth }: IUsePaintToolsPa
     if (!shield.current || !select.current) return;
     if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
 
-    const arbitrary = new ArbitraryBuilder(shield.current, canvas)
-      .setMajorColor$(majorColor$)
-      .setInitMajorColor(toolSettings.majorColor)
-      .setMinorColor$(minorColor$)
-      .setInitMinorColor(toolSettings.minorColor)
-      .setLineWidth$(lineWidth$)
-      .setInitLineWidth(toolSettings.lineWidth)
-      .setSocketNext(socketNext)
-      .setFill$(fill$)
-      .setInitShapeFillType(toolSettings.currentShapeFillType)
-      .setSelectSquare(select.current)
-      .build();
+    const arbitrary = creators.createShape(ShapeTypes.ARBITRARY, getShapeParams());
+    if (!arbitrary) return;
 
     arbitrary.init();
     setCurrentTool(arbitrary);
     dispatch(paintActions.setCurrentTool(arbitrary.type));
+  };
+
+  const selectLine = () => {
+    clearCurrentTool();
+    const { majorColor$, fill$, minorColor$, lineWidth$ } = observables;
+
+    if (!shield.current || !select.current) return;
+    if (!canvas || !majorColor$ || !minorColor$ || !fill$ || !lineWidth$) return;
+
+    const line = creators.createShape(ShapeTypes.LINE, getShapeParams());
+    if (!line) return;
+
+    line.init();
+    setCurrentTool(line);
+    dispatch(paintActions.setCurrentTool(line.type));
   };
 
   useEffect(() => {

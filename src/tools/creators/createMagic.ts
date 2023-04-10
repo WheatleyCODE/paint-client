@@ -1,15 +1,10 @@
 import { Brush } from '../Brush';
 import { BrushBuilder } from '../builders';
-import { IPaintObservables } from '../../hooks/paint/usePaintObservables';
 import { colors } from '../../consts';
-import { EffectTypes, IToolSettings, SocketMethods, SocketPayload, ToolTypes } from '../../types';
+import { EffectTypes, ToolTypes } from '../../types';
+import { ICreateBrushParams } from '../../types/create-tools.interfaces';
 
-export interface ICreateMagicParams {
-  shield?: HTMLDivElement;
-  canvas?: HTMLCanvasElement;
-  toolSettings: IToolSettings;
-  observables: IPaintObservables;
-  socketNext: (method: SocketMethods, payload: SocketPayload) => void;
+export interface ICreateMagicParams extends ICreateBrushParams {
   currentEffect: EffectTypes;
   changeLineWidth: (num: number) => void;
 }
