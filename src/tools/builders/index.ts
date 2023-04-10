@@ -4,3 +4,4 @@ export { CircleBuilder } from './CircleBuilder';
 export { TriangleBuilder } from './TriangleBuilder';
 export { LineBuilder } from './LineBuilder';
 export { ArbitraryBuilder } from './ArbitraryBuilder';
+export { ShapeBuilderFactory } from './ShapeBuildersFactory';

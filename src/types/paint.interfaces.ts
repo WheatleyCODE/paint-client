@@ -1,6 +1,14 @@
 import { EffectTypes, ShapeFillTypes, ToolTypes } from './tool-params.interfaces';
 import { DeepPartial } from './utils.interfaces';
 
+export interface IReqImageData {
+  image: string;
+  size: {
+    width: number;
+    height: number;
+  };
+}
+
 export interface IToolSettings {
   currentShapeFillType: ShapeFillTypes;
   majorColor: string;

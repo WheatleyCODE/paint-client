@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ITools } from '../../../hooks/paint/usePaintTools';
 import { useTypedSelector } from '../../../hooks';
-import { useCreateToolButtons } from './useCreateToolButtons';
+import { createToolButtons } from './createToolButtons';
 import { ToolButton } from './ToolButton';
 import { EffectButton } from './EffectButton';
 import { effects } from '../../../consts';
@@ -16,7 +16,7 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
   const { currentEffect } = useTypedSelector((state) => state.paint);
 
   const type = current?.type || ToolTypes.NONE;
-  const toolButtons = useCreateToolButtons(tools);
+  const toolButtons = createToolButtons(tools);
 
   return (
     <div className="toolbar-tools">

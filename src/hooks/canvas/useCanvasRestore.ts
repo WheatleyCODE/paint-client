@@ -1,7 +1,7 @@
 import { useCanvas } from './useCanvas';
 import { useTypedDispatch, useTypedSelector } from '../redux';
 import { paintActions as PA } from '../../store';
-import { getStreamOnloadImg } from '../../utils';
+import { getSaveDataCanvas, getStreamOnloadImg } from '../../utils';
 
 export const useCanvasRestore = () => {
   const { canvas, context, drawImageCanvas } = useCanvas();
@@ -82,7 +82,14 @@ export const useCanvasRestore = () => {
     });
   };
 
+  const pushToUndo = () => {
+    if (!canvas) return;
+    const saveData = getSaveDataCanvas(canvas);
+    dispatch(PA.pushToUndo(saveData));
+  };
+
   return {
+    pushToUndo,
     redo,
     undo,
   };

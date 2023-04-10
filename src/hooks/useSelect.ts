@@ -14,17 +14,14 @@ export const useSelect = () => {
   const { connections } = useTypedSelector((state) => state.paint);
 
   useEffect(() => {
-    const selectData = connections.reduce((acc, username) => {
+    dev.current = connections.reduce((acc, username) => {
       acc[username] = document.querySelector(`[data-select="${username}"]`) as HTMLDivElement;
       return acc;
     }, {} as ISelectData);
-
-    dev.current = selectData;
   }, [connections]);
 
   const drawSelect = (params: IDrawSelectParams, username: string) => {
     if (!dev.current || !canvas) return;
-
     Shape.drawSelectSquare(dev.current[username], canvas, params);
   };
 

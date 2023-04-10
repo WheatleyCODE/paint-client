@@ -11,7 +11,7 @@ import { RiEraserFill } from 'react-icons/ri';
 import { ToolTypes } from '../../../types';
 import { ITools } from '../../../hooks/paint/usePaintTools';
 
-export const useCreateToolButtons = (tools: ITools) => {
+export const createToolButtons = (tools: ITools) => {
   const {
     selectBrush,
     selectRect,

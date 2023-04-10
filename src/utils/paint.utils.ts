@@ -69,3 +69,7 @@ export const calcTriangle = (width: number, height: number): TriangleParams => {
 
   return triangleParams;
 };
+
+export const generateId = () => {
+  return `f${Date.now().toString(16)}w`;
+};
