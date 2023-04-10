@@ -7,10 +7,10 @@ import {
   RectBuilder,
   TriangleBuilder,
 } from '../../tools';
-import { useCanvas } from '../useCanvas';
+import { useCanvas } from '../canvas';
 import { useSocket } from '../useSocket';
 import { useTypedDispatch, useTypedSelector } from '../redux';
-import { colors, DEFAULT_LINE_WIDTH } from '../../consts/paint.consts';
+import { colors, DEFAULT_LINE_WIDTH } from '../../consts';
 import { paintActions } from '../../store';
 import { EffectTypes, IBrush, IObservables, Tool, ToolTypes } from '../../types';
 

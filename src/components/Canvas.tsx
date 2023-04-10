@@ -4,6 +4,7 @@ import { useParams } from 'react-router-dom';
 import { paintActions, paintActions as PA } from '../store';
 import {
   useCanvas,
+  useCanvasDraw,
   useCanvasResize,
   useCanvasRestore,
   useRequest,
@@ -22,13 +23,15 @@ export interface ICanvasProps {
 export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { username, currentTool, connections } = useTypedSelector((state) => state.paint);
-  const { canvas, draw, setImage, canvasSettings, setImageResize } = useCanvas();
+  const { username, currentTool, connections, canvasSettings } = useTypedSelector(
+    (state) => state.paint
+  );
+  const { canvas, drawImageCanvas, clearCanvas } = useCanvas();
+  const { draw } = useCanvasDraw();
   const { drawSelect } = useSelect();
   const { undo, redo } = useCanvasRestore();
   const { rightRef, bottomRef } = useCanvasResize();
   const { socketObs, socketNext } = useSocket();
-  const { width, height } = canvasSettings;
 
   const changeSize = ({ params: param }: ISocketPayloadResize) => {
     const { sWidth, sHeight, width: w, height: h } = param;
@@ -42,15 +45,9 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
       dispatch(paintActions.setCanvasSize({ width: w, height: h }));
 
       setTimeout(() => {
-        setImageResize(img, w, h, sWidth, sHeight);
+        drawImageCanvas(img, { width: w, height: h, sWidth, sHeight });
       }, 0);
     });
-  };
-
-  const clearCanvas = () => {
-    if (!canvas) return;
-    // eslint-disable-next-line no-self-assign
-    canvas.width = canvas.width;
   };
 
   const pushToUndo = () => {
@@ -155,7 +152,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     const onload$ = getStreamOnloadImg(data.image);
 
     onload$.subscribe((img) => {
-      setImage(img);
+      drawImageCanvas(img);
     });
   }, [data, username]);
 
@@ -165,6 +162,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   };
 
   const cursor = getCursor(currentTool, lineWidthValue);
+  const { width, height } = canvasSettings;
 
   return (
     <div className="canvas">

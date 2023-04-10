@@ -8,6 +8,6 @@ export interface IPaintContext {
   socketObs?: Observable<SocketData>;
 }
 
-const ForbiddenDataForRedax = createContext<IPaintContext>({});
+const ForbiddenDataForRedux = createContext<IPaintContext>({});
 
-export const PaintContext = ForbiddenDataForRedax;
+export const PaintContext = ForbiddenDataForRedux;

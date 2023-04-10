@@ -30,6 +30,8 @@ module.exports = {
     'import/prefer-default-export': 'off',
     'no-param-reassign': 'off',
     'default-param-last': 'off',
+    'no-self-assign': 'off',
+    'consistent-return': 'off',
     'max-len': ['error', 100],
     'react-hooks/exhaustive-deps': ['warn'],
     'react/function-component-definition': [

@@ -1,39 +1,32 @@
 import React from 'react';
+import { useParams } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { MdDelete, MdSave } from 'react-icons/md';
-import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../../store';
-import { downloadCanvasImg } from '../../utils';
 import { useCanvas, useSocket, useTypedDispatch } from '../../hooks';
-import { ISaveCanvas, SocketMethods } from '../../types';
+import { getSaveDataCanvas } from '../../utils';
+import { SocketMethods } from '../../types';
 
 export const ToolbarFooter = () => {
   const params = useParams();
   const dispatch = useTypedDispatch();
-  const { canvas } = useCanvas();
+  const { canvas, clearCanvas, downloadImageCanvas } = useCanvas();
   const { socketNext } = useSocket();
 
   const clear = () => {
     if (!canvas) return;
-
-    const saveData: ISaveCanvas = {
-      width: canvas.width,
-      height: canvas.height,
-      image: canvas.toDataURL(),
-    };
+    const saveData = getSaveDataCanvas(canvas);
 
     socketNext(SocketMethods.PUSH_UNDO);
     dispatch(PA.pushToUndo(saveData));
 
     socketNext(SocketMethods.CLEAR);
-    // eslint-disable-next-line no-self-assign
-    canvas.width = canvas.width;
+    clearCanvas();
   };
 
   const download = () => {
-    if (!canvas || !params.id) return;
-    const dataUrl = canvas.toDataURL();
-    downloadCanvasImg(dataUrl, params.id);
+    if (!params.id) return;
+    downloadImageCanvas(params.id);
   };
 
   return (

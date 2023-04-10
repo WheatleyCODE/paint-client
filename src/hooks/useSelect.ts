@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { IDrawSelectParams } from '../types';
 import { useTypedSelector } from './redux';
 import { Shape } from '../tools/abstract/Shape';
-import { useCanvas } from './useCanvas';
+import { useCanvas } from './canvas';
 
 export interface ISelectData {
   [username: string]: HTMLDivElement;

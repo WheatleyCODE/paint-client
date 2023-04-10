@@ -1,8 +1,7 @@
-export { downloadCanvasImg } from './download.utils';
 export { generateId } from './id.utils';
 export { createStream, getStreamOnloadImg } from './stream.utils';
 export { userValidator } from './validator.utils';
-export { getCursor, applyFillTypeStyles } from './canvas.utils';
+export { getCursor, applyFillTypeStyles, getCVGCursor, getSaveDataCanvas } from './canvas.utils';
 export {
   setStylesOnSelectSquare,
   removeStylesOnSelectSquare,

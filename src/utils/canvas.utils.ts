@@ -1,5 +1,5 @@
 /* eslint-disable max-len */
-import { ShapeFillTypes, ToolTypes } from '../types';
+import { ISaveCanvas, ShapeFillTypes, ToolTypes } from '../types';
 import { cursors } from '../consts';
 
 export const getCVGCursor = (width: number) => {
@@ -33,4 +33,12 @@ export const getCursor = (type: ToolTypes, width: number) => {
       : cursors[type];
 
   return cursor;
+};
+
+export const getSaveDataCanvas = (canvas: HTMLCanvasElement): ISaveCanvas => {
+  return {
+    width: canvas.width,
+    height: canvas.height,
+    image: canvas.toDataURL(),
+  };
 };
