@@ -40,7 +40,6 @@ export const useCanvas = () => {
     }
 
     context.drawImage(image, x, y, width, height);
-    context.stroke();
   };
 
   const clearCanvas = () => {
