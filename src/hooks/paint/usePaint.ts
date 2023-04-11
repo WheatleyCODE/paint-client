@@ -73,6 +73,8 @@ export const usePaint = (): IPaint => {
       majorColor: majorColor.input.value,
       minorColor: minorColor.input.value,
       currentShapeFillType: fill.input.value,
+      lightness: lightness.input.value,
+      saturation: saturation.input.value,
     };
 
     const sub = streamMouseUp$.subscribe(() => {
@@ -82,7 +84,14 @@ export const usePaint = (): IPaint => {
     return () => {
       sub.unsubscribe();
     };
-  }, [lineWidth.input.value, majorColor.input.value, minorColor.input.value, fill.input.value]);
+  }, [
+    lineWidth.input.value,
+    majorColor.input.value,
+    minorColor.input.value,
+    fill.input.value,
+    lightness.input.value,
+    saturation.input.value,
+  ]);
 
   return {
     settings: {
