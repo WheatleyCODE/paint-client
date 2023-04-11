@@ -19,9 +19,9 @@ import {
 
 export class Arbitrary extends Shape implements IArbitrary {
   type = ToolTypes.ARBITRARY;
-  isArbitrary = true;
   protected socketNext: (method: SocketMethods, payload: SocketPayload) => void;
   protected coords: Coords[] = [];
+  protected isEnd = false;
 
   constructor(
     $shield: HTMLDivElement,
@@ -61,7 +61,10 @@ export class Arbitrary extends Shape implements IArbitrary {
     const fill$Stream$ = createStream(this.fill$, this.initShapeFillType);
 
     const streamMouseDown$ = this.mouseDown$.pipe(
-      tap(() => this.save()),
+      tap(() => {
+        this.save();
+        this.isEnd = false;
+      }),
       map(checkMouseButtonAndGetOffsetCoords),
       filter((a) => !a.isDisable),
       withLatestFrom(
@@ -91,6 +94,8 @@ export class Arbitrary extends Shape implements IArbitrary {
     const subscriptionMouseOut = streamMouseOut$.subscribe(({ options }) => {
       const { lineWidth, majorColor, minorColor, fillType, isReverse } = options;
 
+      if (this.isEnd) return;
+
       this.coords = [];
 
       const params: IDrawArbitraryParams = {
@@ -108,6 +113,7 @@ export class Arbitrary extends Shape implements IArbitrary {
       });
 
       Arbitrary.draw(this.canvasCtx, params);
+      this.isEnd = true;
     });
 
     const subscriptionMouseDown = streamMouseDown$.subscribe(({ coords, options }) => {
