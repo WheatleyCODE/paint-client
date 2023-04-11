@@ -13,7 +13,7 @@ export const ToolbarFooter = () => {
   const { canvas, clearCanvas, downloadImageCanvas } = useCanvas();
   const { socketNext } = useSocket();
 
-  const { req: saveImg } = useRequest({
+  const { req: saveImg } = useRequest<any, { image: string }, unknown>({
     url: `image?id=${params.id}`,
     method: 'post',
   });
@@ -32,8 +32,8 @@ export const ToolbarFooter = () => {
     socketNext(SocketMethods.CLEAR);
     clearCanvas();
 
-    const img = canvas.toDataURL();
-    saveImg({ img });
+    const image = canvas.toDataURL();
+    saveImg({ image });
   };
 
   const download = () => {

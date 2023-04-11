@@ -36,7 +36,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     pushToUndo();
   };
 
-  const { req: saveImg } = useRequest({
+  const { req: saveImg } = useRequest<any, { image: string }, unknown>({
     url: `image?id=${params.id}`,
     method: 'post',
   });
@@ -63,8 +63,11 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   }, [data, username]);
 
   const saveImage = () => {
-    const img = canvas?.toDataURL();
-    saveImg({ img });
+    const image = canvas?.toDataURL();
+
+    if (image) {
+      saveImg({ image });
+    }
   };
 
   const cursor = getCursor(currentTool, lineWidthValue, isActive);

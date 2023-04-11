@@ -7,11 +7,11 @@ export interface IRequestStatus {
   error: any | null;
 }
 
-export interface IRequestReturnStatus<T, E = unknown> {
+export interface IRequestReturnStatus<T, F, E = unknown> {
   data: T;
   isLoading: boolean;
   error: E;
-  req: (filds?: any) => Promise<void>;
+  req: (filds?: F) => Promise<void>;
 }
 
 export type Method = 'post' | 'get';
@@ -27,12 +27,14 @@ export const initState: IRequestStatus = {
   data: undefined,
 };
 
-export const useRequest = <T, E = unknown>(prms: IUseRequestParams): IRequestReturnStatus<T, E> => {
+export const useRequest = <T, F, E = unknown>(
+  prms: IUseRequestParams
+): IRequestReturnStatus<T, F, E> => {
   const { url, method } = prms;
 
   const [reqStatus, setReqStatus] = useState<IRequestStatus>(initState);
 
-  const req = async (filds?: any) => {
+  const req = async (filds?: F) => {
     try {
       setReqStatus((p) => ({ ...p, isLoading: true }));
       const { data } = await $api[method]<T>(url, filds);

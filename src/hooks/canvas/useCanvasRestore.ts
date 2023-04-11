@@ -16,7 +16,7 @@ export const useCanvasRestore = () => {
     };
   };
 
-  const undo = () => {
+  const undo = (callback?: (canvas: HTMLCanvasElement) => void) => {
     if (!canvas || !context) return;
     const newUndoList = [...undoList];
     if (newUndoList.length <= 0) return;
@@ -46,10 +46,11 @@ export const useCanvasRestore = () => {
       }
 
       dispatch(PA.setUndo(newUndoList));
+      if (callback) callback(canvas);
     });
   };
 
-  const redo = () => {
+  const redo = (callback?: (canvas: HTMLCanvasElement) => void) => {
     if (!canvas || !context) return;
     const newRedoList = [...redoList];
     if (newRedoList.length <= 0) return;
@@ -79,6 +80,7 @@ export const useCanvasRestore = () => {
       }
 
       dispatch(PA.setRedo(newRedoList));
+      if (callback) callback(canvas);
     });
   };
 
