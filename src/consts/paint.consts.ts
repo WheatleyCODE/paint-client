@@ -31,7 +31,10 @@ export const DEFAULT_LINE_WIDTH = 10;
 
 export const TOOLBAR_WIDTH = 197;
 export const SELECT_BORDER_SUM = 6;
+
+export const MOUSE_LEFT = 1;
 export const MOUSE_RIGHT = 2;
+export const MOUSE_CENTER = 4;
 
 export const effects = [
   {

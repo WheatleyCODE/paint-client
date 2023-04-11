@@ -47,6 +47,7 @@ export const ToolbarSettings: FC<IToolbarSettingsProps> = (props) => {
       <div className="toolbar-settings__fill" ref={fill.ref}>
         {fillRadios.map(({ value, Icon }) => (
           <FillToggle
+            key={value}
             value={value}
             Icon={Icon}
             isChecked={value === fill.value}

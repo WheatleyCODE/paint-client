@@ -26,7 +26,9 @@ export const applyFillTypeStyles = (
   }
 };
 
-export const getCursor = (type: ToolTypes, width: number) => {
+export const getCursor = (type: ToolTypes, width: number, isMove: boolean) => {
+  if (isMove) return 'grabbing';
+
   const cursor =
     type === ToolTypes.BRUSH || type === ToolTypes.ERASER || type === ToolTypes.MAGIC
       ? getCVGCursor(width)

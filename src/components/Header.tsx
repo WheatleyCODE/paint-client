@@ -35,7 +35,7 @@ export const Header = () => {
         <h1 className="header__title">MAGIC PAINT ONLINE</h1>
         <div className="header__users">
           {connections.map((name) => (
-            <div className="header__user">
+            <div key={name} className="header__user">
               <MdPerson className="icon" /> {name}
             </div>
           ))}

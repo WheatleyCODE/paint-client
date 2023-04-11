@@ -1,6 +1,11 @@
-import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { applyFillTypeStyles, createStream, removeStylesOnSelectSquare } from '../utils';
+import {
+  applyFillTypeStyles,
+  checkMouseButtonAndGetOffsetCoords,
+  createStream,
+  removeStylesOnSelectSquare,
+} from '../utils';
 import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
@@ -62,10 +67,8 @@ export class Circle extends Shape implements ICircle {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({
-        startCoords: { x: e.offsetX, y: e.offsetY },
-        isReverse: e.buttons === MOUSE_RIGHT,
-      })),
+      map(checkMouseButtonAndGetOffsetCoords),
+      filter((a) => !a.isDisable),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,
@@ -137,7 +140,6 @@ export class Circle extends Shape implements ICircle {
 
       Circle.draw(this.canvasCtx, params);
 
-      // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
       this.socketNext(SocketMethods.SELECT, {
         params: { startCoords, coords, figure: this.type, isShow: false },

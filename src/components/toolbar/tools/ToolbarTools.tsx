@@ -23,7 +23,7 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
       <div className="toolbar-tools__title">Tools</div>
       <div className="toolbar-tools__tools">
         {toolButtons.map(({ select, toolType, Icon }) => (
-          <ToolButton onClick={select} isActive={toolType === type} Icon={Icon} />
+          <ToolButton key={toolType} onClick={select} isActive={toolType === type} Icon={Icon} />
         ))}
       </div>
 
@@ -31,6 +31,7 @@ export const ToolbarTools: FC<IToolbarToolsProps> = ({ tools }) => {
       <div className="toolbar-tools__effects">
         {effects.map(({ Icon, effectType }) => (
           <EffectButton
+            key={effectType}
             effectType={effectType}
             isActive={currentEffect === effectType}
             Icon={Icon}

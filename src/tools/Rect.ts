@@ -1,7 +1,11 @@
-import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { applyFillTypeStyles, createStream, removeStylesOnSelectSquare } from '../utils';
-import { MOUSE_RIGHT } from '../consts';
+import {
+  applyFillTypeStyles,
+  checkMouseButtonAndGetOffsetCoords,
+  createStream,
+  removeStylesOnSelectSquare,
+} from '../utils';
 import {
   Change,
   IDrawRectParams,
@@ -62,10 +66,8 @@ export class Rect extends Shape implements IRect {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({
-        startCoords: { x: e.offsetX, y: e.offsetY },
-        isReverse: e.buttons === MOUSE_RIGHT,
-      })),
+      map(checkMouseButtonAndGetOffsetCoords),
+      filter((a) => !a.isDisable),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,

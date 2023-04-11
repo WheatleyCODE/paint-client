@@ -1,6 +1,11 @@
-import { map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, switchMap, takeLast, takeUntil, tap, withLatestFrom } from 'rxjs';
 import { Shape } from './abstract/Shape';
-import { createStream, applyFillTypeStyles, removeStylesOnSelectSquare } from '../utils';
+import {
+  createStream,
+  applyFillTypeStyles,
+  removeStylesOnSelectSquare,
+  checkMouseButtonAndGetOffsetCoords,
+} from '../utils';
 import { MOUSE_RIGHT } from '../consts';
 import {
   Change,
@@ -61,10 +66,8 @@ export class Line extends Shape implements ILine {
 
     const streamMouseDown$ = this.mouseDown$.pipe(
       tap(() => this.save()),
-      map((e) => ({
-        startCoords: { x: e.offsetX, y: e.offsetY },
-        isReverse: e.buttons === MOUSE_RIGHT,
-      })),
+      map(checkMouseButtonAndGetOffsetCoords),
+      filter((a) => !a.isDisable),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,

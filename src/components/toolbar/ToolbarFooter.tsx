@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { MdDelete, MdSave } from 'react-icons/md';
 import { paintActions as PA } from '../../store';
-import { useCanvas, useSocket, useTypedDispatch } from '../../hooks';
+import { useCanvas, useRequest, useSocket, useTypedDispatch } from '../../hooks';
 import { getSaveDataCanvas } from '../../utils';
 import { SocketMethods } from '../../types';
 
@@ -13,7 +13,16 @@ export const ToolbarFooter = () => {
   const { canvas, clearCanvas, downloadImageCanvas } = useCanvas();
   const { socketNext } = useSocket();
 
+  const { req: saveImg } = useRequest({
+    url: `image?id=${params.id}`,
+    method: 'post',
+  });
+
   const clear = () => {
+    // eslint-disable-next-line no-restricted-globals
+    const isClear = confirm('Вы действительно хотите очистить холст?');
+    if (!isClear) return;
+
     if (!canvas) return;
     const saveData = getSaveDataCanvas(canvas);
 
@@ -22,6 +31,9 @@ export const ToolbarFooter = () => {
 
     socketNext(SocketMethods.CLEAR);
     clearCanvas();
+
+    const img = canvas.toDataURL();
+    saveImg({ img });
   };
 
   const download = () => {

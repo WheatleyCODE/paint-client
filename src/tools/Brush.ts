@@ -1,7 +1,6 @@
-import { map, Observable, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
+import { filter, map, Observable, pairwise, switchMap, takeUntil, withLatestFrom } from 'rxjs';
 import { Tool } from './abstract/Tool';
-import { createStream } from '../utils';
-import { MOUSE_RIGHT } from '../consts';
+import { createStream, checkMouseButton, getOffsetCoords } from '../utils';
 import {
   Change,
   EffectTypes,
@@ -33,7 +32,6 @@ export class Brush extends Tool implements IBrush {
   protected resizeIsReverse = false;
 
   protected lowMax = 1000;
-  protected bigMax = 1000;
   protected bigIteration = 1000;
   protected lowIteration = 0;
 
@@ -92,14 +90,15 @@ export class Brush extends Tool implements IBrush {
     });
 
     const streamMouseMove$ = this.mouseMove$.pipe(
-      map((e) => ({ x: e.offsetX, y: e.offsetY })),
+      map(getOffsetCoords),
       pairwise(),
       takeUntil(this.mouseUp$),
       takeUntil(this.mouseOut$)
     );
 
     const streamMouseDown$ = this.mouseDown$.pipe(
-      map((e) => ({ isReverse: e.buttons === MOUSE_RIGHT })),
+      map(checkMouseButton),
+      filter((a) => !a.isDisable),
       withLatestFrom(
         majorColorStream$,
         minorColorStream$,

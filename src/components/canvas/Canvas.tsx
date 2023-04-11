@@ -4,6 +4,7 @@ import { paintActions as PA } from '../../store';
 import { UserSelect } from './UserSelect';
 import {
   useCanvas,
+  useCanvasMove,
   useCanvasResize,
   useCanvasRestore,
   useRequest,
@@ -27,6 +28,7 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
   const { canvas, drawImageCanvas } = useCanvas();
   const { pushToUndo } = useCanvasRestore();
   const { rightRef, bottomRef } = useCanvasResize();
+  const { isActive, canvasMain } = useCanvasMove();
   const { socketNext } = useSocket();
 
   const pushToUndoWS = () => {
@@ -65,14 +67,14 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
     saveImg({ img });
   };
 
-  const cursor = getCursor(currentTool, lineWidthValue);
+  const cursor = getCursor(currentTool, lineWidthValue, isActive);
   const { width, height } = canvasSettings;
 
   return (
-    <div className="canvas">
+    <div ref={canvasMain} className="canvas">
       <div style={{ width, height }} className="position-relative">
         {connections.map((name) => (
-          <UserSelect name={name} />
+          <UserSelect key={name} name={name} />
         ))}
 
         <UserSelect />

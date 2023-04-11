@@ -43,9 +43,11 @@
   }
 
   &__users {
+    align-items: center;
     display: flex;
     overflow: auto;
-    max-width: 300px;
+    height: 100%;
+    max-width: 400px;
   }
 
   &__user {
@@ -61,6 +63,24 @@
 
     .icon {
       margin-right: 5px;
+    }
+  }
+}
+
+@media screen and (max-width: 850px){
+  .header {
+    &__title {
+      display: none;
+    }
+
+    &__users {
+      width: 100%;
+      max-width: initial;
+      overflow: initial;
+    }
+
+    &__right {
+      overflow: auto;
     }
   }
 }
