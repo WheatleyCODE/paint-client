@@ -1,6 +1,6 @@
 /* eslint-disable max-len */
-import { ISaveCanvas, ShapeFillTypes, ToolTypes } from '../types';
-import { cursors } from '../consts';
+import { ISaveCanvas, ShapeFillTypes, ToolTypes } from '../../types';
+import { cursors } from '../../consts';
 
 export const getCVGCursor = (width: number) => {
   const widthHalf = width ? width / 2 : 0;

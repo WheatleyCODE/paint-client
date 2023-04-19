@@ -17,9 +17,9 @@ export const UserModal = () => {
   };
 
   return (
-    <Modal show={show} onHide={() => {}}>
+    <Modal data-testid="modal" show={show}>
       <Modal.Header className="user-modal__header" closeButton>
-        <Modal.Title>Welcome to [Paint] Online</Modal.Title>
+        <Modal.Title>Welcome to Paint Online</Modal.Title>
       </Modal.Header>
 
       <Modal.Body className="user-modal__body">
@@ -34,9 +34,10 @@ export const UserModal = () => {
           />
         </InputGroup>
       </Modal.Body>
+
       <Modal.Footer className="user-modal__footer">
         {input.isTouched && input.validError && (
-          <Alert className="user-modal__alert" variant="danger">
+          <Alert title="alert" className="user-modal__alert" variant="danger">
             {input.validError}
           </Alert>
         )}

@@ -1,5 +1,5 @@
 import { getCursor, getCVGCursor } from './canvas.utils';
-import { ToolTypes } from '../types';
+import { ToolTypes } from '../../types';
 
 describe('Утилиты Canvas компонента', () => {
   test('Курсор есть?', () => {

@@ -32,6 +32,7 @@ module.exports = {
     'default-param-last': 'off',
     'no-self-assign': 'off',
     'consistent-return': 'off',
+    'react/react-in-jsx-scope': 'off',
     'max-len': ['error', 100],
     'react-hooks/exhaustive-deps': ['warn'],
     'react/function-component-definition': [

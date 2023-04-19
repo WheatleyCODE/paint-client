@@ -8,7 +8,7 @@ import {
   ToolTypes,
 } from '../../types';
 
-const initialState: IPaintState = {
+export const initialState: IPaintState = {
   username: null,
   currentTool: ToolTypes.NONE,
   currentEffect: EffectTypes.NONE,

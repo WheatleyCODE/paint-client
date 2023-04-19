@@ -1,4 +1,4 @@
-import { SelectSquareParams, ToolTypes, TriangleParams } from '../types';
+import { SelectSquareParams, ToolTypes, TriangleParams } from '../../types';
 
 export const setStylesOnSelectSquare = (
   div: HTMLDivElement,

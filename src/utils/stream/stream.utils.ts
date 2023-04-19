@@ -1,6 +1,6 @@
 import { ChangeEvent } from 'react';
 import { map, Observable, Observer, startWith } from 'rxjs';
-import { MOUSE_LEFT, MOUSE_RIGHT } from '../consts';
+import { MOUSE_LEFT, MOUSE_RIGHT } from '../../consts';
 
 export const createStream = <
   T extends ChangeEvent<HTMLInputElement>,

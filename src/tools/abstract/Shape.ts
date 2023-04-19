@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import { Tool } from './Tool';
 import { IShape, Change, ShapeFillTypes, SelectSquareParams, IDrawSelectParams } from '../../types';
-import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint.utils';
+import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint/paint.utils';
 import { SELECT_BORDER_SUM, TOOLBAR_WIDTH } from '../../consts';
 
 let bottom: HTMLDivElement | null = null;
