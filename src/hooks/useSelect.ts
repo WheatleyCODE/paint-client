@@ -22,7 +22,7 @@ export const useSelect = () => {
 
   const drawSelect = (params: IDrawSelectParams, username: string) => {
     if (!dev.current || !canvas) return;
-    Shape.drawSelectSquare(dev.current[username], canvas, params);
+    Shape.drawSelectSquare(dev.current[username], canvas, { ...params, username });
   };
 
   return {

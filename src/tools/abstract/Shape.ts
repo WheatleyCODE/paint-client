@@ -47,7 +47,7 @@ export abstract class Shape extends Tool implements IShape {
     $canvas: HTMLCanvasElement,
     drawParams: IDrawSelectParams
   ) {
-    const { isShow, startCoords, coords, figure, triangleParams } = drawParams;
+    const { isShow, startCoords, coords, figure, triangleParams, username } = drawParams;
 
     if (!isShow) {
       removeStylesOnSelectSquare($selectSquare, figure);
@@ -82,6 +82,7 @@ export abstract class Shape extends Tool implements IShape {
     params.width = selWidth;
 
     if (triangleParams) {
+      console.log(username);
       // todo fix
       if (!bottom) {
         bottom = $selectSquare.querySelector('[data-triangle="bottom"]') as HTMLDivElement;

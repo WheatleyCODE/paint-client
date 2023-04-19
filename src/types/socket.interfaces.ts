@@ -26,6 +26,7 @@ export interface IDrawSelectParams {
   figure: ToolTypes;
   isShow: boolean;
   triangleParams?: TriangleParams;
+  username?: string;
 }
 
 export interface ISocketPayloadSelect {
