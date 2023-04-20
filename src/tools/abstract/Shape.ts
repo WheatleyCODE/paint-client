@@ -4,9 +4,13 @@ import { IShape, Change, ShapeFillTypes, SelectSquareParams, IDrawSelectParams }
 import { removeStylesOnSelectSquare, setStylesOnSelectSquare } from '../../utils/paint/paint.utils';
 import { SELECT_BORDER_SUM, TOOLBAR_WIDTH } from '../../consts';
 
-let bottom: HTMLDivElement | null = null;
-let right: HTMLDivElement | null = null;
-let left: HTMLDivElement | null = null;
+type TriangleSides = {
+  bottom?: HTMLDivElement;
+  right?: HTMLDivElement;
+  left?: HTMLDivElement;
+};
+
+const cache: { [key: string]: TriangleSides } = {};
 
 export abstract class Shape extends Tool implements IShape {
   initShapeFillType: ShapeFillTypes;
@@ -82,19 +86,27 @@ export abstract class Shape extends Tool implements IShape {
     params.width = selWidth;
 
     if (triangleParams) {
-      console.log(username);
-      // todo fix
-      if (!bottom) {
-        bottom = $selectSquare.querySelector('[data-triangle="bottom"]') as HTMLDivElement;
+      const user = String(username);
+      if (!cache[user]) cache[user] = {};
+
+      if (!cache[user].right) {
+        cache[user].right = $selectSquare.querySelector(
+          '[data-triangle="right"]'
+        ) as HTMLDivElement;
       }
 
-      if (!right) {
-        right = $selectSquare.querySelector('[data-triangle="right"]') as HTMLDivElement;
+      if (!cache[user].left) {
+        cache[user].left = $selectSquare.querySelector('[data-triangle="left"]') as HTMLDivElement;
       }
 
-      if (!left) {
-        left = $selectSquare.querySelector('[data-triangle="left"]') as HTMLDivElement;
+      if (!cache[user].bottom) {
+        cache[user].bottom = $selectSquare.querySelector(
+          '[data-triangle="bottom"]'
+        ) as HTMLDivElement;
       }
+
+      const { right, left, bottom } = cache[user];
+      if (!right || !left || !bottom) return;
 
       right.style.height = `${triangleParams.sides.a}px`;
       left.style.height = `${triangleParams.sides.b}px`;
