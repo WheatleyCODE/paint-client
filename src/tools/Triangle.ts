@@ -147,7 +147,6 @@ export class Triangle extends Shape implements ITriangle {
 
       Triangle.draw(this.canvasCtx, params);
 
-      // clear select
       removeStylesOnSelectSquare(this.$selectSquare, this.type);
       this.socketNext(SocketMethods.SELECT, {
         params: { startCoords, coords, figure: this.type, isShow: false },

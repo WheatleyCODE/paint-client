@@ -1,11 +1,11 @@
 import React, { FC } from 'react';
-import { ITools } from '../../../hooks/paint/usePaintTools';
-import { useTypedSelector } from '../../../hooks';
-import { createToolButtons } from './createToolButtons';
-import { ToolButton } from './ToolButton';
-import { EffectButton } from './EffectButton';
-import { effects } from '../../../consts';
-import { ToolTypes } from '../../../types';
+import { ITools } from '../../../../hooks/paint/usePaintTools';
+import { useTypedSelector } from '../../../../hooks';
+import { createToolButtons } from '../createToolButtons';
+import { ToolButton } from '../tool-button/ToolButton';
+import { EffectButton } from '../effect-button/EffectButton';
+import { effects } from '../../../../consts';
+import { ToolTypes } from '../../../../types';
 
 export interface IToolbarToolsProps {
   tools: ITools;

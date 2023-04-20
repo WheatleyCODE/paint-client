@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import userEvent from '@testing-library/user-event';
 import { store as reduxStore } from '../../store/store';
 import { Header } from './Header';
 import { initialState } from '../../store/paint/paint.slice';
@@ -39,5 +40,27 @@ describe('Шапка', () => {
 
     expect(user1).toBeInTheDocument();
     expect(user2).toBeInTheDocument();
+  });
+
+  test('Кнопки', () => {
+    const { getByTestId } = renderWithProviders(<Header />, {
+      preloadedState: {
+        paint: {
+          ...initialState,
+        },
+      },
+    });
+
+    const undo = getByTestId('undo');
+    const redo = getByTestId('redo');
+
+    expect(undo).toBeInTheDocument();
+    expect(redo).toBeInTheDocument();
+
+    userEvent.click(undo);
+    userEvent.click(redo);
+
+    expect(getByTestId('undo')).toBeEnabled();
+    expect(getByTestId('redo')).toBeEnabled();
   });
 });

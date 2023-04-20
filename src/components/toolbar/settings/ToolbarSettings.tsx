@@ -2,7 +2,7 @@ import React, { FC, MutableRefObject } from 'react';
 import { Form } from 'react-bootstrap';
 import { ShapeFillTypes } from '../../../types';
 import { fillRadios } from '../../../consts';
-import { FillToggle } from './FillToggle';
+import { FillToggle } from './fill-toggle/FillToggle';
 
 export interface IToolbarSettingsProps {
   fill: {

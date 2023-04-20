@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
 import { IconType } from 'react-icons';
 import { Button } from 'react-bootstrap';
-import { paintActions } from '../../../store';
-import { useTypedDispatch } from '../../../hooks';
-import { EffectTypes } from '../../../types';
+import { paintActions } from '../../../../store';
+import { useTypedDispatch } from '../../../../hooks';
+import { EffectTypes } from '../../../../types';
 
 export interface IEffectButtonProps {
   effectType: EffectTypes;
@@ -20,8 +20,12 @@ export const EffectButton: FC<IEffectButtonProps> = (props) => {
   };
 
   return (
-    <Button onClick={onClickHandler} className={`btn icon btn-cian ${isActive && 'active'}`}>
-      <Icon />
+    <Button
+      data-testid="button"
+      onClick={onClickHandler}
+      className={`btn icon btn-cian ${isActive && 'active'}`}
+    >
+      <Icon data-testid="icon" />
     </Button>
   );
 };

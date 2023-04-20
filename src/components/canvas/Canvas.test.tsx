@@ -1,4 +1,4 @@
-import userEvent from '@testing-library/user-event';
+import { fireEvent } from '@testing-library/react';
 import { Canvas } from './Canvas';
 import { renderWithProviders } from '../../utils/tests/renderWithProviders';
 import { initialState } from '../../store/paint/paint.slice';
@@ -63,6 +63,11 @@ describe('Холст', () => {
     expect(canvas.width).toBe(500);
     expect(canvas.height).toBe(500);
 
-    userEvent.click(rightResize);
+    fireEvent.click(rightResize);
+    fireEvent.click(bottomResize);
+
+    const canvas2 = getByTestId('canvas') as HTMLCanvasElement;
+    expect(canvas2.width).toBe(500);
+    expect(canvas2.height).toBe(500);
   });
 });

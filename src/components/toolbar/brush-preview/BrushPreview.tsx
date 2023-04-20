@@ -8,7 +8,11 @@ export interface IBrushPreviewProps {
 export const BrushPreview: FC<IBrushPreviewProps> = ({ width, color }) => {
   return (
     <div className="brash-preview">
-      <div style={{ width, height: width, background: color }} className="brash-preview__brush" />
+      <div
+        data-testid="brash-preview"
+        style={{ width, height: width, background: color }}
+        className="brash-preview__brush"
+      />
     </div>
   );
 };

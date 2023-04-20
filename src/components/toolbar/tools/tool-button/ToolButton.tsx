@@ -12,6 +12,7 @@ export interface ToolButtonProps {
 export const ToolButton: FC<ToolButtonProps> = memo(({ onClick, isActive, Icon, deg }) => {
   return (
     <Button
+      data-testid="tool-button"
       variant="primary"
       onClick={onClick}
       className={`btn btn-cian icon ${isActive && 'active'}`}

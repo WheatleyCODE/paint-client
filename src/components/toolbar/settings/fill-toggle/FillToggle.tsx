@@ -1,7 +1,7 @@
 import React, { FC } from 'react';
 import { ToggleButton } from 'react-bootstrap';
 import { IconType } from 'react-icons';
-import { ShapeFillTypes } from '../../../types';
+import { ShapeFillTypes } from '../../../../types';
 
 export interface IFillToggleProps {
   value: ShapeFillTypes;
@@ -17,6 +17,7 @@ export const FillToggle: FC<IFillToggleProps> = ({ value, Icon, isChecked, chang
 
   return (
     <ToggleButton
+      data-testid="toggle-button"
       id={`radio-${value}`}
       type="radio"
       name="radio"

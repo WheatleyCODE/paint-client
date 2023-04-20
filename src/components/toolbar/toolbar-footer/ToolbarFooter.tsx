@@ -2,10 +2,10 @@ import React from 'react';
 import { useParams } from 'react-router-dom';
 import { Button } from 'react-bootstrap';
 import { MdDelete, MdSave } from 'react-icons/md';
-import { paintActions as PA } from '../../store';
-import { useCanvas, useRequest, useSocket, useTypedDispatch } from '../../hooks';
-import { getSaveDataCanvas } from '../../utils';
-import { SocketMethods } from '../../types';
+import { paintActions as PA } from '../../../store';
+import { useCanvas, useRequest, useSocket, useTypedDispatch } from '../../../hooks';
+import { getSaveDataCanvas } from '../../../utils';
+import { SocketMethods } from '../../../types';
 
 export const ToolbarFooter = () => {
   const params = useParams();

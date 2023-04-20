@@ -1,9 +1,9 @@
 import React, { FC } from 'react';
-import { ToolbarFooter } from './ToolbarFooter';
+import { ToolbarFooter } from './toolbar-footer/ToolbarFooter';
 import { ToolbarSettings } from './settings/ToolbarSettings';
-import { ToolbarTools } from './tools/ToolbarTools';
-import Palette from './Palette';
-import { BrushPreview } from './BrushPreview';
+import { ToolbarTools } from './tools/toolbar-tool/ToolbarTools';
+import Palette from './palette/Palette';
+import { BrushPreview } from './brush-preview/BrushPreview';
 import { ISettings } from '../../hooks/paint/usePaint';
 import { ITools } from '../../hooks/paint/usePaintTools';
 
