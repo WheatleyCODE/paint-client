@@ -1,6 +1,6 @@
 import React from 'react';
 import { PaintProvider } from '../components/hoc/PaintProvider';
-import { Paint } from '../components/Paint';
+import { Paint } from '../components/paint/Paint';
 
 export const PaintPage = () => {
   return (

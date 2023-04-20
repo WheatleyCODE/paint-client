@@ -1,7 +1,7 @@
 import React, { FC, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { paintActions as PA } from '../../store';
-import { UserSelect } from './UserSelect';
+import { UserSelect } from './user-select/UserSelect';
 import {
   useCanvas,
   useCanvasMove,
@@ -82,7 +82,13 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
 
         <UserSelect />
 
-        <canvas id="canvas" width={width} height={height} style={{ width, height }} />
+        <canvas
+          data-testid="canvas"
+          id="canvas"
+          width={width}
+          height={height}
+          style={{ width, height }}
+        />
 
         <div
           style={{ cursor, width, height }}
@@ -91,9 +97,10 @@ export const Canvas: FC<ICanvasProps> = ({ lineWidthValue }) => {
           onMouseUp={saveImage}
           onMouseDown={pushToUndoWS}
           id="shield"
+          data-testid="shield"
         >
-          <div ref={rightRef} className="canvas__resize-right" />
-          <div ref={bottomRef} className="canvas__resize-bottom" />
+          <div data-testid="right" ref={rightRef} className="canvas__resize-right" />
+          <div data-testid="bottom" ref={bottomRef} className="canvas__resize-bottom" />
         </div>
       </div>
     </div>

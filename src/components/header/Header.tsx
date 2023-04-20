@@ -2,8 +2,8 @@ import React from 'react';
 import { MdPerson, MdRedo, MdUndo } from 'react-icons/md';
 import { Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
-import { useCanvasRestore, useRequest, useSocket, useTypedSelector } from '../hooks';
-import { SocketMethods } from '../types';
+import { useCanvasRestore, useRequest, useSocket, useTypedSelector } from '../../hooks';
+import { SocketMethods } from '../../types';
 
 export const Header = () => {
   const params = useParams();
@@ -37,11 +37,11 @@ export const Header = () => {
   return (
     <div className="header">
       <div className="header__left">
-        <Button onClick={undoHandler} className="btn btn-cian" type="submit">
+        <Button data-testid="undo" onClick={undoHandler} className="btn btn-cian" type="submit">
           <MdUndo className="icon" />
         </Button>
 
-        <Button onClick={redoHandler} className="btn btn-cian" type="submit">
+        <Button data-testid="redo" onClick={redoHandler} className="btn btn-cian" type="submit">
           <MdRedo className="icon" />
         </Button>
       </div>

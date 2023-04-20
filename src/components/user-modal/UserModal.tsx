@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Alert, Button, Form, InputGroup, Modal } from 'react-bootstrap';
-import { paintActions as PA } from '../store/paint/paint.slice';
-import { useValidInput, useTypedDispatch } from '../hooks';
-import { userValidator } from '../utils';
+import { paintActions as PA } from '../../store/paint/paint.slice';
+import { useValidInput, useTypedDispatch } from '../../hooks';
+import { userValidator } from '../../utils';
 
 export const UserModal = () => {
   const [show, setShow] = useState(true);
