@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { Alert, Button, Form, InputGroup, Modal } from 'react-bootstrap';
 import { paintActions as PA } from '../../store/paint/paint.slice';
 import { useValidInput, useTypedDispatch } from '../../hooks';
 import { userValidator } from '../../utils';
 
-export const UserModal = () => {
+export const UserModal = memo(() => {
   const [show, setShow] = useState(true);
   const input = useValidInput('', [userValidator]);
 
@@ -52,4 +52,4 @@ export const UserModal = () => {
       </Modal.Footer>
     </Modal>
   );
-};
+});

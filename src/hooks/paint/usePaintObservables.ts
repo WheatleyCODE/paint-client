@@ -82,15 +82,17 @@ export const usePaintObservables = (settings: IPainToolSettings) => {
       settings.saturation.input.changeValue(saturation);
     });
 
-    const majorColorSub = streamMajorColor$.subscribe(({ majorColor }) =>
-      settings.majorColor.input.changeValue(majorColor)
-    );
-    const minorColorSub = streamMinorColor$.subscribe(({ minorColor }) =>
-      settings.minorColor.input.changeValue(minorColor)
-    );
-    const lineWidthSub = streamLineWidth$.subscribe(({ lineWidth }) =>
-      settings.lineWidth.input.changeValue(lineWidth)
-    );
+    const majorColorSub = streamMajorColor$.subscribe(({ majorColor }) => {
+      settings.majorColor.input.changeValue(majorColor);
+    });
+
+    const minorColorSub = streamMinorColor$.subscribe(({ minorColor }) => {
+      settings.minorColor.input.changeValue(minorColor);
+    });
+
+    const lineWidthSub = streamLineWidth$.subscribe(({ lineWidth }) => {
+      settings.lineWidth.input.changeValue(lineWidth);
+    });
 
     return () => {
       effectSpeedSub?.unsubscribe();

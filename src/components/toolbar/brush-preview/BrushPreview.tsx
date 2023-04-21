@@ -1,11 +1,11 @@
-import React, { FC } from 'react';
+import React, { FC, memo } from 'react';
 
 export interface IBrushPreviewProps {
   width: number;
   color: string;
 }
 
-export const BrushPreview: FC<IBrushPreviewProps> = ({ width, color }) => {
+export const BrushPreview: FC<IBrushPreviewProps> = memo(({ width, color }) => {
   return (
     <div className="brash-preview">
       <div
@@ -15,4 +15,4 @@ export const BrushPreview: FC<IBrushPreviewProps> = ({ width, color }) => {
       />
     </div>
   );
-};
+});

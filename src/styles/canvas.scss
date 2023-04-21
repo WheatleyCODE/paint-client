@@ -1,4 +1,9 @@
 .canvas {
+  canvas {
+    position: relative;
+    background: $colorWhite;
+  }
+
   @include no-select;
 
   position: relative;
@@ -138,9 +143,4 @@
   left: 0;
   width: 800px;
   height: 600px;
-}
-
-canvas {
-  position: relative;
-  background: $colorWhite;
 }

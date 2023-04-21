@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { MdPerson, MdRedo, MdUndo } from 'react-icons/md';
 import { Button } from 'react-bootstrap';
 import { useParams } from 'react-router-dom';
@@ -34,6 +34,8 @@ export const Header = () => {
     redo(saveImage);
   };
 
+  const MemoPerson = memo(MdPerson);
+
   return (
     <div className="header">
       <div className="header__left">
@@ -51,7 +53,7 @@ export const Header = () => {
         <div className="header__users">
           {connections.map((name) => (
             <div key={name} className="header__user">
-              <MdPerson className="icon" /> {name}
+              <MemoPerson className="icon" /> {name}
             </div>
           ))}
         </div>
